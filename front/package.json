@@ -1,0 +1,12 @@
+{
+  "name": "creat-front",
+  "version": "1.0.0",
+  "author": "uiuing<uiuing@foxmail.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "dev-web": "cd creat-render && npm run dev",
+    "build-web": "cd creat-render && npm run build",
+    "lint-web": "cd creat-render && npm run lint"
+  }
+}

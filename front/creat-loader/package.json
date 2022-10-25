@@ -1,0 +1,12 @@
+{
+  "name": "creat-loader",
+  "version": "1.0.0",
+  "author": "uiuing<uiuing@foxmail.com>",
+  "license": "MIT",
+  "private": false,
+  "main": "index.js",
+  "scripts": {},
+  "dependencies": {
+    "eventemitter3": "^4.0.7"
+  }
+}
