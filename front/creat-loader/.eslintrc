@@ -1,0 +1,24 @@
+{
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "extends": ["airbnb-base","airbnb-typescript/base", "prettier"],
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["simple-import-sort", "@typescript-eslint", "prettier"],
+  "rules": {
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    "no-restricted-syntax": "off",
+    "prettier/prettier": "error",
+    "comma-dangle": ["error", "never"],
+    "semi": ["error", "never"],
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "import/no-extraneous-dependencies": "off",
+    "import/prefer-default-export": "off"
+  }
+}
