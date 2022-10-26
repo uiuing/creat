@@ -307,7 +307,6 @@ export function getTextElementSize(element: any) {
   }
 }
 
-// 节流函数
 export function throttle(fn: Function, ctx: any, time = 100) {
   let timer: number | null = null
   return (...args: any) => {
