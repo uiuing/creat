@@ -11,10 +11,17 @@ class Room(object):
         self.room_owner_id = room_owner_id
         self.room_owner_avatar = room_owner_avatar
         self.room_members = []
+        self.room_online_members = [] # 在线人员,之后还需要用这个进行转发整个房间的信息
         self.room_content = []
         self.room_prohibits = []
         self.room_member_setting = {}
     
+    def add_room_online_member(self, memeber):
+        self.room_members.append(memeber)
+
+    def reomve_room_online_member(self, member):
+        self.room_members.remove(member)
+
     def update_member_setting(self, member, setting):
         if member in self.room_members:
             self.room_member_setting
