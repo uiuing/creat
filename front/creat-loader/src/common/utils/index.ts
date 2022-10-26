@@ -218,8 +218,8 @@ export function getRotateAngleCardin(
   }
 }
 
-export function getElementCenterCoordinate(element: any) {
-  const { x, y, width, height } = element
+export function getNodeCenterCoordinate(node: any) {
+  const { x, y, width, height } = node
   return {
     x: x + width / 2,
     y: y + height / 2
@@ -246,13 +246,13 @@ export function getReversRotateCardin(
   }
 }
 
-export function getReversRotateGetMouse(x: number, y: number, element: any) {
-  const center = getElementCenterCoordinate(element)
-  return getReversRotateCardin(x, y, center.x, center.y, element.rotate)
+export function getReversRotateGetMouse(x: number, y: number, node: any) {
+  const center = getNodeCenterCoordinate(node)
+  return getReversRotateCardin(x, y, center.x, center.y, node.rotate)
 }
 
-export function getElementFourCornerCardin(element: any, posit: FourCorner) {
-  const { x, y, width, height } = element
+export function getNodeFourCornerCardin(node: any, posit: FourCorner) {
+  const { x, y, width, height } = node
   switch (posit) {
     case 'topRight':
       return {
@@ -277,18 +277,15 @@ export function getElementFourCornerCardin(element: any, posit: FourCorner) {
   }
 }
 
-export function getElementRotatedFourCornerCardin(
-  element: any,
-  posit: FourCorner
-) {
-  const center = getElementCenterCoordinate(element)
-  const dirPos = getElementFourCornerCardin(element, posit)
+export function getNodeRotatedFourCornerCardin(node: any, posit: FourCorner) {
+  const center = getNodeCenterCoordinate(node)
+  const dirPos = getNodeFourCornerCardin(node, posit)
   return getRotateAngleCardin(
     dirPos.x,
     dirPos.y,
     center.x,
     center.y,
-    element.rotate
+    node.rotate
   )
 }
 
@@ -302,25 +299,25 @@ export function checkCoordinateIsInRectangle(
 ) {
   const o = { rx, ry, rw, rh }
   if (typeof rx === 'object') {
-    const element = rx
-    o.rx = element.x
-    o.ry = element.y
-    o.rw = element.width
-    o.rh = element.height
+    const node = rx
+    o.rx = node.x
+    o.ry = node.y
+    o.rw = node.width
+    o.rh = node.height
   }
   return x >= o.rx && x <= o.rx + o.rw && y >= o.ry && y <= o.ry + o.rh
 }
 
-export function getElementCorners(element: any) {
-  const topLeft = getElementRotatedFourCornerCardin(element, 'topLeft')
-  const topRight = getElementRotatedFourCornerCardin(element, 'topRight')
-  const bottomLeft = getElementRotatedFourCornerCardin(element, 'bottomLeft')
-  const bottomRight = getElementRotatedFourCornerCardin(element, 'bottomRight')
+export function getNodeCorners(node: any) {
+  const topLeft = getNodeRotatedFourCornerCardin(node, 'topLeft')
+  const topRight = getNodeRotatedFourCornerCardin(node, 'topRight')
+  const bottomLeft = getNodeRotatedFourCornerCardin(node, 'bottomLeft')
+  const bottomRight = getNodeRotatedFourCornerCardin(node, 'bottomRight')
   return [topLeft, topRight, bottomLeft, bottomRight]
 }
 
-export function getMultiElementRectInfo(elementList: Array<any> = []) {
-  if (elementList.length <= 0) {
+export function getMultiNodeRectInfo(nodeList: Array<any> = []) {
+  if (nodeList.length <= 0) {
     return {
       minX: 0,
       maxX: 0,
@@ -332,9 +329,9 @@ export function getMultiElementRectInfo(elementList: Array<any> = []) {
   let maxX = -Infinity
   let minY = Infinity
   let maxY = -Infinity
-  elementList.forEach((element) => {
+  nodeList.forEach((node) => {
     const coordinateList: Array<{ x: number; y: number }> =
-      element.getEndcoordinateList()
+      node.getEndcoordinateList()
     coordinateList.forEach(({ x, y }) => {
       if (x < minX) {
         minX = x
@@ -375,16 +372,16 @@ export function createImageObj(url: string) {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let nodeKeyIndex = 0
 
-export function createNodeKey() {
+export function createElementKey() {
   nodeKeyIndex += 1
 }
 
-export function getWrapTextActWidth(element: any) {
-  const { text } = element
+export function getWrapTextActWidth(node: any) {
+  const { text } = node
   const textArr = splitTextLines(text)
   let maxWidth = -Infinity
   textArr.forEach((textRow) => {
-    const width = getTextActWidth(textRow, element.style)
+    const width = getTextActWidth(textRow, node.style)
     if (width > maxWidth) {
       maxWidth = width
     }
@@ -392,9 +389,9 @@ export function getWrapTextActWidth(element: any) {
   return maxWidth
 }
 
-export function getTextElementSize(element: any) {
-  const { text, style } = element
-  const width = getWrapTextActWidth(element)
+export function getTextNodeSize(node: any) {
+  const { text, style } = node
+  const width = getWrapTextActWidth(node)
   const lines = Math.max(splitTextLines(text).length, 1)
   const lineHeight = style.fontSize * style.lineHeightRatio
   const height = lines * lineHeight

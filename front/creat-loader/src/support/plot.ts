@@ -156,7 +156,7 @@ export function plotFreeLine(
 
 export function plotImage(
   ctx: any,
-  element: any,
+  node: any,
   x: number,
   y: number,
   width: number,
@@ -166,14 +166,14 @@ export function plotImage(
     const ratio = width / height
     let showWidth = 0
     let showHeight = 0
-    if (ratio > element.ratio) {
+    if (ratio > node.ratio) {
       showHeight = height
-      showWidth = element.ratio * height
+      showWidth = node.ratio * height
     } else {
       showWidth = width
-      showHeight = width / element.ratio
+      showHeight = width / node.ratio
     }
-    ctx.plotImage(element.imageObject, x, y, showWidth, showHeight)
+    ctx.plotImage(node.imageObject, x, y, showWidth, showHeight)
   })
 }
 

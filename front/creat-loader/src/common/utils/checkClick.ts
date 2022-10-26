@@ -12,70 +12,70 @@ export function getCircleRadius(width: number, height: number) {
   return Math.min(Math.abs(width), Math.abs(height)) / 2
 }
 
-export function checkIsAtCircleEdge(element: any, rp: Rp) {
-  const { width, height, x, y } = element
+export function checkIsAtCircleEdge(node: any, rp: Rp) {
+  const { width, height, x, y } = node
   const radius = getCircleRadius(width, height)
   const dis = getCoordinateSpace(rp.x, rp.y, x + radius, y + radius)
   const onCircle =
     dis >= radius - CLICK_FAULT_TOWER && dis <= radius + CLICK_FAULT_TOWER
-  return onCircle ? element : null
+  return onCircle ? node : null
 }
 
-export function clickIsEdgeFreeSegment(element: any, rp: Rp) {
+export function clickIsEdgeFreeSegment(node: any, rp: Rp) {
   let flag: any = null
-  element.coordinates.forEach((coordinate: number[]) => {
+  node.coordinates.forEach((coordinate: number[]) => {
     if (flag) return
     const dis = getCoordinateSpace(rp.x, rp.y, coordinate[0], coordinate[1])
     if (dis <= CLICK_FAULT_TOWER) {
-      flag = element
+      flag = node
     }
   })
   return flag
 }
 
-export const checkIsAtDiamondEdge = (element: any, rp: Rp) => {
-  const { x, y, width, height } = element
+export const checkIsAtDiamondEdge = (node: any, rp: Rp) => {
+  const { x, y, width, height } = node
   const segments: Segments = [
     [x + width / 2, y, x + width, y + height / 2],
     [x + width, y + height / 2, x + width / 2, y + height],
     [x + width / 2, y + height, x, y + height / 2],
     [x, y + height / 2, x + width / 2, y]
   ]
-  return checkAGregBrokenLine(segments, rp) ? element : null
+  return checkAGregBrokenLine(segments, rp) ? node : null
 }
 
-export const checkIsTriangleEdge = (element: any, rp: Rp) => {
-  const { x, y, width, height } = element
+export const checkIsTriangleEdge = (node: any, rp: Rp) => {
+  const { x, y, width, height } = node
   const segments: Segments = [
     [x + width / 2, y, x + width, y + height],
     [x + width, y + height, x, y + height],
     [x, y + height, x + width / 2, y]
   ]
-  return checkAGregBrokenLine(segments, rp) ? element : null
+  return checkAGregBrokenLine(segments, rp) ? node : null
 }
 
-export function checkIsLineEdge(element: any, rp: Rp) {
+export function checkIsLineEdge(node: any, rp: Rp) {
   const segments: Segments = []
-  const len = element.coordinates.length
-  const arr: Array<[x: number, y: number]> = element.coordinates
+  const len = node.coordinates.length
+  const arr: Array<[x: number, y: number]> = node.coordinates
   for (let i = 0; i < len - 1; i += 1) {
     segments.push([...arr[i], ...arr[i + 1]])
   }
-  return checkAGregBrokenLine(segments, rp) ? element : null
+  return checkAGregBrokenLine(segments, rp) ? node : null
 }
 
-export function checkIsClickInSidMatrix(element: any, rp: Rp) {
-  return checkCoordinateIsInRectangle(rp.x, rp.y, element) ? element : null
+export function checkIsClickInSidMatrix(node: any, rp: Rp) {
+  return checkCoordinateIsInRectangle(rp.x, rp.y, node) ? node : null
 }
 
-export const checkIsArrowEdge = (element: any, rp: Rp) => {
-  const { coordinates } = element
+export const checkIsArrowEdge = (node: any, rp: Rp) => {
+  const { coordinates } = node
   const x = coordinates[0][0]
   const y = coordinates[0][1]
   const tx = coordinates[coordinates.length - 1][0]
   const ty = coordinates[coordinates.length - 1][1]
   const segments: Segments = [[x, y, tx, ty]]
-  return checkAGregBrokenLine(segments, rp) ? element : null
+  return checkAGregBrokenLine(segments, rp) ? node : null
 }
 
 export function checkAGregBrokenLine(segments: Segments, rp: Rp) {
@@ -91,13 +91,13 @@ export function checkAGregBrokenLine(segments: Segments, rp: Rp) {
   return flag
 }
 
-export function clickIsEdgeRectangle(element: any, rp: Rp) {
-  const { x, y, width, height } = element
+export function clickIsEdgeRectangle(node: any, rp: Rp) {
+  const { x, y, width, height } = node
   const segments: Segments = [
     [x, y, x + width, y],
     [x + width, y, x + width, y + height],
     [x + width, y + height, x, y + height],
     [x, y + height, x, y]
   ]
-  return checkAGregBrokenLine(segments, rp) ? element : null
+  return checkAGregBrokenLine(segments, rp) ? node : null
 }
