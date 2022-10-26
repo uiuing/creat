@@ -1,5 +1,116 @@
 import { FourCorner } from '../../types'
 
+export function computedLineWidthBySpeed(
+  speed: number,
+  lastLineWidth: number,
+  baseLineWidth = 2
+) {
+  let lineWidth: number
+  const maxLineWidth = baseLineWidth + 2
+  const maxSpeed = 10
+  const minSpeed = 0.5
+  let lastWidth = lastLineWidth
+  if (speed >= maxSpeed) {
+    lineWidth = baseLineWidth
+  } else if (speed <= minSpeed) {
+    lineWidth = maxLineWidth + 1
+  } else {
+    lineWidth =
+      maxLineWidth - ((speed - minSpeed) / (maxSpeed - minSpeed)) * maxLineWidth
+  }
+  if (lastLineWidth === -1) {
+    lastWidth = maxLineWidth
+  }
+  return lineWidth * (1 / 2) + lastWidth * (1 / 2)
+}
+
+export function getBoundingRect(
+  pointArr: Array<[x: number, y: number]> = [],
+  returnCorners = false
+) {
+  let minX = Infinity
+  let maxX = -Infinity
+  let minY = Infinity
+  let maxY = -Infinity
+  pointArr.forEach((point) => {
+    const [x, y] = point
+    if (x < minX) {
+      minX = x
+    }
+    if (x > maxX) {
+      maxX = x
+    }
+    if (y < minY) {
+      minY = y
+    }
+    if (y > maxY) {
+      maxY = y
+    }
+  })
+  const x = minX
+  const y = minY
+  const width = maxX - minX
+  const height = maxY - minY
+  if (returnCorners) {
+    return [
+      {
+        x,
+        y
+      },
+      {
+        x: x + width,
+        y
+      },
+      {
+        x: x + width,
+        y: y + height
+      },
+      {
+        x,
+        y: y + height
+      }
+    ]
+  }
+  return {
+    x,
+    y,
+    width,
+    height
+  }
+}
+
+export function deepCopy(obj: object) {
+  return JSON.parse(JSON.stringify(obj))
+}
+
+export function getFontString(fontSize: number, fontFamily: string) {
+  return `${fontSize}px ${fontFamily}`
+}
+
+export function splitTextLines(text: string) {
+  return text.replace(/\r\n?/g, '\n').split('\n')
+}
+
+let textCheckEl: HTMLDivElement | null = null
+
+export function getTextActWidth(
+  text: string,
+  style: { fontSize: number; fontFamily: string }
+) {
+  if (!textCheckEl) {
+    textCheckEl = document.createElement('div')
+    textCheckEl.style.position = 'fixed'
+    textCheckEl.style.left = '-999999px'
+    document.body.appendChild(textCheckEl)
+  }
+  const { fontSize, fontFamily } = style
+  textCheckEl.innerText = text
+  textCheckEl.style.fontSize = `${fontSize}px`
+  textCheckEl.style.fontFamily = fontFamily
+  const { width } = textCheckEl.getBoundingClientRect()
+  return width
+}
+
 export function createCanvas(
   width: number,
   height: number,
@@ -179,10 +290,10 @@ export function getElementRotatedFourCornerCardin(
 export function checkPointIsInRectangle(
   x: number,
   y: number,
-  rx: any,
-  ry: any,
-  rw: undefined,
-  rh: undefined
+  rx?: any,
+  ry?: any,
+  rw?: undefined,
+  rh?: undefined
 ) {
   const o = { rx, ry, rw, rh }
   if (typeof rx === 'object') {
@@ -193,155 +304,6 @@ export function checkPointIsInRectangle(
     o.rh = element.height
   }
   return x >= o.rx && x <= o.rx + o.rw && y >= o.ry && y <= o.ry + o.rh
-}
-
-export function getBoundingRect(
-  pointArr: Array<[x: number, y: number]> = [],
-  returnCorners = false
-) {
-  let minX = Infinity
-  let maxX = -Infinity
-  let minY = Infinity
-  let maxY = -Infinity
-  pointArr.forEach((point) => {
-    const [x, y] = point
-    if (x < minX) {
-      minX = x
-    }
-    if (x > maxX) {
-      maxX = x
-    }
-    if (y < minY) {
-      minY = y
-    }
-    if (y > maxY) {
-      maxY = y
-    }
-  })
-  const x = minX
-  const y = minY
-  const width = maxX - minX
-  const height = maxY - minY
-  if (returnCorners) {
-    return [
-      {
-        x,
-        y
-      },
-      {
-        x: x + width,
-        y
-      },
-      {
-        x: x + width,
-        y: y + height
-      },
-      {
-        x,
-        y: y + height
-      }
-    ]
-  }
-  return {
-    x,
-    y,
-    width,
-    height
-  }
-}
-
-export function deepCopy(obj: object) {
-  return JSON.parse(JSON.stringify(obj))
-}
-
-export function getFontString(fontSize: number, fontFamily: string) {
-  return `${fontSize}px ${fontFamily}`
-}
-
-export function splitTextLines(text: string) {
-  return text.replace(/\r\n?/g, '\n').split('\n')
-}
-
-let textCheckEl: HTMLDivElement | null = null
-
-export function getTextActWidth(
-  text: string,
-  style: { fontSize: number; fontFamily: string }
-) {
-  if (!textCheckEl) {
-    textCheckEl = document.createElement('div')
-    textCheckEl.style.position = 'fixed'
-    textCheckEl.style.left = '-999999px'
-    document.body.appendChild(textCheckEl)
-  }
-  const { fontSize, fontFamily } = style
-  textCheckEl.innerText = text
-  textCheckEl.style.fontSize = `${fontSize}px`
-  textCheckEl.style.fontFamily = fontFamily
-  const { width } = textCheckEl.getBoundingClientRect()
-  return width
-}
-
-export function getWrapTextActWidth(element: any) {
-  const { text } = element
-  const textArr = splitTextLines(text)
-  let maxWidth = -Infinity
-  textArr.forEach((textRow) => {
-    const width = getTextActWidth(textRow, element.style)
-    if (width > maxWidth) {
-      maxWidth = width
-    }
-  })
-  return maxWidth
-}
-
-export function getTextElementSize(element: any) {
-  const { text, style } = element
-  const width = getWrapTextActWidth(element)
-  const lines = Math.max(splitTextLines(text).length, 1)
-  const lineHeight = style.fontSize * style.lineHeightRatio
-  const height = lines * lineHeight
-  return {
-    width,
-    height
-  }
-}
-
-export function throttle(fn: Function, ctx: any, time = 100) {
-  let timer: number | null = null
-  return (...args: any) => {
-    if (timer) {
-      return
-    }
-    timer = setTimeout(() => {
-      fn.call(ctx, ...args)
-      timer = null
-    }, time)
-  }
-}
-
-export function computedLineWidthBySpeed(
-  speed: number,
-  lastLineWidth: number,
-  baseLineWidth = 2
-) {
-  let lineWidth: number
-  const maxLineWidth = baseLineWidth + 2
-  const maxSpeed = 10
-  const minSpeed = 0.5
-  let lastWidth = lastLineWidth
-  if (speed >= maxSpeed) {
-    lineWidth = baseLineWidth
-  } else if (speed <= minSpeed) {
-    lineWidth = maxLineWidth + 1
-  } else {
-    lineWidth =
-      maxLineWidth - ((speed - minSpeed) / (maxSpeed - minSpeed)) * maxLineWidth
-  }
-  if (lastLineWidth === -1) {
-    lastWidth = maxLineWidth
-  }
-  return lineWidth * (1 / 2) + lastWidth * (1 / 2)
 }
 
 export function getElementCorners(element: any) {
@@ -409,4 +371,42 @@ let nodeKeyIndex = 0
 
 export function createNodeKey() {
   nodeKeyIndex += 1
+}
+
+export function getWrapTextActWidth(element: any) {
+  const { text } = element
+  const textArr = splitTextLines(text)
+  let maxWidth = -Infinity
+  textArr.forEach((textRow) => {
+    const width = getTextActWidth(textRow, element.style)
+    if (width > maxWidth) {
+      maxWidth = width
+    }
+  })
+  return maxWidth
+}
+
+export function getTextElementSize(element: any) {
+  const { text, style } = element
+  const width = getWrapTextActWidth(element)
+  const lines = Math.max(splitTextLines(text).length, 1)
+  const lineHeight = style.fontSize * style.lineHeightRatio
+  const height = lines * lineHeight
+  return {
+    width,
+    height
+  }
+}
+
+export function throttle(fn: Function, ctx: any, time = 100) {
+  let timer: number | null = null
+  return (...args: any) => {
+    if (timer) {
+      return
+    }
+    timer = setTimeout(() => {
+      fn.call(ctx, ...args)
+      timer = null
+    }, time)
+  }
 }
