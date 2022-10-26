@@ -8,85 +8,85 @@ import {
 type Coordinates = Array<[x: number, y: number]>
 
 export function plotCircle(
-  ctx: any,
+  context: any,
   x: number,
   y: number,
   r: number,
   fill = false
 ) {
   plotContain(
-    ctx,
+    context,
     () => {
-      ctx.arc(x, y, r, 0, 2 * Math.PI)
+      context.arc(x, y, r, 0, 2 * Math.PI)
     },
     fill
   )
 }
 
-export function plotLine(ctx: any, coordinates: Coordinates) {
-  plotContain(ctx, () => {
+export function plotLine(context: any, coordinates: Coordinates) {
+  plotContain(context, () => {
     let first = true
     coordinates.forEach((coordinate) => {
       if (first) {
         first = false
-        ctx.moveTo(coordinate[0], coordinate[1])
+        context.moveTo(coordinate[0], coordinate[1])
       } else {
-        ctx.lineTo(coordinate[0], coordinate[1])
+        context.lineTo(coordinate[0], coordinate[1])
       }
     })
   })
 }
 
-export function plotText(ctx: any, textObj: any, x: number, y: number) {
+export function plotText(context: any, textObj: any, x: number, y: number) {
   const { text, style } = textObj
   const lineHeight = style.fontSize * style.lineHeightRatio
-  plotContain(ctx, () => {
-    ctx.font = getFontString(style.fontSize, style.fontFamily)
-    ctx.textBaseline = 'middle'
+  plotContain(context, () => {
+    context.font = getFontString(style.fontSize, style.fontFamily)
+    context.textBaseline = 'middle'
     const textArr = splitTextLines(text)
     textArr.forEach((textRow, index) => {
-      ctx.fillText(textRow, x, y + (index * lineHeight + lineHeight / 2))
+      context.fillText(textRow, x, y + (index * lineHeight + lineHeight / 2))
     })
   })
 }
 
 export function plotRectangle(
-  ctx: any,
+  context: any,
   x: number,
   y: number,
   width: number,
   height: number,
   fill = false
 ) {
-  plotContain(ctx, () => {
-    ctx.rect(x, y, width, height)
+  plotContain(context, () => {
+    context.rect(x, y, width, height)
     if (fill) {
-      ctx.fillRect(x, y, width, height)
+      context.fillRect(x, y, width, height)
     }
   })
 }
 
 export function plotLineSegment(
-  ctx: any,
+  context: any,
   mx: number,
   my: number,
   tx: number,
   ty: number,
   lineWidth = 0
 ) {
-  plotContain(ctx, () => {
+  plotContain(context, () => {
     if (lineWidth > 0) {
-      ctx.lineWidth = lineWidth
+      context.lineWidth = lineWidth
     }
-    ctx.moveTo(mx, my)
-    ctx.lineTo(tx, ty)
-    ctx.lineCap = 'round'
-    ctx.lineJoin = 'round'
+    context.moveTo(mx, my)
+    context.lineTo(tx, ty)
+    context.lineCap = 'round'
+    context.lineJoin = 'round'
   })
 }
 
 export function plotDiamond(
-  ctx: any,
+  context: any,
   x: number,
   y: number,
   width: number,
@@ -94,20 +94,20 @@ export function plotDiamond(
   fill = false
 ) {
   plotContain(
-    ctx,
+    context,
     () => {
-      ctx.moveTo(x + width / 2, y)
-      ctx.lineTo(x + width, y + height / 2)
-      ctx.lineTo(x + width / 2, y + height)
-      ctx.lineTo(x, y + height / 2)
-      ctx.closePath()
+      context.moveTo(x + width / 2, y)
+      context.lineTo(x + width, y + height / 2)
+      context.lineTo(x + width / 2, y + height)
+      context.lineTo(x, y + height / 2)
+      context.closePath()
     },
     fill
   )
 }
 
 export function plotTriangle(
-  ctx: any,
+  context: any,
   x: number,
   y: number,
   width: number,
@@ -115,25 +115,25 @@ export function plotTriangle(
   fill = false
 ) {
   plotContain(
-    ctx,
+    context,
     () => {
-      ctx.moveTo(x + width / 2, y)
-      ctx.lineTo(x + width, y + height)
-      ctx.lineTo(x, y + height)
-      ctx.closePath()
+      context.moveTo(x + width / 2, y)
+      context.lineTo(x + width, y + height)
+      context.lineTo(x, y + height)
+      context.closePath()
     },
     fill
   )
 }
 
 export function plotFreeLine(
-  ctx: any,
+  context: any,
   coordinates: Coordinates,
   options: { app: any; cx: any; cy: any }
 ) {
   for (let i = 0; i < coordinates.length - 1; i += 1) {
     plotContain(
-      ctx,
+      context,
       () => {
         const coordinate = transformLineCoordinate(coordinates[i], options)
         const nextCoordinate = transformLineCoordinate(
@@ -141,7 +141,7 @@ export function plotFreeLine(
           options
         )
         plotLineSegment(
-          ctx,
+          context,
           coordinate[0],
           coordinate[1],
           nextCoordinate[0],
@@ -155,14 +155,14 @@ export function plotFreeLine(
 }
 
 export function plotImage(
-  ctx: any,
+  context: any,
   node: any,
   x: number,
   y: number,
   width: number,
   height: number
 ) {
-  plotContain(ctx, () => {
+  plotContain(context, () => {
     const ratio = width / height
     let showWidth = 0
     let showHeight = 0
@@ -173,20 +173,20 @@ export function plotImage(
       showWidth = width
       showHeight = width / node.ratio
     }
-    ctx.plotImage(node.imageObject, x, y, showWidth, showHeight)
+    context.plotImage(node.imageObject, x, y, showWidth, showHeight)
   })
 }
 
-export function plotArrow(ctx: any, coordinates: Coordinates) {
+export function plotArrow(context: any, coordinates: Coordinates) {
   const x = coordinates[0][0]
   const y = coordinates[0][1]
   const tx = coordinates[coordinates.length - 1][0]
   const ty = coordinates[coordinates.length - 1][1]
   plotContain(
-    ctx,
+    context,
     () => {
-      ctx.moveTo(x, y)
-      ctx.lineTo(tx, ty)
+      context.moveTo(x, y)
+      context.lineTo(tx, ty)
     },
     true
   )
@@ -194,22 +194,22 @@ export function plotArrow(ctx: any, coordinates: Coordinates) {
   const deg = 30
   const lineDeg = radToDeg(Math.atan2(ty - y, tx - x))
   plotContain(
-    ctx,
+    context,
     () => {
       const plusDeg = deg - lineDeg
       const x1 = tx - l * Math.cos(degToRad(plusDeg))
       const y1 = ty + l * Math.sin(degToRad(plusDeg))
-      ctx.moveTo(x1, y1)
-      ctx.lineTo(tx, ty)
+      context.moveTo(x1, y1)
+      context.lineTo(tx, ty)
     },
     true
   )
-  plotContain(ctx, () => {
+  plotContain(context, () => {
     const plusDeg = 90 - lineDeg - deg
     const x1 = tx - l * Math.sin(degToRad(plusDeg))
     const y1 = ty - l * Math.cos(degToRad(plusDeg))
-    ctx.moveTo(x1, y1)
-    ctx.lineTo(tx, ty)
+    context.moveTo(x1, y1)
+    context.lineTo(tx, ty)
   })
 }
 
@@ -228,11 +228,11 @@ function transformLineCoordinate(
   return [x - options.cx, y - options.cy, ...coordinate.slice(2)]
 }
 
-export function plotContain(ctx: any, fn: Function, fill = false) {
-  ctx.beginPath()
+export function plotContain(context: any, fn: Function, fill = false) {
+  context.beginPath()
   fn()
-  ctx.stroke()
+  context.stroke()
   if (fill) {
-    ctx.fill()
+    context.fill()
   }
 }

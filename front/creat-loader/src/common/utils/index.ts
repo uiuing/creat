@@ -123,15 +123,15 @@ export function createCanvas(
   if (options.className) {
     canvas.className = options.className
   }
-  const ctx = canvas.getContext('2d')
+  const context = canvas.getContext('2d')
   canvas.width = width
   canvas.height = height
-  if (!options.noTranslate && ctx) {
-    ctx.translate(canvas.width / 2, canvas.height / 2)
+  if (!options.noTranslate && context) {
+    context.translate(canvas.width / 2, canvas.height / 2)
   }
   return {
     canvas,
-    ctx
+    context
   }
 }
 
@@ -401,14 +401,14 @@ export function getTextNodeSize(node: any) {
   }
 }
 
-export function throttle(fn: Function, ctx: any, time = 100) {
+export function throttle(fn: Function, context: any, time = 100) {
   let timer: number | null = null
   return (...args: any) => {
     if (timer) {
       return
     }
     timer = setTimeout(() => {
-      fn.call(ctx, ...args)
+      fn.call(context, ...args)
       timer = null
     }, time)
   }
