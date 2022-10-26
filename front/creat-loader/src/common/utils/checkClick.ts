@@ -1,8 +1,8 @@
 import { CLICK_FAULT_TOWER } from '../constants'
 import {
+  checkCoordinateIsInRectangle,
   checkIsClickLine,
-  checkPointIsInRectangle,
-  getPointSpace
+  getCoordinateSpace
 } from './index'
 
 type Segments = Array<[x1: number, y1: number, x2: number, y2: number]>
@@ -15,7 +15,7 @@ export function getCircleRadius(width: number, height: number) {
 export function checkIsAtCircleEdge(element: any, rp: Rp) {
   const { width, height, x, y } = element
   const radius = getCircleRadius(width, height)
-  const dis = getPointSpace(rp.x, rp.y, x + radius, y + radius)
+  const dis = getCoordinateSpace(rp.x, rp.y, x + radius, y + radius)
   const onCircle =
     dis >= radius - CLICK_FAULT_TOWER && dis <= radius + CLICK_FAULT_TOWER
   return onCircle ? element : null
@@ -23,9 +23,9 @@ export function checkIsAtCircleEdge(element: any, rp: Rp) {
 
 export function clickIsEdgeFreeSegment(element: any, rp: Rp) {
   let flag: any = null
-  element.pointArr.forEach((point: number[]) => {
+  element.coordinates.forEach((coordinate: number[]) => {
     if (flag) return
-    const dis = getPointSpace(rp.x, rp.y, point[0], point[1])
+    const dis = getCoordinateSpace(rp.x, rp.y, coordinate[0], coordinate[1])
     if (dis <= CLICK_FAULT_TOWER) {
       flag = element
     }
@@ -56,8 +56,8 @@ export const checkIsTriangleEdge = (element: any, rp: Rp) => {
 
 export function checkIsLineEdge(element: any, rp: Rp) {
   const segments: Segments = []
-  const len = element.pointArr.length
-  const arr: Array<[x: number, y: number]> = element.pointArr
+  const len = element.coordinates.length
+  const arr: Array<[x: number, y: number]> = element.coordinates
   for (let i = 0; i < len - 1; i += 1) {
     segments.push([...arr[i], ...arr[i + 1]])
   }
@@ -65,15 +65,15 @@ export function checkIsLineEdge(element: any, rp: Rp) {
 }
 
 export function checkIsClickInSidMatrix(element: any, rp: Rp) {
-  return checkPointIsInRectangle(rp.x, rp.y, element) ? element : null
+  return checkCoordinateIsInRectangle(rp.x, rp.y, element) ? element : null
 }
 
 export const checkIsArrowEdge = (element: any, rp: Rp) => {
-  const { pointArr } = element
-  const x = pointArr[0][0]
-  const y = pointArr[0][1]
-  const tx = pointArr[pointArr.length - 1][0]
-  const ty = pointArr[pointArr.length - 1][1]
+  const { coordinates } = element
+  const x = coordinates[0][0]
+  const y = coordinates[0][1]
+  const tx = coordinates[coordinates.length - 1][0]
+  const ty = coordinates[coordinates.length - 1][1]
   const segments: Segments = [[x, y, tx, ty]]
   return checkAGregBrokenLine(segments, rp) ? element : null
 }

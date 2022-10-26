@@ -25,15 +25,15 @@ export function computedLineWidthBySpeed(
 }
 
 export function getBoundingRect(
-  pointArr: Array<[x: number, y: number]> = [],
+  coordinates: Array<[x: number, y: number]> = [],
   returnCorners = false
 ) {
   let minX = Infinity
   let maxX = -Infinity
   let minY = Infinity
   let maxY = -Infinity
-  pointArr.forEach((point) => {
-    const [x, y] = point
+  coordinates.forEach((coordinate) => {
+    const [x, y] = coordinate
     if (x < minX) {
       minX = x
     }
@@ -135,11 +135,16 @@ export function createCanvas(
   }
 }
 
-export function getPointSpace(x1: number, y1: number, x2: number, y2: number) {
+export function getCoordinateSpace(
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number
+) {
   return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 }
 
-export function getPointLineSpace(
+export function getCoordinateLineSpace(
   x: number,
   y: number,
   x1: number,
@@ -168,12 +173,12 @@ export function checkIsClickLine(
   if (x2 === undefined || y2 === undefined) {
     return false
   }
-  if (getPointLineSpace(x, y, x1, y1, x2, y2) > ds) {
+  if (getCoordinateLineSpace(x, y, x1, y1, x2, y2) > ds) {
     return false
   }
-  const d1 = getPointSpace(x, y, x1, y1)
-  const d2 = getPointSpace(x, y, x2, y2)
-  const d3 = getPointSpace(x1, y1, x2, y2)
+  const d1 = getCoordinateSpace(x, y, x1, y1)
+  const d2 = getCoordinateSpace(x, y, x2, y2)
+  const d3 = getCoordinateSpace(x1, y1, x2, y2)
   const max = Math.sqrt(ds * ds + d3 * d3)
   return d1 <= max && d2 <= max
 }
@@ -206,14 +211,14 @@ export function getRotateAngleCardin(
 ) {
   const deg = radToDeg(Math.atan2(y - cy, x - cx))
   const del = deg + rotate
-  const dis = getPointSpace(x, y, cx, cy)
+  const dis = getCoordinateSpace(x, y, cx, cy)
   return {
     x: Math.cos(degToRad(del)) * dis + cx,
     y: Math.sin(degToRad(del)) * dis + cy
   }
 }
 
-export function getElementCenterPoint(element: any) {
+export function getElementCenterCoordinate(element: any) {
   const { x, y, width, height } = element
   return {
     x: x + width / 2,
@@ -242,7 +247,7 @@ export function getReversRotateCardin(
 }
 
 export function getReversRotateGetMouse(x: number, y: number, element: any) {
-  const center = getElementCenterPoint(element)
+  const center = getElementCenterCoordinate(element)
   return getReversRotateCardin(x, y, center.x, center.y, element.rotate)
 }
 
@@ -276,7 +281,7 @@ export function getElementRotatedFourCornerCardin(
   element: any,
   posit: FourCorner
 ) {
-  const center = getElementCenterPoint(element)
+  const center = getElementCenterCoordinate(element)
   const dirPos = getElementFourCornerCardin(element, posit)
   return getRotateAngleCardin(
     dirPos.x,
@@ -287,7 +292,7 @@ export function getElementRotatedFourCornerCardin(
   )
 }
 
-export function checkPointIsInRectangle(
+export function checkCoordinateIsInRectangle(
   x: number,
   y: number,
   rx?: any,
@@ -328,8 +333,9 @@ export function getMultiElementRectInfo(elementList: Array<any> = []) {
   let minY = Infinity
   let maxY = -Infinity
   elementList.forEach((element) => {
-    const pointList: Array<{ x: number; y: number }> = element.getEndpointList()
-    pointList.forEach(({ x, y }) => {
+    const coordinateList: Array<{ x: number; y: number }> =
+      element.getEndcoordinateList()
+    coordinateList.forEach(({ x, y }) => {
       if (x < minX) {
         minX = x
       }
