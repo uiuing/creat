@@ -20,3 +20,5 @@ export type CreatLoaderProps = {
   shapeType?: string
   state?: State
 }
+
+export type FourCorner = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'
