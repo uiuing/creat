@@ -178,4 +178,3 @@ class RoomManager(object):
             return None
 
 
-room_manager = RoomManager()

@@ -57,5 +57,3 @@ class PaintedFactory(object):
             return DeleteHandle(self.data)
         else:
             return PaintedHandle(self.data)
-
-    
