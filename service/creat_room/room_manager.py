@@ -1,6 +1,7 @@
+from creat_data import Data
 
 
-class Room(object):
+class Room(Data):
     
     def __init__(self, room_id, room_name, room_type, room_status, room_owner, room_owner_id, room_owner_avatar):
         self.room_id = room_id
