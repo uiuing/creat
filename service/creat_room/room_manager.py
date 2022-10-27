@@ -15,9 +15,7 @@ class Room(object):
         self.room_content = []
         self.room_prohibits = []
         self.room_member_setting = {}
-    
-    def add_room_online_member(self, memeber):
-        self.room_members.append(memeber)
+        self.room_mumber_socket = {}
 
     def reomve_room_online_member(self, member):
         self.room_members.remove(member)
@@ -25,6 +23,19 @@ class Room(object):
     def update_member_setting(self, member, setting):
         if member in self.room_members:
             self.room_member_setting
+
+    def join_room(self, member, socket):
+        """
+        进入房间to_info
+        """
+        if self.is_access(member):
+            self.room_mumber_socket[member] = socket
+            if member not in self.room_members:
+                self.add_member(member)
+            return self.to_info()
+        else:
+            return None 
+            
 
     def add_member(self, member):
         self.room_members.append(member)
@@ -34,6 +45,7 @@ class Room(object):
 		    "name": str(len(self.room_members)),    
 		    "type": ""
             }
+        
 
     def remove_member(self, member):
         if member in self.room_members:
@@ -81,6 +93,20 @@ class Room(object):
 
         if u_id in self.room_prohibits:
             return 0
+
+    def to_info(self):
+        """
+        将信息转换成为dict
+        """
+        return {
+            "room_id": self.room_id,
+            "room_name": self.room_name,
+            "room_type": self.room_type,
+            "room_status": self.room_status,
+            "room_members": self.room_members,
+            "room_member_setting": self.room_member_setting,
+            "room_content": self.room_content
+        }
     
 
 class RoomManager(object):
@@ -135,6 +161,18 @@ class RoomManager(object):
     def get_room_content_list(self, room_id):
         if room_id in self.room_dict:
             return self.room_dict[room_id].room_content
+        else:
+            return None
+    
+    def check_user_permission(self, room_id, u_id):
+        if room_id in self.room_dict:
+            return self.room_dict[room_id].is_access(u_id)
+        else:
+            return None
+
+    def get_room_info(self, room_id):
+        if room_id in self.room_dict:
+            return self.room_dict[room_id].to_info()
         else:
             return None
 
