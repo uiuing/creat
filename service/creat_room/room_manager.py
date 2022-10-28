@@ -1,3 +1,4 @@
+from typing import Dict
 from creat_data import Data
 
 
@@ -115,10 +116,14 @@ class RoomManager(object):
     def __init__(self):
         self.room_dict = {}
 
-    def create_room(self, room_id):
+    def create_room(self, room_id, room_name, room_type, room_owner, room_owner_id, room_owner_avatar, room_owner_socket):
+        # 创建房间,并且转发给房主
         if room_id not in self.room_dict:
-            self.room_dict[room_id] = Room(room_id)
-            return self.room_dict[room_id]
+            self.room_dict[room_id] = Room(room_id, room_name, room_type, 0, room_owner, room_owner_id, room_owner_avatar)
+            self.room_dict[room_id].join_room(room_owner_id, room_owner_socket)
+            
+
+            return self.room_dict[room_id].to_info()
         else:
             return None
 

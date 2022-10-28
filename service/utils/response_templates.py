@@ -12,6 +12,6 @@ def success(msg: str, data: dict = None) -> dict:
 def error(msg: str, data: dict = None) -> dict:
     return {
         'status': 400,
-        'msg': msg,
+        'msg':  msg,
         'data': data
     }
