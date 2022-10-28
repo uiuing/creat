@@ -17,7 +17,7 @@ class Room(Data):
         self.room_content = []
         self.room_prohibits = []
         self.room_member_setting = {}
-        self.room_mumber_socket = {}
+        self.room_member_socket = {}
 
     def reomve_room_online_member(self, member):
         self.room_members.remove(member)
@@ -25,13 +25,16 @@ class Room(Data):
     def update_member_setting(self, member, setting):
         if member in self.room_members:
             self.room_member_setting
+    
+    def get_member_setting(self, member):
+        return self.room_member_setting[member]
 
     def join_room(self, member, socket):
         """
         进入房间to_info
         """
         if self.is_access(member):
-            self.room_mumber_socket[member] = socket
+            self.room_member_socket[member] = socket
             if member not in self.room_members:
                 self.add_member(member)
             return self.to_info()
@@ -43,9 +46,11 @@ class Room(Data):
         self.room_members.append(member)
         # Default user setting
         self.room_member_setting[member] = {
+            # 默认颜色, 名称, 头像
             "default_color": "#000000",             
 		    "name": str(len(self.room_members)),    
-		    "type": ""
+		    "type": "",
+            "room_owner_avatar":0
             }
         
 
@@ -121,9 +126,14 @@ class RoomManager(object):
         if room_id not in self.room_dict:
             self.room_dict[room_id] = Room(room_id, room_name, room_type, 0, room_owner, room_owner_id, room_owner_avatar)
             self.room_dict[room_id].join_room(room_owner_id, room_owner_socket)
-            
-
-            return self.room_dict[room_id].to_info()
+            return self.room_dict[room_id]
+        else:
+            return None
+    
+    def join_room(self, room_id, member, socket):
+        if room_id in self.room_dict:
+            self.room_dict[room_id].join_room(member, socket)
+            return self.room_dict[room_id]
         else:
             return None
 

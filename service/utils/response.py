@@ -9,9 +9,8 @@ def success(msg: str, data: dict = None) -> dict:
         'data': data
     }
 
-def error(msg: str, data: dict = None) -> dict:
+def error(msg: str) -> dict:
     return {
         'status': 400,
-        'msg':  msg,
-        'data': data
+        'msg':  msg
     }
