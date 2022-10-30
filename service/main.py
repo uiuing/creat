@@ -20,6 +20,7 @@ class Echo(WebSocketEndpoint):
     
     # 连接
     async def on_connect(self, websocket):
+        print('on_connect')
         await websocket.accept()
         # 获取用户ip地址
         ip = websocket.client.host
@@ -30,22 +31,22 @@ class Echo(WebSocketEndpoint):
         
     # 收发
     async def on_receive(self, websocket, data):
-
+        print('on_receive')
         # 获取用户ip地址
         ip = websocket.client.host
         # 获取用户发送的消息
         data = await websocket.receive_json()
-        
-        transfer.handle(ip, data)
+        await transfer.handle(ip, data, websocket)
         
     # 断开
     async def on_disconnect(self, websocket, close_code):
+        print('on_disconnect')
         # 获取用户ip地址
         ip = websocket.client.host
         # 获取用户发送的消息
         data = await websocket.receive_json()
         
-        transfer.handle(ip, data)
+        await transfer.handle(ip, data)
 
 
 routes = [
