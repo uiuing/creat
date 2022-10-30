@@ -40,7 +40,35 @@ class Room(Data):
             return self.to_info()
         else:
             return None 
-            
+    
+    def new_shape(self, content):
+        """
+        生成新的形状
+        """
+        # TODO 这里最好用一个dict存储,这样可以加速处理
+        self.room_content.append(content)
+        return True
+    
+    def delete_shape(self, shape_id):
+        """
+        删除形状
+        """
+        for shape in self.room_content:
+            if shape["shape_id"] == shape_id:
+                self.room_content.remove(shape)
+                return True
+        return False
+        
+    
+    def update_shape(self, shape_id, content):
+        """
+        更新形状
+        """
+        for shape in self.room_content:
+            if shape["shape_id"] == shape_id:
+                shape.update(content)
+                return True
+        return False
 
     def add_member(self, member):
         self.room_members.append(member)
@@ -131,6 +159,9 @@ class RoomManager(object):
             return None
     
     def join_room(self, room_id, member, socket):
+        """
+        进入房间
+        """
         if room_id in self.room_dict:
             self.room_dict[room_id].join_room(member, socket)
             return self.room_dict[room_id]
@@ -138,17 +169,59 @@ class RoomManager(object):
             return None
 
     def get_room(self, room_id) -> Room:
+        """
+        获取房间
+        """
         if room_id in self.room_dict:
             return self.room_dict[room_id]
         else:
             return None
 
     def delete_room(self, room_id):
+        """
+        删除房间
+        """
         if room_id in self.room_dict:
             del self.room_dict[room_id]
             return True
         else:
             return False
+    
+    def room_operation(self, room_id, user, operation, content) -> bool:
+        """
+        房间操作
+        Args:
+            room_id: 房间id
+            user: 用户id
+            operation: 操作类型
+                - new_shape: 生成新的形状
+                - delete_shape: 删除形状
+                - update_shape: 更新形状
+            content: 操作内容
+        
+        Returns:
+            bool: 操作是否成功
+        """
+        res = False
+
+        if room_id in self.room_dict:
+            room = self.room_dict[room_id]
+
+            # 验证用户是否可以进入房间
+            if room.is_access(user):
+                if operation == "new_shape":
+                    res = room.new_shape(content)
+                elif operation == "delete_shape":
+                    res = room.delete_shape(content)
+                elif operation == "update_shape":
+                    res = room.update_shape(content)
+                # 测试的时候输出房间的info
+                print(room.to_info())
+            else:
+                res = False
+        else:
+            res = False
+        return res
 
     def get_room_list(self):
         return self.room_dict.keys()

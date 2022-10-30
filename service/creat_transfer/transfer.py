@@ -13,10 +13,8 @@ class Transfer(object):
         数据处理:
         1. 创建房间: 需要先随机出一个uuid 房间号,然后再初始化房间,并且将房间信息返回给用户
         """
-        # painted_factory = PaintedFactory(ip, data, websocket)
-        # painted_handle = painted_factory.get_handle()
-        # return painted_handle.run()
         ip = str(uuid.uuid1()) # TODO 因为单机测试,ip都一样
+        print(data)
         # 创建房间
         if data['type'] == 'create_room':
             room_id = str(uuid.uuid1())
@@ -34,12 +32,21 @@ class Transfer(object):
             room = self.room_manager.join_room(data['room_id'], ip, websocket)
             if not room:
                 await websocket.send_json(response.error('房间不存在 或者 权限不足'))
-            print(room.room_member_socket)
+                return 
+            
+            # 给新加入的用户发送房间信息
+            room_info = room.to_info()
+            await websocket.send_json(response.success('加入房间成功', room_info))
 
             res['data'] = room.get_member_setting(ip)
-
             for number, socket in room.room_member_socket.items():
                 if number != ip:
                     await socket.send_json(response.success('新成员加入', res))
-            
-
+        
+        # 图像操作
+        elif data['type'] == 'new_shape' or data['type'] == 'delete_shape' or data['type'] == 'update_shape':
+            res = self.room_manager.room_operation(data['room_id'], ip, data['type'], data['content'])
+            if res:
+                for number, socket in room.room_member_socket.items():
+                    if number != ip:
+                        await socket.send_json(response.success('图形编辑操作', data))
