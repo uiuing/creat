@@ -50,6 +50,8 @@ class Transfer(object):
                 for number, socket in room.room_member_socket.items():
                     if number != ip:
                         await socket.send_json(response.success('图形编辑操作', data))
+            else:
+                await websocket.send_json(response.error('图形编辑操作失败'))
     
     # 退出房间
     async def exit_room(self, ip, websocket: WebSocket):
