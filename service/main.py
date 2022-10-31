@@ -21,21 +21,26 @@ class Echo(WebSocketEndpoint):
     # 连接
     async def on_connect(self, websocket):
         print('on_connect')
+        
         await websocket.accept()
+        print('-->连接成功1')
+        # data = json.loads(data)
         # 获取用户ip地址
         ip = websocket.client.host
+        print('-->连接成功2')
         # 获取用户发送的消息
         data = await websocket.receive_json()
+        print('-->连接成功3')
         await transfer.handle(ip, data, websocket)
-
         
     # 收发
     async def on_receive(self, websocket, data):
         print('on_receive')
+        data = json.loads(data)
         # 获取用户ip地址
         ip = websocket.client.host
         # 获取用户发送的消息
-        data = await websocket.receive_json()
+        # data = websocket.receive_json()
         await transfer.handle(ip, data, websocket)
         
     # 断开
