@@ -13,7 +13,7 @@ class Transfer(object):
         数据处理:
         1. 创建房间: 需要先随机出一个uuid 房间号,然后再初始化房间,并且将房间信息返回给用户
         """
-        ip = str(uuid.uuid1()) # TODO 因为单机测试,ip都一样
+        # ip = str(uuid.uuid1()) # TODO 因为单机测试,ip都一样
         print(data)
         # 创建房间
         if data['type'] == 'create_room':
@@ -45,11 +45,17 @@ class Transfer(object):
         
         # 图像操作
         elif data['type'] == 'new_shape' or data['type'] == 'delete_shape' or data['type'] == 'update_shape':
-            res = self.room_manager.room_operation(data['room_id'], ip, data['type'], data['content'])
+            room_id = self.room_manager.user_location(ip)
+            room = self.room_manager.room_dict.get(room_id)
+            if room == None:
+                await websocket.send_json(response.error('操作失败, 并没有加入房间'))
+                return
+            res = self.room_manager.room_operation(room_id, ip, data['type'], data['content'])
             if res:
                 for number, socket in room.room_member_socket.items():
                     if number != ip:
                         await socket.send_json(response.success('图形编辑操作', data))
+                await websocket.send_json(response.success('图形编辑操作成功'))
             else:
                 await websocket.send_json(response.error('图形编辑操作失败'))
     
@@ -58,7 +64,8 @@ class Transfer(object):
         """
         退出房间
         """
-        room = self.room_manager.user_location(ip)
+        room_id = self.room_manager.user_location(ip)
+        room = self.room_manager.room_dict.get(room_id)
         if room == None:
             # await websocket.send_json(response.error('退出房间失败, 并没有加入房间'))
             return 
