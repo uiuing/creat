@@ -39,7 +39,12 @@ class Room(Data):
                 self.add_member(member)
             return self.to_info()
         else:
-            return None 
+            return None
+    
+    # 离开房间
+    def leave_room(self, member):
+        self.room_member_socket.pop(member)
+        return True
     
     def new_shape(self, content):
         """
@@ -148,22 +153,48 @@ class RoomManager(object):
 
     def __init__(self):
         self.room_dict = {}
+        # 建立用户与房间之间的联系
+        self.user2room = {}
+
 
     def create_room(self, room_id, room_name, room_type, room_owner, room_owner_id, room_owner_avatar, room_owner_socket):
         # 创建房间,并且转发给房主
         if room_id not in self.room_dict:
             self.room_dict[room_id] = Room(room_id, room_name, room_type, 0, room_owner, room_owner_id, room_owner_avatar)
             self.room_dict[room_id].join_room(room_owner_id, room_owner_socket)
+            self.user2room[room_owner_id] = room_id
             return self.room_dict[room_id]
         else:
             return None
     
+    def user_location(self, u_id):
+        """
+        查看用户所在房间
+        """
+        if u_id in self.user2room:
+            return self.user2room[u_id]
+        else:
+            return None
+    
+    def level_room(self, u_id):
+        """
+        离开房间
+        """
+        if u_id in self.user2room:
+            room_id = self.user2room[u_id]
+            self.room_dict[room_id].leave_room(u_id)
+            self.user2room.pop(u_id)
+            return True
+        else:
+            return False
+
     def join_room(self, room_id, member, socket):
         """
         进入房间
         """
         if room_id in self.room_dict:
             self.room_dict[room_id].join_room(member, socket)
+            self.user2room[member] = room_id
             return self.room_dict[room_id]
         else:
             return None
@@ -186,6 +217,8 @@ class RoomManager(object):
             return True
         else:
             return False
+    
+    
     
     def room_operation(self, room_id, user, operation, content) -> bool:
         """

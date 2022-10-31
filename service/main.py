@@ -40,13 +40,11 @@ class Echo(WebSocketEndpoint):
         
     # 断开
     async def on_disconnect(self, websocket, close_code):
+        print(close_code)
         print('on_disconnect')
         # 获取用户ip地址
         ip = websocket.client.host
-        # 获取用户发送的消息
-        data = await websocket.receive_json()
-        
-        await transfer.handle(ip, data)
+        await transfer.exit_room(ip, websocket)
 
 
 routes = [

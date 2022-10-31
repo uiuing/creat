@@ -50,3 +50,4 @@ class Transfer(object):
                 for number, socket in room.room_member_socket.items():
                     if number != ip:
                         await socket.send_json(response.success('图形编辑操作', data))
+    
