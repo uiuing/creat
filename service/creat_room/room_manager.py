@@ -1,3 +1,4 @@
+from typing import Dict
 from creat_data import Data
 
 
@@ -16,7 +17,7 @@ class Room(Data):
         self.room_content = []
         self.room_prohibits = []
         self.room_member_setting = {}
-        self.room_mumber_socket = {}
+        self.room_member_socket = {}
 
     def reomve_room_online_member(self, member):
         self.room_members.remove(member)
@@ -24,27 +25,65 @@ class Room(Data):
     def update_member_setting(self, member, setting):
         if member in self.room_members:
             self.room_member_setting
+    
+    def get_member_setting(self, member):
+        return self.room_member_setting[member]
 
     def join_room(self, member, socket):
         """
         进入房间to_info
         """
         if self.is_access(member):
-            self.room_mumber_socket[member] = socket
+            self.room_member_socket[member] = socket
             if member not in self.room_members:
                 self.add_member(member)
             return self.to_info()
         else:
-            return None 
-            
+            return None
+    
+    # 离开房间
+    def leave_room(self, member):
+        self.room_member_socket.pop(member)
+        return True
+    
+    def new_shape(self, content):
+        """
+        生成新的形状
+        """
+        # TODO 这里最好用一个dict存储,这样可以加速处理
+        self.room_content.append(content)
+        return True
+    
+    def delete_shape(self, shape_id):
+        """
+        删除形状
+        """
+        for shape in self.room_content:
+            if shape["shape_id"] == shape_id:
+                self.room_content.remove(shape)
+                return True
+        return False
+        
+    
+    def update_shape(self, shape_id, content):
+        """
+        更新形状
+        """
+        for shape in self.room_content:
+            if shape["shape_id"] == shape_id:
+                shape.update(content)
+                return True
+        return False
 
     def add_member(self, member):
         self.room_members.append(member)
         # Default user setting
         self.room_member_setting[member] = {
+            # 默认颜色, 名称, 头像
             "default_color": "#000000",             
 		    "name": str(len(self.room_members)),    
-		    "type": ""
+		    "type": "",
+            "room_owner_avatar":0
             }
         
 
@@ -114,26 +153,108 @@ class RoomManager(object):
 
     def __init__(self):
         self.room_dict = {}
+        # 建立用户与房间之间的联系
+        self.user2room = {}
 
-    def create_room(self, room_id):
+
+    def create_room(self, room_id, room_name, room_type, room_owner, room_owner_id, room_owner_avatar, room_owner_socket):
+        # 创建房间,并且转发给房主
         if room_id not in self.room_dict:
-            self.room_dict[room_id] = Room(room_id)
+            self.room_dict[room_id] = Room(room_id, room_name, room_type, 0, room_owner, room_owner_id, room_owner_avatar)
+            self.room_dict[room_id].join_room(room_owner_id, room_owner_socket)
+            self.user2room[room_owner_id] = room_id
+            return self.room_dict[room_id]
+        else:
+            return None
+    
+    def user_location(self, u_id):
+        """
+        查看用户所在房间
+        """
+        if u_id in self.user2room:
+            return self.user2room[u_id]
+        else:
+            return None
+    
+    def level_room(self, u_id):
+        """
+        离开房间
+        """
+        if u_id in self.user2room:
+            room_id = self.user2room[u_id]
+            self.room_dict[room_id].leave_room(u_id)
+            self.user2room.pop(u_id)
+            return True
+        else:
+            return False
+
+    def join_room(self, room_id, member, socket):
+        """
+        进入房间
+        """
+        if room_id in self.room_dict:
+            self.room_dict[room_id].join_room(member, socket)
+            self.user2room[member] = room_id
             return self.room_dict[room_id]
         else:
             return None
 
     def get_room(self, room_id) -> Room:
+        """
+        获取房间
+        """
         if room_id in self.room_dict:
             return self.room_dict[room_id]
         else:
             return None
 
     def delete_room(self, room_id):
+        """
+        删除房间
+        """
         if room_id in self.room_dict:
             del self.room_dict[room_id]
             return True
         else:
             return False
+    
+    
+    
+    def room_operation(self, room_id, user, operation, content) -> bool:
+        """
+        房间操作
+        Args:
+            room_id: 房间id
+            user: 用户id
+            operation: 操作类型
+                - new_shape: 生成新的形状
+                - delete_shape: 删除形状
+                - update_shape: 更新形状
+            content: 操作内容
+        
+        Returns:
+            bool: 操作是否成功
+        """
+        res = False
+
+        if room_id in self.room_dict:
+            room = self.room_dict[room_id]
+
+            # 验证用户是否可以进入房间
+            if room.is_access(user):
+                if operation == "new_shape":
+                    res = room.new_shape(content)
+                elif operation == "delete_shape":
+                    res = room.delete_shape(content)
+                elif operation == "update_shape":
+                    res = room.update_shape(content)
+                # 测试的时候输出房间的info
+                print(room.to_info())
+            else:
+                res = False
+        else:
+            res = False
+        return res
 
     def get_room_list(self):
         return self.room_dict.keys()
