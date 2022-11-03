@@ -3,7 +3,7 @@
     "browser": true,
     "node": true
   },
-  "extends": ["airbnb-base","airbnb-typescript/base", "prettier"],
+  "extends": ["airbnb-base", "airbnb-typescript/base", "prettier"],
   "parserOptions": {
     "project": ["./tsconfig.json"]
   },
@@ -16,9 +16,11 @@
     "prettier/prettier": "error",
     "comma-dangle": ["error", "never"],
     "semi": ["error", "never"],
-    "@typescript-eslint/no-var-requires": "off",
-    "@typescript-eslint/no-use-before-define": "off",
-    "import/no-extraneous-dependencies": "off",
-    "import/prefer-default-export": "off"
+    "no-param-reassign": "off",
+    "default-param-last": "off",
+    "no-async-promise-executor": "off",
+    "no-underscore-dangle": "off",
+    "@typescript-eslint/naming-convention": "off",
+    "class-methods-use-this": "off"
   }
 }

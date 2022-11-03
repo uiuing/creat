@@ -2,7 +2,7 @@
 
 ## 使用 👌
 
-首先link到本地的`creat-loader`模块
+首先link `creat-loader`
 
 ```shell
 cd creat-loader && npm link
@@ -26,7 +26,7 @@ const state = {
 // Same parameters as document.querySelector, and you can also put in HTMLElement objects directly.
 const el = '#app'
 
-createLoader(state).mount(el)
+const app = createLoader(state).mount(el)
 ```
 
 <br />
