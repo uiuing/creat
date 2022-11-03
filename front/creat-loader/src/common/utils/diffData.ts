@@ -1,5 +1,28 @@
 import { LocalData, State } from '../../types'
 
+// Depth-first traversal based on key to determine if equal
+export function isEqual(oldData: any, nowData: any) {
+  if (typeof oldData !== typeof nowData) {
+    return false
+  }
+  if (typeof oldData !== 'object') {
+    return oldData === nowData
+  }
+  const oldKeys = Object.keys(oldData)
+  const nowKeys = Object.keys(nowData)
+  if (oldKeys.length !== nowKeys.length) {
+    return false
+  }
+  for (let i = 0; i < oldKeys.length; i += 1) {
+    const key = oldKeys[i]
+    if (!isEqual(oldData[key], nowData[key])) {
+      return false
+    }
+  }
+  return true
+}
+
+// diff nodes
 export function getDiffData(oldData: LocalData, nowData: LocalData) {
   const isUNOld = typeof oldData === 'undefined'
   const isUNNow = typeof nowData === 'undefined'
@@ -18,17 +41,18 @@ export function getDiffData(oldData: LocalData, nowData: LocalData) {
   }
   if (isUNOld) {
     return {
-      type: 'add-all',
-      node: nowData.nodes
+      type: 'cover-all',
+      nodes: nowData.nodes
     }
   }
-  if (JSON.stringify(oldData.nodes) === JSON.stringify(nowData.nodes)) {
+  if (isEqual(oldData.nodes, nowData.nodes)) {
     return undefined
   }
   const oldNodes = oldData.nodes
   const nowNodes = nowData.nodes
   const oldLen = oldNodes.length
   const nowLen = nowNodes.length
+  // Add｜Delete Operation
   const isAdd = nowLen > oldLen
   const isDelete = nowLen < oldLen
   if (isAdd || isDelete) {
@@ -36,7 +60,10 @@ export function getDiffData(oldData: LocalData, nowData: LocalData) {
     const PIDs = isAdd
       ? oldNodes.map((item) => item.id)
       : nowNodes.map((item) => item.id)
-    const diffNodes = ANodes.filter((item) => !PIDs.includes(item.id))
+    let diffNodes = ANodes.filter((item) => !PIDs.includes(item.id))
+    if (isDelete) {
+      diffNodes = diffNodes.map((item) => ({ id: item.id })) as any
+    }
     return {
       type: isAdd ? 'add' : 'delete',
       nodes: diffNodes
@@ -44,22 +71,31 @@ export function getDiffData(oldData: LocalData, nowData: LocalData) {
   }
   if (nowLen === oldLen) {
     const updateNodes = []
+    // Determine which attributes have changed and store those that have changed, but not those that have not
     for (let i = 0; i < nowLen; i += 1) {
-      if (JSON.stringify(oldNodes[i]) !== JSON.stringify(nowNodes[i])) {
-        updateNodes.push(nowNodes[i])
+      if (!isEqual(oldNodes[i], nowNodes[i])) {
+        const diff = {}
+        Object.keys(nowNodes[i]).forEach((key) => {
+          // @ts-ignore
+          if (!isEqual(oldNodes[i][key], nowNodes[i][key])) {
+            // @ts-ignore
+            diff[key] = nowNodes[i][key]
+          }
+        })
+        updateNodes.push(diff)
       }
     }
     if (updateNodes.length > 0) {
       return {
         type: 'update',
-        node: updateNodes
+        nodes: updateNodes
       }
     }
   }
   return undefined
 }
 
-// diff state
+// diff state att: ( backgroundColor / showGrid / showGrid )
 export function getDiffState(oldData: LocalData, nowData: LocalData) {
   const oldState = oldData?.state
   if (typeof oldState === 'undefined') {
@@ -70,17 +106,20 @@ export function getDiffState(oldData: LocalData, nowData: LocalData) {
   const isDiffGrid = oldState.showGrid !== nowState.showGrid
   const isDiffReadonly = oldState.readonly !== nowState.readonly
   if (isDiffBac || isDiffGrid || isDiffReadonly) {
-    const r: State = {}
+    const state: State = {}
     if (isDiffBac) {
-      r.backgroundColor = nowState.backgroundColor
+      state.backgroundColor = nowState.backgroundColor
     }
     if (isDiffGrid) {
-      r.showGrid = nowState.showGrid
+      state.showGrid = nowState.showGrid
     }
     if (isDiffReadonly) {
-      r.readonly = nowState.readonly
+      state.readonly = nowState.readonly
     }
-    return r
+    return {
+      type: 'update-state',
+      state
+    }
   }
   return undefined
 }
