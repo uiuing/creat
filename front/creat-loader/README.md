@@ -63,5 +63,4 @@ const app = createLoader(state).mount(el)
 
 ### `creat-loader` 模块协作下数据同步设计 ✏️
 
-![creat-loader模块协作下数据同步设计](https://user-images.githubusercontent.com/73827386/198849655-e2e405ab-84c9-4da3-911f-bc224f9ed322.jpg)
-
+![creat-loader模块协作下数据同步设计](https://user-images.githubusercontent.com/73827386/199678312-7ca37278-9be4-46bf-ae23-ab09610f3ac1.jpg)
