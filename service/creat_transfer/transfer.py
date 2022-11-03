@@ -22,7 +22,7 @@ class Transfer(object):
             return
 
         # 创建房间
-        if data['type'] == OPERATE.CREATE:
+        if data['type'] == OPERATE.CREATE.value:
             room_id = str(uuid.uuid1())
             room = self.room_manager.create_room(room_id, data['room_name'], data['room_type'],ip,
                                                  ip, data['room_owner_avatar'], websocket)
@@ -30,7 +30,7 @@ class Transfer(object):
             await websocket.send_json(response.success('创建房间成功', room.to_info()))
 
         # 加入房间
-        elif data['type'] == OPERATE.JOIN:
+        elif data['type'] == OPERATE.JOIN.value:
             res = {
                 'type': 'join_room',
                 'data':None
@@ -50,13 +50,13 @@ class Transfer(object):
                     await socket.send_json(response.success('新成员加入', res))
         
         # 图像操作
-        elif data['type'] == OPERATE.SHAPE_NEW or data['type'] == OPERATE.SHAPE_DELETE or data['type'] == OPERATE.SHAPE_UPDATE:
+        elif data['type'] == OPERATE.SHAPE_NEW.value or data['type'] == OPERATE.SHAPE_DELETE.value or data['type'] == OPERATE.SHAPE_UPDATE.value:
             room_id = self.room_manager.user_location(ip)
             room = self.room_manager.room_dict.get(room_id)
             if room == None:
                 await websocket.send_json(response.error('操作失败, 并没有加入房间'))
                 return
-            res = self.room_manager.room_operation(room_id, ip, data['type'], data['content'])
+            res = self.room_manager.room_operation(room_id, ip, data['type'], data['node'])
             if res:
                 for number, socket in room.room_member_socket.items():
                     if number != ip:

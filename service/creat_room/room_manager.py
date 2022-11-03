@@ -11,6 +11,7 @@ class Room(Data):
         self.room_owner = room_owner
         self.room_owner_id = room_owner_id
         self.room_owner_avatar = room_owner_avatar
+        self.only_read = False
         self.room_members = []
         self.room_online_members = [] # 在线人员,之后还需要用这个进行转发整个房间的信息
         self.nodes = []
@@ -22,10 +23,16 @@ class Room(Data):
         self.room_members.remove(member)
 
     def update_member_setting(self, member, setting):
+        """
+        更新用户设置
+        """
         if member in self.room_members:
-            self.room_member_setting
+            self.room_member_setting[member].update(setting)
     
     def get_member_setting(self, member):
+        """
+        获取用户设置
+        """
         return self.room_member_setting[member]
 
     def join_room(self, member, socket):
@@ -53,23 +60,23 @@ class Room(Data):
         self.nodes.append(content)
         return True
     
-    def delete_node(self, node_id):
+    def delete_node(self, id):
         """
         删除形状
         """
         for node in self.nodes:
-            if node["node_id"] == node_id:
+            if node["id"] == id:
                 self.nodes.remove(node)
                 return True
         return False
         
     
-    def update_node(self, node_id, content):
+    def update_node(self, id, content):
         """
         更新形状
         """
         for node in self.nodes:
-            if node["node_id"] == node_id:
+            if node["id"] == id:
                 node.update(content)
                 return True
         return False
@@ -155,7 +162,8 @@ class Room(Data):
             "room_status": self.room_status,
             "room_members": self.room_members,
             "room_member_setting": self.room_member_setting,
-            "nodes": self.nodes
+            "nodes": self.nodes,
+            "only_read": self.only_read
         }
     
 
@@ -262,19 +270,19 @@ class RoomManager(object):
 
             # 验证用户是否可以进入房间
             if room.is_access(user):
-                if operation == OPERATE.SHAPE_NEW:
+                if operation == OPERATE.SHAPE_NEW.value:
                     # 生成新的形状
                     res = room.new_node(content)
-                elif operation == OPERATE.SHAPE_DELETE:
+                elif operation == OPERATE.SHAPE_DELETE.value:
                     # 删除形状
                     res = room.delete_node(content)
-                elif operation == OPERATE.SHAPE_UPDATE:
+                elif operation == OPERATE.SHAPE_UPDATE.value:
                     # 更新形状
                     res = room.update_node(content)
-                elif operation == OPERATE.SHAPE_DELETEALL:
+                elif operation == OPERATE.SHAPE_DELETEALL.value:
                     # 删除所有形状
                     res = room.delete_all_node()
-                elif operation == OPERATE.SHAPE_COVERALL:
+                elif operation == OPERATE.SHAPE_COVERALL.value:
                     # 覆盖所有形状
                     res = room.cover_all_node(content)
                 else:
