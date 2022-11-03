@@ -4,144 +4,184 @@ import {
   radToDeg,
   splitTextLines
 } from '../common/utils'
+import { Ctx } from '../types'
 
-type Coordinates = Array<[x: number, y: number]>
+// Drawing public operations
+export const plotWrap = (ctx: Ctx, fn: any, fill = false) => {
+  ctx.beginPath()
+  fn()
+  ctx.stroke()
+  if (fill) {
+    ctx.fill()
+  }
+}
 
-export function plotCircle(
-  context: any,
+// Drawing circle
+export const plotCircle = (
+  ctx: Ctx,
   x: number,
   y: number,
   r: number,
   fill = false
-) {
-  plotContain(
-    context,
+) => {
+  plotWrap(
+    ctx,
     () => {
-      context.arc(x, y, r, 0, 2 * Math.PI)
+      ctx.arc(x, y, r, 0, 2 * Math.PI)
     },
     fill
   )
 }
 
-export function plotLine(context: any, coordinates: Coordinates) {
-  plotContain(context, () => {
-    let first = true
-    coordinates.forEach((coordinate) => {
-      if (first) {
-        first = false
-        context.moveTo(coordinate[0], coordinate[1])
-      } else {
-        context.lineTo(coordinate[0], coordinate[1])
-      }
-    })
+// Drawing arrows
+export const plotArrow = (ctx: Ctx, coordinateArr: any[]) => {
+  const x = coordinateArr[0][0]
+  const y = coordinateArr[0][1]
+  const tx = coordinateArr[coordinateArr.length - 1][0]
+  const ty = coordinateArr[coordinateArr.length - 1][1]
+  plotWrap(
+    ctx,
+    () => {
+      ctx.moveTo(x, y)
+      ctx.lineTo(tx, ty)
+    },
+    true
+  )
+  const l = 30
+  const deg = 30
+  const lineDeg = radToDeg(Math.atan2(ty - y, tx - x))
+  plotWrap(
+    ctx,
+    () => {
+      const plusDeg = deg - lineDeg
+      const _x = tx - l * Math.cos(degToRad(plusDeg))
+      const _y = ty + l * Math.sin(degToRad(plusDeg))
+      ctx.moveTo(_x, _y)
+      ctx.lineTo(tx, ty)
+    },
+    true
+  )
+  plotWrap(ctx, () => {
+    const plusDeg = 90 - lineDeg - deg
+    const _x = tx - l * Math.sin(degToRad(plusDeg))
+    const _y = ty - l * Math.cos(degToRad(plusDeg))
+    ctx.moveTo(_x, _y)
+    ctx.lineTo(tx, ty)
   })
 }
 
-export function plotText(context: any, textObj: any, x: number, y: number) {
-  const { text, style } = textObj
-  const lineHeight = style.fontSize * style.lineHeightRatio
-  plotContain(context, () => {
-    context.font = getFontString(style.fontSize, style.fontFamily)
-    context.textBaseline = 'middle'
-    const textArr = splitTextLines(text)
-    textArr.forEach((textRow, index) => {
-      context.fillText(textRow, x, y + (index * lineHeight + lineHeight / 2))
-    })
-  })
-}
-
-export function plotRectangle(
-  context: any,
+// Drawing rectangles
+export const plotRect = (
+  ctx: Ctx,
   x: number,
   y: number,
   width: number,
   height: number,
   fill = false
-) {
-  plotContain(context, () => {
-    context.rect(x, y, width, height)
+) => {
+  plotWrap(ctx, () => {
+    ctx.rect(x, y, width, height)
     if (fill) {
-      context.fillRect(x, y, width, height)
+      ctx.fillRect(x, y, width, height)
     }
   })
 }
 
-export function plotLineSegment(
-  context: any,
+// Drawing a diamond
+export const plotDiamond = (
+  ctx: Ctx,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  fill = false
+) => {
+  plotWrap(
+    ctx,
+    () => {
+      ctx.moveTo(x + width / 2, y)
+      ctx.lineTo(x + width, y + height / 2)
+      ctx.lineTo(x + width / 2, y + height)
+      ctx.lineTo(x, y + height / 2)
+      ctx.closePath()
+    },
+    fill
+  )
+}
+
+// Convert the coordinates of the brush to the coordinates of the canvas
+const transformArbitraryLineCoordinate = (
+  coordinate: string | any[],
+  opt: {
+    app: {
+      calculate: { transform: (arg0: any, arg1: any) => { x: any; y: any } }
+    }
+    cx: number
+    cy: number
+  }
+) => {
+  const { x, y } = opt.app.calculate.transform(coordinate[0], coordinate[1])
+  return [x - opt.cx, y - opt.cy, ...coordinate.slice(2)]
+}
+
+// Drawing line segments
+export const plotLineSegment = (
+  ctx: Ctx,
   mx: number,
   my: number,
   tx: number,
   ty: number,
   lineWidth = 0
-) {
-  plotContain(context, () => {
+) => {
+  plotWrap(ctx, () => {
     if (lineWidth > 0) {
-      context.lineWidth = lineWidth
+      ctx.lineWidth = lineWidth
     }
-    context.moveTo(mx, my)
-    context.lineTo(tx, ty)
-    context.lineCap = 'round'
-    context.lineJoin = 'round'
+    ctx.moveTo(mx, my)
+    ctx.lineTo(tx, ty)
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
   })
 }
 
-export function plotDiamond(
-  context: any,
+// Drawing triangles
+export const plotTriangle = (
+  ctx: Ctx,
   x: number,
   y: number,
   width: number,
-  height: number,
+  height: any,
   fill = false
-) {
-  plotContain(
-    context,
+) => {
+  plotWrap(
+    ctx,
     () => {
-      context.moveTo(x + width / 2, y)
-      context.lineTo(x + width, y + height / 2)
-      context.lineTo(x + width / 2, y + height)
-      context.lineTo(x, y + height / 2)
-      context.closePath()
+      ctx.moveTo(x + width / 2, y)
+      ctx.lineTo(x + width, y + height)
+      ctx.lineTo(x, y + height)
+      ctx.closePath()
     },
     fill
   )
 }
 
-export function plotTriangle(
-  context: any,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  fill = false
-) {
-  plotContain(
-    context,
-    () => {
-      context.moveTo(x + width / 2, y)
-      context.lineTo(x + width, y + height)
-      context.lineTo(x, y + height)
-      context.closePath()
-    },
-    fill
-  )
-}
-
-export function plotFreeLine(
-  context: any,
-  coordinates: Coordinates,
-  options: { app: any; cx: any; cy: any }
-) {
+// Drawing free line segments (Also known as a paintbrush)
+export const plotArbitraryLine = (
+  ctx: Ctx,
+  coordinates: string | any[],
+  opt: any
+) => {
   for (let i = 0; i < coordinates.length - 1; i += 1) {
-    plotContain(
-      context,
+    plotWrap(
+      ctx,
       () => {
-        const coordinate = transformLineCoordinate(coordinates[i], options)
-        const nextCoordinate = transformLineCoordinate(
+        const coordinate = transformArbitraryLineCoordinate(coordinates[i], opt)
+        const nextCoordinate = transformArbitraryLineCoordinate(
           coordinates[i + 1],
-          options
+          opt
         )
         plotLineSegment(
-          context,
+          ctx,
           coordinate[0],
           coordinate[1],
           nextCoordinate[0],
@@ -154,15 +194,30 @@ export function plotFreeLine(
   }
 }
 
-export function plotImage(
-  context: any,
+// Drawing text
+export const plotText = (ctx: Ctx, textObj: any, x: number, y: number) => {
+  const { text, style } = textObj
+  const lineHeight = style.fontSize * style.lineHeightRatio
+  plotWrap(ctx, () => {
+    ctx.font = getFontString(style.fontSize, style.fontFamily)
+    ctx.textBaseline = 'middle'
+    const textArr = splitTextLines(text)
+    textArr.forEach((textRow, index) => {
+      ctx.fillText(textRow, x, y + (index * lineHeight + lineHeight / 2))
+    })
+  })
+}
+
+// Drawing pictures
+export const plotImage = (
+  ctx: Ctx,
   node: any,
   x: number,
   y: number,
   width: number,
   height: number
-) {
-  plotContain(context, () => {
+) => {
+  plotWrap(ctx, () => {
     const ratio = width / height
     let showWidth = 0
     let showHeight = 0
@@ -173,66 +228,21 @@ export function plotImage(
       showWidth = width
       showHeight = width / node.ratio
     }
-    context.plotImage(node.imageObject, x, y, showWidth, showHeight)
+    ctx.drawImage(node.imageObj, x, y, showWidth, showHeight)
   })
 }
 
-export function plotArrow(context: any, coordinates: Coordinates) {
-  const x = coordinates[0][0]
-  const y = coordinates[0][1]
-  const tx = coordinates[coordinates.length - 1][0]
-  const ty = coordinates[coordinates.length - 1][1]
-  plotContain(
-    context,
-    () => {
-      context.moveTo(x, y)
-      context.lineTo(tx, ty)
-    },
-    true
-  )
-  const l = 30
-  const deg = 30
-  const lineDeg = radToDeg(Math.atan2(ty - y, tx - x))
-  plotContain(
-    context,
-    () => {
-      const plusDeg = deg - lineDeg
-      const x1 = tx - l * Math.cos(degToRad(plusDeg))
-      const y1 = ty + l * Math.sin(degToRad(plusDeg))
-      context.moveTo(x1, y1)
-      context.lineTo(tx, ty)
-    },
-    true
-  )
-  plotContain(context, () => {
-    const plusDeg = 90 - lineDeg - deg
-    const x1 = tx - l * Math.sin(degToRad(plusDeg))
-    const y1 = ty - l * Math.cos(degToRad(plusDeg))
-    context.moveTo(x1, y1)
-    context.lineTo(tx, ty)
+// Draw the line
+export const plotLine = (ctx: Ctx, coordinates: any[]) => {
+  plotWrap(ctx, () => {
+    let first = true
+    coordinates.forEach((coordinate) => {
+      if (first) {
+        first = false
+        ctx.moveTo(coordinate[0], coordinate[1])
+      } else {
+        ctx.lineTo(coordinate[0], coordinate[1])
+      }
+    })
   })
-}
-
-function transformLineCoordinate(
-  coordinate: string | any[],
-  options: {
-    app: any
-    cx: number
-    cy: number
-  }
-) {
-  const { x, y } = options.app.coordinate.transform(
-    coordinate[0],
-    coordinate[1]
-  )
-  return [x - options.cx, y - options.cy, ...coordinate.slice(2)]
-}
-
-export function plotContain(context: any, fn: Function, fill = false) {
-  context.beginPath()
-  fn()
-  context.stroke()
-  if (fill) {
-    context.fill()
-  }
 }
