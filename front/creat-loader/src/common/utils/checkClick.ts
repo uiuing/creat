@@ -1,103 +1,124 @@
-import { CLICK_FAULT_TOWER } from '../constants'
+import { Node } from '../../types'
+import { CLICK_DISTANCE } from '../constants'
 import {
   checkCoordinateIsInRectangle,
-  checkIsClickLine,
-  getCoordinateSpace
+  checkIsAtSegment,
+  getTowCoordinateDistance
 } from './index'
 
 type Segments = Array<[x1: number, y1: number, x2: number, y2: number]>
 type Rp = { xs?: number; ys?: number; x: number; y: number }
 
-export function getCircleRadius(width: number, height: number) {
-  return Math.min(Math.abs(width), Math.abs(height)) / 2
+// Detects if a click is inside a rectangle
+export const checkIsAtRectangleInner = (node: any, rp: Rp) =>
+  checkCoordinateIsInRectangle(rp.x, rp.y, node as Node) ? node : null
+
+// Calculate the radius of the circle from the width and height
+export const getCircleRadius = (width: number, height: number) =>
+  Math.min(Math.abs(width), Math.abs(height)) / 2
+
+// Detects if a click is made on the fold
+export const checkIsAtMultiplexSegment = (segments: Segments, rp: Rp) => {
+  let res = false
+  segments.forEach((seg) => {
+    if (res) return
+    if (checkIsAtSegment(rp.x, rp.y, ...seg, CLICK_DISTANCE)) {
+      res = true
+    }
+  })
+  return res
 }
 
-export function checkIsAtCircleEdge(node: any, rp: Rp) {
-  const { width, height, x, y } = node
+// Calculate the radius of the circle from the width and height
+export const checkIsAtCircleEdge = (node: any, rp: Rp) => {
+  const { width, height, x, y } = node as Node
   const radius = getCircleRadius(width, height)
-  const dis = getCoordinateSpace(rp.x, rp.y, x + radius, y + radius)
+  const dis = getTowCoordinateDistance(rp.x, rp.y, x + radius, y + radius)
   const onCircle =
-    dis >= radius - CLICK_FAULT_TOWER && dis <= radius + CLICK_FAULT_TOWER
+    dis >= radius - CLICK_DISTANCE && dis <= radius + CLICK_DISTANCE
   return onCircle ? node : null
 }
 
-export function clickIsEdgeFreeSegment(node: any, rp: Rp) {
-  let flag: any = null
-  node.coordinates.forEach((coordinate: number[]) => {
-    if (flag) return
-    const dis = getCoordinateSpace(rp.x, rp.y, coordinate[0], coordinate[1])
-    if (dis <= CLICK_FAULT_TOWER) {
-      flag = node
-    }
-  })
-  return flag
-}
-
-export const checkIsAtDiamondEdge = (node: any, rp: Rp) => {
-  const { x, y, width, height } = node
-  const segments: Segments = [
-    [x + width / 2, y, x + width, y + height / 2],
-    [x + width, y + height / 2, x + width / 2, y + height],
-    [x + width / 2, y + height, x, y + height / 2],
-    [x, y + height / 2, x + width / 2, y]
-  ]
-  return checkAGregBrokenLine(segments, rp) ? node : null
-}
-
-export const checkIsTriangleEdge = (node: any, rp: Rp) => {
-  const { x, y, width, height } = node
-  const segments: Segments = [
-    [x + width / 2, y, x + width, y + height],
-    [x + width, y + height, x, y + height],
-    [x, y + height, x + width / 2, y]
-  ]
-  return checkAGregBrokenLine(segments, rp) ? node : null
-}
-
-export function checkIsLineEdge(node: any, rp: Rp) {
-  const segments: Segments = []
-  const len = node.coordinates.length
-  const arr: Array<[x: number, y: number]> = node.coordinates
-  for (let i = 0; i < len - 1; i += 1) {
-    segments.push([...arr[i], ...arr[i + 1]])
-  }
-  return checkAGregBrokenLine(segments, rp) ? node : null
-}
-
-export function checkIsClickInSidMatrix(node: any, rp: Rp) {
-  return checkCoordinateIsInRectangle(rp.x, rp.y, node) ? node : null
-}
-
-export const checkIsArrowEdge = (node: any, rp: Rp) => {
-  const { coordinates } = node
-  const x = coordinates[0][0]
-  const y = coordinates[0][1]
-  const tx = coordinates[coordinates.length - 1][0]
-  const ty = coordinates[coordinates.length - 1][1]
-  const segments: Segments = [[x, y, tx, ty]]
-  return checkAGregBrokenLine(segments, rp) ? node : null
-}
-
-export function checkAGregBrokenLine(segments: Segments, rp: Rp) {
-  let flag = false
-  segments.forEach((seg) => {
-    if (flag) {
-      return
-    }
-    if (checkIsClickLine(rp.x, rp.y, ...seg, CLICK_FAULT_TOWER)) {
-      flag = true
-    }
-  })
-  return flag
-}
-
-export function clickIsEdgeRectangle(node: any, rp: Rp) {
-  const { x, y, width, height } = node
+// Detects if you click on the edge of a rectangle
+export const checkIsAtRectangleEdge = (node: any, rp: Rp) => {
+  const { x, y, width, height } = node as Node
   const segments: Segments = [
     [x, y, x + width, y],
     [x + width, y, x + width, y + height],
     [x + width, y + height, x, y + height],
     [x, y + height, x, y]
   ]
-  return checkAGregBrokenLine(segments, rp) ? node : null
+  return checkIsAtMultiplexSegment(segments, rp) ? node : null
+}
+
+// Detects if a triangle edge is clicked on
+export const checkIsAtTriangleEdge = (node: Node, rp: Rp) => {
+  const { x, y, width, height } = node
+  const segments = [
+    [x + width / 2, y, x + width, y + height],
+    [x + width, y + height, x, y + height],
+    [x, y + height, x + width / 2, y]
+  ]
+  return checkIsAtMultiplexSegment(segments as Segments, rp) ? node : null
+}
+
+// Detects if a diamond edge is clicked on
+export const checkIsAtDiamondEdge = (node: any, rp: Rp) => {
+  const { x, y, width, height } = node as Node
+  const segments = [
+    [x + width / 2, y, x + width, y + height / 2],
+    [x + width, y + height / 2, x + width / 2, y + height],
+    [x + width / 2, y + height, x, y + height / 2],
+    [x, y + height / 2, x + width / 2, y]
+  ]
+  return checkIsAtMultiplexSegment(segments as Segments, rp) ? node : null
+}
+
+// Detects if you click on the edge of the arrow
+export const checkIsAtArrowEdge = (node: any, rp: Rp) => {
+  const { coordinateArr } = node as Node
+  if (typeof coordinateArr === 'undefined') {
+    return null
+  }
+  const x = coordinateArr[0][0]
+  const y = coordinateArr[0][1]
+  const tx = coordinateArr[coordinateArr.length - 1][0]
+  const ty = coordinateArr[coordinateArr.length - 1][1]
+  const segments = [[x, y, tx, ty]]
+  return checkIsAtMultiplexSegment(segments as Segments, rp) ? node : null
+}
+
+// Detects if a click is made on the edge of a free line segment
+export const checkIsAtArbitraryPlotLineEdge = (node: Node, rp: Rp) => {
+  let res: Node | null = null
+  if (typeof node.coordinateArr === 'undefined') {
+    return null
+  }
+  node.coordinateArr.forEach((coordinate) => {
+    if (res) return
+    const dis = getTowCoordinateDistance(
+      rp.x,
+      rp.y,
+      coordinate[0],
+      coordinate[1]
+    )
+    if (dis <= CLICK_DISTANCE) {
+      res = node
+    }
+  })
+  return res
+}
+
+// Detects if a click is made on the edge of a line segment
+export const checkIsAtLineEdge = (node: Node, rp: Rp) => {
+  const segments = []
+  if (typeof node.coordinateArr === 'undefined') {
+    return null
+  }
+  const len = node.coordinateArr.length
+  const arr = node.coordinateArr
+  for (let i = 0; i < len - 1; i += 1) {
+    segments.push([...arr[i], ...arr[i + 1]])
+  }
+  return checkIsAtMultiplexSegment(segments as Segments, rp) ? node : null
 }

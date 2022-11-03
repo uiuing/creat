@@ -1,22 +1,7 @@
-export const FOUR_CORNER = {
-  TOP_LEFT: 'topLeft',
-  TOP_RIGHT: 'topRight',
-  BOTTOM_RIGHT: 'bottomRight',
-  BOTTOM_LEFT: 'bottomLeft'
-}
+import { KeyPosit } from '../types'
 
-export const DRAG_POSIT = {
-  BODY: 'body',
-  ROTATE: 'rotate',
-  TOP_LEFT_BTN: 'topLeftBtn',
-  TOP_RIGHT_BTN: 'topRightBtn',
-  BOTTOM_RIGHT_BTN: 'bottomRightBtn',
-  BOTTOM_LEFT_BTN: 'bottomLeftBtn'
-}
-
-export const CLICK_FAULT_TOWER = 10
-
-export const keyPosit = {
+// The number key corresponding to the key position
+export const keyPosit: KeyPosit = {
   '0': 48,
   '1': 49,
   '2': 50,
@@ -94,4 +79,24 @@ export const keyPosit = {
   x: 88,
   y: 89,
   z: 90
+}
+// Click on the applicable trigger pixel range
+export const CLICK_DISTANCE = 15
+
+// Four corners of a graphical object
+export const FOUR_CORNER = {
+  TOP_LEFT: 'topLeft',
+  TOP_RIGHT: 'topRight',
+  BOTTOM_RIGHT: 'bottomRight',
+  BOTTOM_LEFT: 'bottomLeft'
+}
+
+// Drag and drop a part of a graphic object
+export const DRAG_NODE_PARTS = {
+  BODY: 'body',
+  ROTATE: 'rotate',
+  TOP_LEFT_BUTTON: 'topLeftButton',
+  TOP_RIGHT_BUTTON: 'topRightButton',
+  BOTTOM_RIGHT_BUTTON: 'bottomRightButton',
+  BOTTOM_LEFT_BUTTON: 'bottomLeftButton'
 }
