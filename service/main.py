@@ -27,11 +27,12 @@ class Echo(WebSocketEndpoint):
         # data = json.loads(data)
         # 获取用户ip地址
         ip = websocket.client.host
+        post = websocket.client.port
         print('-->连接成功2')
         # 获取用户发送的消息
         data = await websocket.receive_json()
         print('-->连接成功3')
-        await transfer.handle(ip, data, websocket)
+        await transfer.handle(ip+post, data, websocket)
         
     # 收发
     async def on_receive(self, websocket, data):
@@ -39,9 +40,10 @@ class Echo(WebSocketEndpoint):
         data = json.loads(data)
         # 获取用户ip地址
         ip = websocket.client.host
+        post = websocket.client.port
         # 获取用户发送的消息
         # data = websocket.receive_json()
-        await transfer.handle(ip, data, websocket)
+        await transfer.handle(ip+post, data, websocket)
         
     # 断开
     async def on_disconnect(self, websocket, close_code):
@@ -49,7 +51,8 @@ class Echo(WebSocketEndpoint):
         print('on_disconnect')
         # 获取用户ip地址
         ip = websocket.client.host
-        await transfer.exit_room(ip, websocket)
+        post = websocket.client.port
+        await transfer.exit_room(ip+post, websocket)
 
 
 routes = [
