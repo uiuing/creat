@@ -72,6 +72,8 @@ export type AppObject = {
   getData: () => LocalData
   updateState: (state: State) => void
   setData: (data: LocalData, noEmitChange: boolean) => void
+  emitDiffNodesChange: (oldData: LocalData, newData: LocalData) => void
+  emitDiffStateChange: (oldData: LocalData, newData: LocalData) => void
 }
 
 export type AppResponse = {
@@ -127,6 +129,7 @@ export type AppResponse = {
   utils: {
     downloadFile: (data: string, filename: string) => void
   }
+  parseSetDiffData: (config: DiffNodesRes | DiffStateRes) => void
 }
 
 export type LoaderOptions = {
@@ -211,7 +214,7 @@ export type Node = {
   updateMultiplexCoordinateBoundingRect?: () => Node
   checkCoordinateInDragNodeWhere?: (x: number, y: number) => string
   endResize?: () => void
-  getEndcoordinateList?: () => any
+  getEndCoordinateList?: () => any
   rotateByCenter?: (rotate: number, cx: number, cy: number) => void
 }
 
@@ -334,3 +337,13 @@ export type KeyPosit = {
 }
 
 export type OnCallBack = (...args: any[]) => void
+
+export type DiffNodesRes = {
+  type: 'add' | 'delete' | 'update' | 'cover-all' | 'delete-all'
+  nodes: NodeArray
+}
+
+export type DiffStateRes = {
+  type: 'update-state'
+  state: State
+}

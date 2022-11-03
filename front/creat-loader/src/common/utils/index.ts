@@ -342,7 +342,7 @@ export const getMultiplexNodeRectInfo = (nodeList: NodeArray = []) => {
   let minY = Infinity
   let maxY = -Infinity
   nodeList.forEach((node) => {
-    const coordinateList = node?.getEndcoordinateList?.()
+    const coordinateList = node?.getEndCoordinateList?.()
     coordinateList.forEach(({ x, y }: { x: number; y: number }) => {
       if (x < minX) {
         minX = x
