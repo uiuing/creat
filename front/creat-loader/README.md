@@ -64,3 +64,18 @@ const app = createLoader(state).mount(el)
 ### `creat-loader` 模块协作下数据同步设计 ✏️
 
 ![creat-loader模块协作下数据同步设计](https://user-images.githubusercontent.com/73827386/199678312-7ca37278-9be4-46bf-ae23-ab09610f3ac1.jpg)
+
+
+<br />
+<br />
+
+
+## 使用技术 📚
+
+- 编程语言：TypeScript
+- 渲染方式：Canvas
+
+
+- 代码规范：ESLint + Prettier 
+- 代码标准：Airbnb
+
