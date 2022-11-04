@@ -21,6 +21,7 @@
     "no-async-promise-executor": "off",
     "no-underscore-dangle": "off",
     "@typescript-eslint/naming-convention": "off",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "@typescript-eslint/no-shadow": "off"
   }
 }
