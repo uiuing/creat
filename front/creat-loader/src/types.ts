@@ -71,7 +71,7 @@ export type AppObject = {
   emitChange: () => void
   getData: () => LocalData
   updateState: (state: State) => void
-  setData: (data: LocalData, noEmitChange: boolean) => void
+  setData: (data: LocalData, noEmitChange: boolean) => Promise<void>
   emitDiffNodesChange: (oldData: LocalData, newData: LocalData) => void
   emitDiffStateChange: (oldData: LocalData, newData: LocalData) => void
 }
