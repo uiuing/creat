@@ -50,6 +50,7 @@ class Room(Data):
         """
         res = {}
         res['whiteboard'] = self.whiteboard
+        del res['whiteboard']['id']
         identity = None
         if 'user' in data:
             if data['user']['id'] == self.room_owner_id:
@@ -61,7 +62,7 @@ class Room(Data):
 
             # 给其他用户发送加入消息
             for user_id, socket in self.user2socket.items():
-                await socket.send_json(data)
+                await socket.send_json(res)
             
             # 将该用户的socket和id对应起来
             self.socket2user[websocket] = data['user']['id']
