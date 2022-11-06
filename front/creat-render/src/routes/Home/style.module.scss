@@ -1,0 +1,24 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fixedBanner {
+  width: 30vw;
+  margin: 5vh 0 10vh;
+}
+
+.createContent {
+  display: flex;
+  align-items: center;
+  gap: 5vw;
+}
+
+.historyContent {
+  display: flex;
+  width: 90vw;
+  max-width: 700px;
+  flex-direction: column;
+  margin: 5vh 0 15vh;
+}

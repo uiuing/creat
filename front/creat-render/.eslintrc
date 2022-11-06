@@ -3,17 +3,17 @@
     "browser": true,
     "node": true
   },
-  "extends": [
-    "airbnb",
-    "airbnb/hooks",
-    "airbnb-typescript",
-    "prettier"
-  ],
+  "extends": ["airbnb", "airbnb/hooks", "airbnb-typescript", "prettier"],
   "parserOptions": {
     "project": ["./tsconfig.json"]
   },
   "parser": "@typescript-eslint/parser",
-  "plugins": ["jsx-a11y","simple-import-sort", "@typescript-eslint", "prettier"],
+  "plugins": [
+    "jsx-a11y",
+    "simple-import-sort",
+    "@typescript-eslint",
+    "prettier"
+  ],
   "rules": {
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
@@ -29,6 +29,7 @@
     "react-hooks/exhaustive-deps": "off",
     "react/jsx-no-useless-fragment": "off",
     "react/require-default-props": "off",
-    "react/no-array-index-key": "off"
+    "react/no-array-index-key": "off",
+    "react/jsx-props-no-spreading": "off"
   }
 }

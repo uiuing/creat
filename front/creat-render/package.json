@@ -15,6 +15,10 @@
     "lint:stylelint": "stylelint './src/**/*.{css,scss,less}' --fix"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.2.0",
+    "@fortawesome/free-regular-svg-icons": "^6.2.0",
+    "@fortawesome/free-solid-svg-icons": "^6.2.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@types/node": "^18.11.4",
     "localforage": "^1.10.0",
     "react": "^18.2.0",
@@ -43,6 +47,7 @@
     "prettier": "^2.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.3",
     "sass": "^1.55.0",
     "stylelint": "^14.14.0",
     "stylelint-config-idiomatic-order": "^9.0.0",
@@ -54,12 +59,5 @@
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4",
     "vite": "^3.1.8"
-  },
-  "pnpm": {
-    "peerDependencyRules": {
-      "ignoreMissing": [
-        "react"
-      ]
-    }
   }
 }
