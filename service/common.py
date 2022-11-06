@@ -5,7 +5,7 @@ class OPERATE(Enum):
     # 创建房间
     CREATE = 'create_meeting'
     # 加入房间
-    JOIN = 'join_room'
+    JOIN = 'join_meeting'
     # 检查会议
     CHECK = 'check_meeting'
     # 退出房间
