@@ -1,3 +1,4 @@
+import copy
 from creat_data import Data
 from common import OPERATE
 from utils import response
@@ -37,8 +38,7 @@ class Room(Data):
         加入房间
 
         两种情况:
-            - 只读: 不用返回
-            - 非只读: 需要返回
+            - 只读
                 {
                     "whiteboard":{
                         "name": "未命名文件1",     // 白板名称 
@@ -47,30 +47,83 @@ class Room(Data):
                     },
                     "user_rights":"author"  // 用户类型
                 }
+            - 非只读
+                当前socket用户:
+                {
+                    "whiteboard":{
+                        "name": "未命名文件1",         // 白板名称 
+                        "nodes":[],                 // 初始白板数据
+                        "readonly":false           // 这里是全局的是否只读状态
+                    },
+                    "user_rights":"author",    // 用户类型
+                    "cooperation_users": [    // 已在线协作用户数据
+                        {  
+                        "name": "aaa",
+                        "color": "xxx",
+                        "rights": "contributor"
+                        }
+                        .....
+                    ],
+                }
+
+                其他用户:
+                {
+                    "type": "join_meeting",
+                    "join_user":{      
+                        "name":"aaa",       // 用户昵称 （加入的时候会判断，是否已经存在该用户昵称，存在则反馈）   
+                        "color":"xxx",     // 用户默认颜色
+                    }
+                }
         """
         res = {}
-        res['whiteboard'] = self.whiteboard
+        res['whiteboard'] =  copy.deepcopy(self.whiteboard)
         del res['whiteboard']['id']
+        
         identity = None
+        # 身份验证
         if 'user' in data:
             if data['user']['id'] == self.room_owner_id:
                 identity = 'author'
             else:
                 identity = 'contributor'
-        if identity is not None:
-            res['user_rights'] = identity
 
-            # 给其他用户发送加入消息
-            for user_id, socket in self.user2socket.items():
-                await socket.send_json(res)
+        # 只读判断
+        if self.whiteboard['readonly'] == True:
             
+            if identity is not None:
+                res['user_rights'] = identity
+
+                # 仅给当前用户发消息
+                await websocket.send_json(res)
+                
+                # 将该用户的socket和id对应起来
+                self.socket2user[websocket] = data['user']['id']
+                self.user2socket[data['user']['id']] = websocket
+                
+            else:
+                # 无须任何操作
+                pass 
+        else:
+            # 非只读
+            # 仅给当前用户发消息
+            res['user_rights'] = identity
+            self.cooperation_users.append(data['user'])
+            res['cooperation_users'] = copy.deepcopy(self.cooperation_users)
+            await websocket.send_json(res)
+
             # 将该用户的socket和id对应起来
             self.socket2user[websocket] = data['user']['id']
             self.user2socket[data['user']['id']] = websocket
-            
-        else:
-            # 无须任何操作
-            pass 
+
+
+            # 给其他用户发送加入消息
+            for user_id, socket in self.user2socket.items():
+                if socket != websocket:
+                    res = {}
+                    res['type'] = 'join_meeting'
+                    res['join_user'] = data['user']
+                    await socket.send_json(res)
+                    
 
     async def exit_room(self, data, websocket):
         """
@@ -85,9 +138,22 @@ class Room(Data):
         }
         """
         user_id = self.socket2user[websocket]
+
+        if len(data['user']) == 0:
+            # 意外退出的用户
+            _name = '未知用户'
+
+            for i in self.cooperation_users:
+                if i['id'] == user_id:
+                    _name = i['name']
+                    break
+
+            data['user']['name'] = _name
+
         del self.socket2user[websocket]
         del self.user2socket[user_id]
         
+
         # 当前用户发送退出消息
         await websocket.send_json(response.success('退出房间成功'))
 
