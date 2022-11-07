@@ -1,5 +1,3 @@
-import { RecoilRoot } from 'recoil'
-
 import { setTitle } from '../../utils/urls'
 import CreateContent from './components/CreateContent'
 import FixedBanner from './components/FixedBanner'
@@ -12,10 +10,8 @@ export default function Home() {
   return (
     <div className={styles.wrapper}>
       <FixedBanner className={styles.fixedBanner} />
-      <RecoilRoot>
-        <CreateContent className={styles.createContent} />
-        <HistoryContent className={styles.historyContent} />
-      </RecoilRoot>
+      <CreateContent className={styles.createContent} />
+      <HistoryContent className={styles.historyContent} />
     </div>
   )
 }

@@ -1,10 +1,10 @@
-import { Button, ButtonGroup, List } from '@douyinfe/semi-ui'
+import { Button, ButtonGroup, List, Typography } from '@douyinfe/semi-ui'
+
+import { WhiteboardInfos } from '../../../../../utils/data'
+import { openWhiteboard } from '../../../../../utils/optionControl'
 
 type Props = {
-  whiteboardList: Array<{
-    id: string
-    name: string
-  }>
+  whiteboardList: WhiteboardInfos
   fns: {
     reName: (id: string) => void
     download: (id: string) => void
@@ -13,6 +13,9 @@ type Props = {
 }
 
 export default function HistoryList({ whiteboardList, fns }: Props) {
+  const { Text } = Typography
+  const list: WhiteboardInfos = Object.assign([], whiteboardList)
+  list.sort((a, b) => b.recentlyOpened - a.recentlyOpened)
   return (
     <div
       style={{
@@ -22,16 +25,36 @@ export default function HistoryList({ whiteboardList, fns }: Props) {
       }}
     >
       <List
-        dataSource={whiteboardList}
-        renderItem={({ id, name }) => (
+        dataSource={list}
+        renderItem={({ id, name, recentlyOpened }) => (
           <List.Item
-            main={<div>{name}</div>}
+            header={
+              <Button
+                theme="borderless"
+                type="tertiary"
+                onClick={() => {
+                  openWhiteboard(id)
+                }}
+              >
+                {name}
+              </Button>
+            }
             extra={
-              <ButtonGroup theme="borderless" type="secondary" size="small">
-                <Button onClick={() => fns.reName(id)}>重命名</Button>
-                <Button onClick={() => fns.download(id)}>下载</Button>
-                <Button onClick={() => fns.delete(id)}>删除</Button>
-              </ButtonGroup>
+              <>
+                <ButtonGroup
+                  theme="borderless"
+                  type="secondary"
+                  size="small"
+                  style={{ display: 'flex', alignItems: 'center' }}
+                >
+                  <Text type="quaternary">
+                    {new Date(recentlyOpened).toLocaleString()}
+                  </Text>
+                  <Button onClick={() => fns.reName(id)}>重命名</Button>
+                  <Button onClick={() => fns.download(id)}>下载</Button>
+                  <Button onClick={() => fns.delete(id)}>删除</Button>
+                </ButtonGroup>
+              </>
             }
           />
         )}

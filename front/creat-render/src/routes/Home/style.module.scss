@@ -6,13 +6,14 @@
 
 .fixedBanner {
   width: 30vw;
-  margin: 5vh 0 10vh;
+  max-width: 500px;
+  margin: 10vh 0 5vh;
 }
 
 .createContent {
   display: flex;
   align-items: center;
-  gap: 5vw;
+  gap: 3vw;
 }
 
 .historyContent {
@@ -20,5 +21,5 @@
   width: 90vw;
   max-width: 700px;
   flex-direction: column;
-  margin: 5vh 0 15vh;
+  margin: 6vh 0 15vh;
 }
