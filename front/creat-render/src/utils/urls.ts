@@ -1,5 +1,7 @@
-export function getWhiteboardId(): string {
-  return window.location.pathname.replaceAll('/', '')
+export function parseUrlWhiteboardId(): string {
+  const id = window.location.pathname.replaceAll('/', '')
+  window.whiteboardId = id
+  return id
 }
 
 export function setTitle(content: string, isAddIt?: boolean): void {
