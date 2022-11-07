@@ -223,7 +223,8 @@ class CreatLoader extends EventEmitter {
       diffNodesChange: (callback: OnCallBack) =>
         this.on('diffNodesChange', callback),
       diffStateChange: (callback: OnCallBack) =>
-        this.on('diffStateChange', callback)
+        this.on('diffStateChange', callback),
+      localDataChange: (callback: OnCallBack) => this.on('change', callback)
     }
   }
 

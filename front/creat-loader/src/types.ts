@@ -106,7 +106,8 @@ export type AppResponse = {
     diffStateChange: (callback: (diffState: State) => void) => void
     nodeRotateChange: (callback: (rotate: number) => void) => void
     nodeSizeChange: (callback: (width: number, height: number) => void) => void
-    nodePositionChange: (callback: (x: number, y: number) => void) => void
+    nodePositionChange: (callback: (x: number, y: number) => void) => void,
+    localDataChange: (callback: (localData: LocalData) => void) => void
   }
   setData: (data: LocalData, noEmitChange: boolean) => void
   setEditAuthor: () => void
