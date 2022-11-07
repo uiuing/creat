@@ -137,7 +137,12 @@ class Room(Data):
             }
         }
         """
-        user_id = self.socket2user[websocket]
+        user_id = self.socket2user.get(websocket)
+        if user_id is None:
+            # TODO 已经退出了, 之后还需要处理
+            return
+
+        
 
         if len(data['user']) == 0:
             # 意外退出的用户
@@ -155,12 +160,19 @@ class Room(Data):
         
 
         # 当前用户发送退出消息
-        await websocket.send_json(response.success('退出房间成功'))
+        # await websocket.send_json(response.success('退出房间成功'))
 
         # 给其他用户发送退出消息
         for user_id, socket in self.user2socket.items():
             data['user']['id'] = user_id
-            await socket.send_json(data)
+            try:
+                await socket.send_json(data)
+            except:
+                # 这些也断了 TODO 还需要递归删除吗？
+                user_id = self.socket2user[socket]
+                del self.socket2user[socket]
+                del self.user2socket[user_id]
+
     
 
 
@@ -256,17 +268,19 @@ class Room(Data):
 
         Input: 
         {
-            "type": "update",    // 传输数据类型
-            "node":{               // 节点数据
-                "id": "xxxxx",    // 节点id
-                "type": "xxxxx",  // 节点类型
-                "data":{          // 节点数据
-                    "x": 100,     // 节点x坐标
-                    "y": 100,     // 节点y坐标
-                    "width": 100, // 节点宽度
-                    "height": 100 // 节点高度
+            "type": "nodes-update",
+            "nodes":[
+                {
+                "id":"aaaaaa"
+                "更新的key":"更新的数据"
+                    .......
+                },
+                {
+                "id":"bbbb"
+                "更新的key":"更新的数据"
+                    .......
                 }
-            }
+            ]
         }
         """
         # 权限判断
@@ -276,11 +290,13 @@ class Room(Data):
             return
 
         # 有权限
-        node = data['node']
-        for i in range(len(self.whiteboard['nodes'])):
-            if self.whiteboard['nodes'][i]['id'] == node['id']:
-                self.whiteboard['nodes'][i] = node
-                break
+        nodes = data['nodes']
+        for node in nodes:
+            for i in self.whiteboard['nodes']:
+                if i['id'] == node['id']:
+                    for key in node:
+                        i[key] = node[key]
+
         
         # 给其他用户发送更新节点消息
         for user_id, socket in self.user2socket.items():
