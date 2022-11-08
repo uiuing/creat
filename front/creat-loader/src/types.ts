@@ -70,7 +70,8 @@ export type AppObject = {
   on: (event: string, fn: (...args: any[]) => void, ...args: any) => void
   emitChange: () => void
   getData: () => LocalData
-  updateState: (state: State) => void
+  // TODO: fix this type
+  updateState: (state: any) => void
   setData: (data: LocalData, noEmitChange: boolean) => Promise<void>
   emitDiffNodesChange: (oldData: LocalData, newData: LocalData) => void
   emitDiffStateChange: (oldData: LocalData, newData: LocalData) => void

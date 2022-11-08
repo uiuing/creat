@@ -25,14 +25,14 @@ export const downloadFile = (file: string, fileName: string) => {
 
 // Throttling
 export const throttle = (fn: any, ctx: Ctx, time = 20) => {
-  let timer: number | null = null
+  let _timer: any = null
   return (...args: any) => {
-    if (timer) {
+    if (_timer) {
       return
     }
-    timer = setTimeout(() => {
+    _timer = setTimeout(() => {
       fn.call(ctx, ...args)
-      timer = null
+      _timer = null
     }, time)
   }
 }

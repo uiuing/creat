@@ -7,6 +7,9 @@ export function useWhiteboardId() {
   const [hasId, setHasId] = useState(false)
   const [checkOK, setCheckOK] = useState(false)
 
+  // TODO : 检查云上是否存在该白板
+  // ....
+
   parseHasWhiteBoardId(id).then((res) => {
     setHasId(res)
     setCheckOK(true)
