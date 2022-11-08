@@ -7,6 +7,7 @@
   "scripts": {
     "dev-web": "cd creat-render && npm run dev",
     "build-web": "cd creat-render && npm run build",
-    "lint-web": "cd creat-render && npm run lint"
+    "lint-web": "cd creat-render && npm run lint",
+    "build-www": "cd creat-loader && yarn install && yarn link && cd .. && cd creat-render && yarn install && yarn link creat-loader"
   }
 }
