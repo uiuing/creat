@@ -1,18 +1,11 @@
-import createLoader from 'creat-loader'
-import { useLayoutEffect } from 'react'
-
+import styles from '../style.module.scss'
 import { CollatorState } from './CollatorState'
 import { FileOperate } from './FileOperate'
 import { GlobalOperate } from './GlobalOperate'
 import { GraphicOption } from './GraphicOption'
-import styles from './style.module.scss'
+import StyleMenu from './MenuOptions/StyleMenu'
 
 export function MenuControl() {
-  useLayoutEffect(() => {
-    window.whiteboard = createLoader({ plotType: 'selection' }).mount(
-      '#creat-loader'
-    )
-  }, [])
   return (
     <>
       <div className={styles.graphicOption}>
@@ -27,6 +20,7 @@ export function MenuControl() {
       <div className={styles.fileOperate}>
         <FileOperate />
       </div>
+      <StyleMenu />
     </>
   )
 }
