@@ -6,7 +6,7 @@
 .graphicOption {
   @extend %fixed;
 
-  top: 20%;
+  top: calc(50% - 225px);
   left: 15px;
 }
 
@@ -20,7 +20,8 @@
 .globalOperate {
   @extend %fixed;
 
-  bottom: 0;
+  bottom: 15px;
+  width: 100%;
 }
 
 .collatorState {

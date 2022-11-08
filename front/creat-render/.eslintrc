@@ -32,6 +32,7 @@
     "react/no-array-index-key": "off",
     "react/jsx-props-no-spreading": "off",
     "import/no-cycle": "off",
-    "no-param-reassign": "off"
+    "no-param-reassign": "off",
+    "react/style-prop-object": "off"
   }
 }
