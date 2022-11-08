@@ -140,12 +140,13 @@ class Room(Data):
         user_id = self.socket2user.get(websocket)
         if user_id is None:
             # TODO 已经退出了, 之后还需要处理
+            print(f'{user_id} 已经退出了')
             return
 
         
 
         if len(data['user']) == 0:
-            # 意外退出的用户
+            # 意外退出的用户 TODO
             _name = '未知用户'
 
             for i in self.cooperation_users:
@@ -163,15 +164,20 @@ class Room(Data):
         # await websocket.send_json(response.success('退出房间成功'))
 
         # 给其他用户发送退出消息
-        for user_id, socket in self.user2socket.items():
+
+        # 防止线程冲突
+        _user2socket = copy.copy(self.user2socket)
+        _socket2user = copy.copy(self.socket2user)
+        for user_id, socket in _user2socket.items():
             data['user']['id'] = user_id
             try:
                 await socket.send_json(data)
             except:
                 # 这些也断了 TODO 还需要递归删除吗？
-                user_id = self.socket2user[socket]
+                user_id = _socket2user[socket]
                 del self.socket2user[socket]
                 del self.user2socket[user_id]
+
 
     
 
@@ -446,7 +452,3 @@ class RoomManager(object):
             self.user2room[websocket] = self.room_dict[room_id]
         else:
             await websocket.send_json(response.error('创建房间失败,房间已存在'))
-    
-
-
-

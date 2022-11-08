@@ -112,22 +112,13 @@ class Transfer(object):
 
 
     # 退出房间
-    async def exit_room(self, ip, websocket: WebSocket):
+    async def exit_room(self, data, websocket: WebSocket):
         """
         退出房间
         """
-        room_id = self.room_manager.user_location(ip)
-        room = self.room_manager.room_dict.get(room_id)
-        if room == None:
-            # await websocket.send_json(response.error('退出房间失败, 并没有加入房间'))
-            return 
-
-        res = {
-            'type': 'exit_room',
-            'data': {
-                'user_id': ip
-            }
-        }
-        for number, socket in room.room_member_socket.items():
-            await socket.send_json(response.success('成员退出', res))
+        room = self.room_manager.user2room.get(websocket)
+        if room:
+            await room.exit_room(data, websocket)
+        else:
+            await websocket.send_json(response.error('房间不存在'))
 
