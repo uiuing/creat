@@ -103,18 +103,6 @@ export default class Render {
     this.app.keyCommand.addShortcut('Control+v', () => {
       this.pasteCurrentNode(true)
     })
-    // Enlarge
-    this.app.keyCommand.addShortcut('Control++', () => {
-      this.zoomIn()
-    })
-    // Reduction
-    this.app.keyCommand.addShortcut('Control+-', () => {
-      this.zoomOut()
-    })
-    // Scaling to fit all graphic objects
-    this.app.keyCommand.addShortcut('Shift+1', () => {
-      this.fit()
-    })
   }
 
   // Copy the currently active or selected graphic object
@@ -232,7 +220,6 @@ export default class Render {
   empty() {
     this.app.nodes.deleteAllNodes()
     this.render()
-    this.app.history.clear()
     this.app.emitChange()
   }
 
@@ -241,7 +228,7 @@ export default class Render {
     if (this.app.state.scale) {
       this.app.updateState({
         scale: this.app.state.scale + num
-      })
+      } as any)
       this.render()
       this.app.emit('zoomChange', this.app.state.scale)
     }
@@ -252,7 +239,7 @@ export default class Render {
     if (this.app.state.scale) {
       this.app.updateState({
         scale: this.app.state.scale - num > 0 ? this.app.state.scale - num : 0
-      })
+      } as any)
       this.render()
       this.app.emit('zoomChange', this.app.state.scale)
     }
@@ -265,7 +252,7 @@ export default class Render {
     }
     this.app.updateState({
       scale: zoom
-    })
+    } as any)
     this.render()
     this.app.emit('zoomChange', this.app.state.scale)
   }
@@ -290,7 +277,7 @@ export default class Render {
     this.app.updateState({
       scrollX,
       scrollY
-    })
+    } as any)
     this.render()
     this.app.emit(
       'scrollChange',
@@ -326,7 +313,7 @@ export default class Render {
   setBackgroundColor(color: string) {
     this.app.updateState({
       backgroundColor: color
-    })
+    } as any)
     this.app.background.set()
   }
 

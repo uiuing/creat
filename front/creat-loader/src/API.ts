@@ -25,7 +25,6 @@ import * as checkClick from './common/utils/checkClick'
 import {
   getDiffData,
   getDiffState,
-  isEqual,
   parseDiffNodes,
   parseDiffState
 } from './common/utils/diffData'
@@ -225,7 +224,10 @@ class CreatLoader extends EventEmitter {
         this.on('diffNodesChange', callback),
       diffStateChange: (callback: OnCallBack) =>
         this.on('diffStateChange', callback),
-      localDataChange: (callback: OnCallBack) => this.on('change', callback)
+      localDataChange: (callback: OnCallBack) => this.on('change', callback),
+      nodeRotateChange: (callback: OnCallBack) => {
+        this.on('nodeRotateChange', callback)
+      }
     }
   }
 
@@ -245,6 +247,10 @@ class CreatLoader extends EventEmitter {
     ;['undo', 'redo'].forEach((method) => {
       // @ts-ignore
       this[method] = this.history[method].bind(this.history)
+    })
+    ;['unBindEvent', 'bindEvent'].forEach((method) => {
+      // @ts-ignore
+      this[method] = this.keyCommand[method].bind(this.keyCommand)
     })
     ;['setSelectedNodeStyle'].forEach((method) => {
       // @ts-ignore
@@ -359,7 +365,7 @@ class CreatLoader extends EventEmitter {
     this.grid.renderGrid()
   }
 
-  // Updating the state data only updates the state data and does not trigger a re-render
+  // Updating the state data only updates the state data and does not trigger a render
   updateState(data = {}) {
     this.state = {
       ...this.state,
