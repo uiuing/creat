@@ -56,10 +56,12 @@ export default class History {
     const data = this.historyStack[this.index]
     // Avoid interference and enforce correction
     this.fixIndex = this.index
+    const fixLength = this.length
     this.app
       .setData(data, true)
       .then(() => {
         this.index = this.fixIndex
+        this.length = fixLength
         this.emitChange()
         this.app.emit('change', data)
         this.app.emitDiffNodesChange(oldData, data)

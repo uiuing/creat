@@ -106,10 +106,11 @@ export type AppResponse = {
     diffStateChange: (callback: (diffState: State) => void) => void
     nodeRotateChange: (callback: (rotate: number) => void) => void
     nodeSizeChange: (callback: (width: number, height: number) => void) => void
-    nodePositionChange: (callback: (x: number, y: number) => void) => void,
+    nodePositionChange: (callback: (x: number, y: number) => void) => void
     localDataChange: (callback: (localData: LocalData) => void) => void
   }
   setData: (data: LocalData, noEmitChange: boolean) => void
+  getData: () => LocalData
   setEditAuthor: () => void
   setReadonlyAuthor: () => void
   showGrid: () => void
@@ -230,6 +231,7 @@ export type State = {
   defaultColor?: string
   gridColor?: string
   gridConfig?: GridConfig
+  plotType: PlotType
 }
 
 export type AppState = {
@@ -348,3 +350,6 @@ export type DiffStateRes = {
   type: 'update-state'
   state: State
 }
+
+export type Mount = (mountEl: string | Object | HTMLElement) => AppResponse
+export type creatLoader = (state: AppState) => Mount

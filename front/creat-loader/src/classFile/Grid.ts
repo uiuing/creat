@@ -149,14 +149,14 @@ export default class Grid {
   showGrid() {
     this.app.updateState({
       showGrid: true
-    })
+    } as any)
     this.renderGrid()
   }
 
   hideGrid() {
     this.app.updateState({
       showGrid: false
-    })
+    } as any)
     this.canvas.clearCanvas()
   }
 
@@ -166,7 +166,7 @@ export default class Grid {
         ...this.app.state.gridConfig,
         ...config
       }
-    })
+    } as any)
     if (this.app.state.showGrid) {
       this.hideGrid()
       this.showGrid()

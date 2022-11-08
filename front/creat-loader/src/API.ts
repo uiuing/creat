@@ -25,6 +25,7 @@ import * as checkClick from './common/utils/checkClick'
 import {
   getDiffData,
   getDiffState,
+  isEqual,
   parseDiffNodes,
   parseDiffState
 } from './common/utils/diffData'
@@ -161,7 +162,7 @@ class CreatLoader extends EventEmitter {
       },
       // Coverage
       ...(options.state || {})
-    }
+    } as any
 
     this.initCanvas()
 
@@ -364,7 +365,7 @@ class CreatLoader extends EventEmitter {
       ...this.state,
       ...data
     }
-    this.emitChange()
+    this.emitChange(undefined, true)
   }
 
   // Update current drawing type
@@ -672,14 +673,18 @@ class CreatLoader extends EventEmitter {
   }
 
   // Triggering update events
-  emitChange(noDiffData?: boolean) {
+  emitChange(noDiffData?: boolean, noHistory?: boolean) {
     const data = this.getData()
     const oldData = this.history.now()
-    this.history.add(<LocalData>data)
-    const nowData = this.history.now()
+    if (
+      (typeof oldData === 'undefined' && data.nodes.length !== 0) ||
+      (typeof oldData !== 'undefined' && !noHistory)
+    ) {
+      this.history.add(<LocalData>data)
+    }
     if (this.onceLoaderOK && !noDiffData) {
-      this.emitDiffNodesChange(oldData, nowData)
-      this.emitDiffStateChange(oldData, nowData)
+      this.emitDiffNodesChange(oldData, data)
+      this.emitDiffStateChange(oldData, data)
     }
     this.emit('change', data)
   }

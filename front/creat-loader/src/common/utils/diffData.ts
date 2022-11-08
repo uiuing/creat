@@ -144,7 +144,7 @@ export function getDiffState(oldData: LocalData, nowData: LocalData) {
   const isDiffGrid = oldState.showGrid !== nowState.showGrid
   const isDiffReadonly = oldState.readonly !== nowState.readonly
   if (isDiffBac || isDiffGrid || isDiffReadonly) {
-    const state: State = {}
+    const state: any = {}
     if (isDiffBac) {
       state.backgroundColor = nowState.backgroundColor
     }
