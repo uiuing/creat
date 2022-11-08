@@ -17,6 +17,8 @@ export type UserInfo = {
   name: string
 }
 
+export type UserTmpColor = string
+
 // ------------------------ Customised local storage methods 👇 ------------------------ Start
 
 // ----------------------------------
@@ -37,7 +39,6 @@ export async function setWhiteboardInfos(infos: WhiteboardInfos) {
 }
 
 // ----------------------------------
-
 export async function getWhiteboardLocalData(
   id?: string
 ): Promise<WhiteboardLocalData | undefined> {
@@ -69,7 +70,7 @@ export async function setWhiteboardLocalData(
   if (!infos.find((info) => info.id === id)) {
     infos.push({
       id,
-      name: `未命名白板-${id.slice(0, 9)}`,
+      name: `未命名白板-${id.slice(3, 10)}`,
       recentlyOpened: Date.now()
     })
     await setWhiteboardInfos(infos)
@@ -89,21 +90,39 @@ export function generateId(): string {
   return id
 }
 
-export async function getUserInfo(): Promise<UserInfo | undefined> {
+export async function getUserInfo(): Promise<UserInfo> {
   let userInfo = (await localforage.getItem('creat-user-info')) as UserInfo
   if (!userInfo) {
     const id = generateId()
     userInfo = {
       id,
-      name: `${id.slice(0, 6)}`
+      name: `${id.slice(5, 9)}`
     }
     await setUserInfo(userInfo)
   }
-  return userInfo || undefined
+  return userInfo
 }
 
 export async function setUserInfo(userInfo: UserInfo) {
   await localforage.setItem('creat-user-info', userInfo)
+}
+
+export async function getUserTmpColor(): Promise<UserTmpColor> {
+  let userTmpColor = (await localforage.getItem(
+    `creat-user-tmp-color-${window.whiteboardId}`
+  )) as UserTmpColor
+  if (!userTmpColor) {
+    userTmpColor = `#${Math.floor(Math.random() * 0xffffff).toString(16)}`
+    await setUserTmpColor(userTmpColor)
+  }
+  return userTmpColor
+}
+
+export async function setUserTmpColor(userTmpInfo: UserTmpColor) {
+  await localforage.setItem(
+    `creat-user-tmp-color-${window.whiteboardId}`,
+    userTmpInfo
+  )
 }
 
 // ------------------------ Customised local storage methods 👆 ------------------------ End
@@ -150,6 +169,10 @@ const customLocalforageEffect = {
   'creat-whiteboard': {
     get: getWhiteboardLocalData,
     set: setWhiteboardLocalData
+  },
+  'creat-user-tmp-color': {
+    get: getUserTmpColor,
+    set: setUserTmpColor
   }
 }
 
