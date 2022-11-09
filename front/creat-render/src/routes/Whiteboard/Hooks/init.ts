@@ -20,7 +20,7 @@ export function useInitWhiteboardLoader() {
   useEffect(() => {
     const initData = whiteboardApp().getData()
     getWhiteboardLocalData().then((data) => {
-      if (data) {
+      if (data && 'state' in data) {
         setLocalData(data)
         whiteboardApp().setData(data, false)
       } else {
