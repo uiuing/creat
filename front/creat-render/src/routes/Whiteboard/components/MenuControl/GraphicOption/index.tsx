@@ -88,7 +88,7 @@ export function GraphicOption() {
       <Collapsible
         keepDOM
         collapseHeight={40}
-        isOpen={!localData.state.readonly}
+        isOpen={!localData?.state?.readonly}
         className={styles.group}
       >
         {Options.map((option, index) => (

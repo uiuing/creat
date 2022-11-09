@@ -98,20 +98,20 @@ function AuthorGridsEraserOperate() {
       <ButtonGroup type="tertiary" className={styles.group}>
         <Tooltip
           content={
-            localData.state.readonly ? '切换到编辑模式' : '切换到只读模式'
+            localData?.state?.readonly ? '切换到编辑模式' : '切换到只读模式'
           }
         >
           <Button
             onClick={() => {
               whiteboardApp().updateCurrentType('selection')
-              if (localData.state.readonly) {
+              if (localData?.state?.readonly) {
                 whiteboardApp().setEditAuthor()
               } else {
                 whiteboardApp().setReadonlyAuthor()
               }
             }}
             icon={
-              localData.state.readonly ? (
+              localData?.state?.readonly ? (
                 <ReadSvg width={15} height={15} fill="#3d3d3d" />
               ) : (
                 <EditSvg width={15} height={15} fill="#3d3d3d" />
@@ -123,7 +123,7 @@ function AuthorGridsEraserOperate() {
         <Tooltip content="网格">
           <Button
             onClick={() => {
-              if (localData.state.showGrid) {
+              if (localData?.state?.showGrid) {
                 whiteboardApp().hideGrid()
               } else {
                 whiteboardApp().showGrid()
@@ -133,7 +133,7 @@ function AuthorGridsEraserOperate() {
               <GridsSvg
                 width={15}
                 height={15}
-                fill={localData.state.showGrid ? 'rgb(0,100,250)' : '#3d3d3d'}
+                fill={localData?.state?.showGrid ? 'rgb(0,100,250)' : '#3d3d3d'}
               />
             }
           />
@@ -146,7 +146,7 @@ function AuthorGridsEraserOperate() {
           />
         </Tooltip>
       </ButtonGroup>
-      {localData.state.readonly ? (
+      {localData?.state?.readonly ? (
         <></>
       ) : (
         <>
@@ -159,7 +159,7 @@ function AuthorGridsEraserOperate() {
                     width={15}
                     height={15}
                     fill={
-                      localData.state.readonly
+                      localData?.state?.readonly
                         ? 'rgb(28 31 35 / 35%)'
                         : '#3d3d3d'
                     }
@@ -177,7 +177,9 @@ function AuthorGridsEraserOperate() {
                     width: 32,
                     height: 27,
                     borderRadius: 6,
-                    backgroundColor: localData.state.backgroundColor
+                    backgroundColor: localData?.state
+                      ? localData?.state?.backgroundColor
+                      : 'transparent'
                   }}
                 />
               </Button>
