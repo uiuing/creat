@@ -16,6 +16,7 @@ import DotLineSvg from '../../../../../components/svgs/DotLineSvg'
 import DotPLineSvg from '../../../../../components/svgs/DotPLineSvg'
 import SolidLineSvg from '../../../../../components/svgs/SolidLineSvg'
 import TrashSvg from '../../../../../components/svgs/TrashSvg'
+import { commonColors } from '../../../../common/colors'
 import { whiteboardApp } from '../../../../utils'
 import styles from './style.module.scss'
 
@@ -153,6 +154,7 @@ export default function StyleMenu() {
               }
               return '#000000'
             })()}
+            colors={commonColors}
             triangle="hide"
             onChangeComplete={(color) => {
               if (changeColorType) {

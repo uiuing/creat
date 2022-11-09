@@ -16,6 +16,7 @@ import LocationSvg from '../../../../components/svgs/LocationSvg'
 import ReadSvg from '../../../../components/svgs/ReadSvg'
 import RotateLeftRightSvg from '../../../../components/svgs/RotateLeftRightSvg'
 import TrashSvg from '../../../../components/svgs/TrashSvg'
+import { commonColors } from '../../../common/colors'
 import { localDataState } from '../../../store'
 import { whiteboardApp } from '../../../utils'
 import styles from './style.module.scss'
@@ -113,8 +114,10 @@ function AuthorGridsEraserOperate() {
               whiteboardApp().cancelActiveNode()
               if (localData?.state?.readonly) {
                 whiteboardApp().setEditAuthor()
+                whiteboardApp().bindEvent()
               } else {
                 whiteboardApp().setReadonlyAuthor()
+                whiteboardApp().unBindEvent()
               }
             }}
             icon={
@@ -206,6 +209,7 @@ function AuthorGridsEraserOperate() {
               <TwitterPicker
                 color={backgroundColor}
                 triangle="hide"
+                colors={commonColors}
                 onChangeComplete={(v) => {
                   setBackgroundColor(v.hex)
                   whiteboardApp().setBackgroundColor(v.hex)
