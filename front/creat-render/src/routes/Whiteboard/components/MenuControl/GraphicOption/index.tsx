@@ -77,6 +77,7 @@ export function GraphicOption() {
       return
     }
     whiteboardApp().cancelActiveNode()
+    whiteboardApp().cancelSelectNodes()
     setCurrentType(currentType)
     whiteboardApp().updateCurrentType(t)
   }

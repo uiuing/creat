@@ -109,6 +109,8 @@ function AuthorGridsEraserOperate() {
           <Button
             onClick={() => {
               whiteboardApp().updateCurrentType('selection')
+              whiteboardApp().cancelSelectNodes()
+              whiteboardApp().cancelActiveNode()
               if (localData?.state?.readonly) {
                 whiteboardApp().setEditAuthor()
               } else {
