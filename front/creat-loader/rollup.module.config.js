@@ -18,7 +18,7 @@ export default {
       sourcemap: true
     },
     {
-      file: 'build/creat-loader.global.js',
+      file: 'creat-loader.global.js',
       name: 'CreatLoader',
       format: 'iife',
       sourcemap: true

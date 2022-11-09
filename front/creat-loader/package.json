@@ -1,19 +1,23 @@
 {
   "name": "@uiuing/creat-loader",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "author": "uiuing<uiuing@foxmail.com>",
   "description": "https://github.com/uiuing/creat Underlay rendering, available for use with third parties",
-  "keywords": ["canvas","whiteboard","creat"],
+  "keywords": [
+    "canvas",
+    "whiteboard",
+    "creat"
+  ],
   "license": "MIT",
   "private": false,
-  "main": "build/creat-loader.cjs.js",
-  "module": "build/creat-loader.es.js",
-  "typings": "build/index.d.ts",
+  "main": "creat-loader.cjs.js",
+  "module": "creat-loader.es.js",
+  "typings": "index.d.ts",
   "scripts": {
     "lint": "npm run prettier && npm run lint:eslint",
     "prettier": "prettier --write './src/**/*.{ts,json}'",
     "lint:eslint": "eslint --fix --ext .ts ./src ",
-    "build": "rollup -c rollup.config.js --bundleConfigAsCjs"
+    "build": "rollup -c rollup.module.config.js --bundleConfigAsCjs"
   },
   "publishConfig": {
     "access": "public",
@@ -36,6 +40,7 @@
     "eslint-plugin-simple-import-sort": "^8.0.0",
     "prettier": "^2.7.1",
     "rollup": "^3.2.5",
+    "rollup-plugin-dts": "^5.0.0",
     "rollup-plugin-uglify": "^6.0.4",
     "tslib": "^2.4.1",
     "typescript": "^4.8.4"
