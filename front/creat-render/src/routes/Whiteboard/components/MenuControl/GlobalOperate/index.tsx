@@ -7,6 +7,7 @@ import {
 } from '@douyinfe/semi-ui'
 import { LocalData } from 'creat-loader/src/types'
 import { useState } from 'react'
+import { TwitterPicker } from 'react-color'
 import { useRecoilValue } from 'recoil'
 
 import EditSvg from '../../../../components/svgs/EditSvg'
@@ -93,6 +94,10 @@ function HistoryOperate() {
 
 function AuthorGridsEraserOperate() {
   const localData = useRecoilValue(localDataState) as LocalData
+  const [backgroundColor, setBackgroundColor] = useState(
+    localData?.state ? localData?.state?.backgroundColor : 'transparent'
+  )
+  const [nowChangeBackground, setNowChangeBackground] = useState(false)
   return (
     <>
       <ButtonGroup type="tertiary" className={styles.group}>
@@ -170,21 +175,42 @@ function AuthorGridsEraserOperate() {
           </ButtonGroup>
           <ButtonGroup type="tertiary" className={styles.group}>
             <Tooltip content="设置背景颜色">
-              {/* TODO 设置背景颜色 */}
-              <Button className={styles.buttonNoPadding}>
+              <Button
+                className={styles.buttonNoPadding}
+                onClick={() => {
+                  setNowChangeBackground(true)
+                }}
+              >
                 <div
                   style={{
                     width: 32,
                     height: 27,
                     borderRadius: 6,
-                    backgroundColor: localData?.state
-                      ? localData?.state?.backgroundColor
-                      : 'transparent'
+                    backgroundColor
                   }}
                 />
               </Button>
             </Tooltip>
           </ButtonGroup>
+          <div
+            onMouseLeave={() => {
+              setNowChangeBackground(false)
+            }}
+          >
+            <Collapsible
+              className={styles.twitterPicker}
+              isOpen={nowChangeBackground}
+            >
+              <TwitterPicker
+                color={backgroundColor}
+                triangle="hide"
+                onChangeComplete={(v) => {
+                  setBackgroundColor(v.hex)
+                  whiteboardApp().setBackgroundColor(v.hex)
+                }}
+              />
+            </Collapsible>
+          </div>
         </>
       )}
     </>
