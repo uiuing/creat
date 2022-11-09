@@ -38,6 +38,18 @@ join_meeting_2 = {
   }
 }
 
+join_meeting_3 = {
+  "type": "join_meeting",
+  "whiteboard":{
+    "id":"1"  
+  },
+  "user":{      
+    "id":"d",  
+    "name":"d",      
+    "color":"d"
+  }
+}
+
 change_meeting = {
   "type": "change_meeting",    
   "whiteboard":{
@@ -112,4 +124,11 @@ cover_all = {
       "更新的key":"cover"
     }
   ]
+}
+
+quit_meeting = {
+  "type": "quit_meeting",
+  "user":{
+    "name":"b"   
+  }
 }

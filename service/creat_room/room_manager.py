@@ -39,6 +39,14 @@ class Room(Data):
 
         两种情况:
             - 只读
+            Input:
+                {
+                    "type": "join_meeting",
+                    "whiteboard":{
+                        "id":"xxxxxxxxxxx",      // 白板唯一识别
+                    },
+                }
+            Output:
                 {
                     "whiteboard":{
                         "name": "未命名文件1",     // 白板名称 
@@ -49,6 +57,19 @@ class Room(Data):
                 }
             - 非只读
                 当前socket用户:
+                Input:
+                {
+                    "type": "join_meeting",
+                    "whiteboard":{
+                        "id":"xxxxxxxxxxx"  
+                    },
+                    "user":{      
+                        "id":"b",  
+                        "name":"aaa",      
+                        "color":"xxx"
+                    }
+                }
+                Output:
                 {
                     "whiteboard":{
                         "name": "未命名文件1",         // 白板名称 
@@ -105,6 +126,16 @@ class Room(Data):
                 pass 
         else:
             # 非只读
+
+            # 判断用户name是否已经存在
+            if 'user' in data:
+                for user in self.cooperation_users:
+                    if user['name'] == data['user']['name']:
+                        # 用户名已存在
+                        res['user_name_exist'] = True
+                        await websocket.send_json(response.error('用户名已存在'))
+                        return
+
             # 仅给当前用户发消息
             res['user_rights'] = identity
             self.cooperation_users.append(data['user'])
@@ -124,7 +155,6 @@ class Room(Data):
                     res['join_user'] = data['user']
                     await socket.send_json(res)
                     
-
     async def exit_room(self, data, websocket):
         """
         退出房间
@@ -177,10 +207,6 @@ class Room(Data):
                 user_id = _socket2user[socket]
                 del self.socket2user[socket]
                 del self.user2socket[user_id]
-
-
-    
-
 
     async def whiteboard_data(self, data, websocket):
         """
@@ -267,7 +293,6 @@ class Room(Data):
             if websocket != socket:
                 await socket.send_json(data)
     
-
     async def update_nodes(self, data, websocket):
         """
         更新节点
@@ -309,7 +334,6 @@ class Room(Data):
             if websocket != socket:
                 await socket.send_json(data)
         
-    
     async def delete_nodes(self, data, websocket):
         """
         删除节点
