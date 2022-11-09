@@ -126,7 +126,7 @@ export default class Export {
 
   show(canvas: HTMLCanvasElement) {
     if (this.openPreview) {
-      canvas.style.cssText = `position: absolute;left: 0;top: 0;background-color: #fff;`
+      canvas.style.cssText = `position: absolute;left: 0;top: 0;background-color: #FFFFFF;`
       document.body.appendChild(canvas)
     }
   }

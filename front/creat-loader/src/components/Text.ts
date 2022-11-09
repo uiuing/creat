@@ -17,7 +17,7 @@ export default class Text extends BaseNode {
 
     this.text = options?.text || ''
 
-    this.style.fillStyle = options?.style?.fillStyle || '#000'
+    this.style.fillStyle = options?.style?.fillStyle || '#000000'
 
     this.style.fontSize = options?.style?.fontSize || 18
 

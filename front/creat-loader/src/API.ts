@@ -149,7 +149,7 @@ class CreatLoader extends EventEmitter {
       // Is it read-only mode
       readonly: false,
       // Default colour
-      defaultColor: '#000',
+      defaultColor: '#000000',
       // Grid configuration
       gridConfig: {
         // Grid size
