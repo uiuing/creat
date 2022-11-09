@@ -3,79 +3,122 @@ from creat_transfer import PaintedFactory
 from creat_room import RoomManager
 from fastapi import WebSocket
 from utils import response
+from common import OPERATE
+
 
 class Transfer(object):
     def __init__(self, room_manager: RoomManager):
         self.room_manager = room_manager
     
     async def handle(self, ip, data, websocket: WebSocket):
-        """
-        数据处理:
-        1. 创建房间: 需要先随机出一个uuid 房间号,然后再初始化房间,并且将房间信息返回给用户
-        """
-        # ip = str(uuid.uuid1()) # TODO 因为单机测试,ip都一样
-        print(data)
+
+        operate = [i.value for i in OPERATE]
+        if data['type'] not in operate:
+            await websocket.send_json(response.error('操作类型(type)错误'))
+            return
+
         # 创建房间
-        if data['type'] == 'create_room':
-            room_id = str(uuid.uuid1())
-            room = self.room_manager.create_room(room_id, data['room_name'], data['room_type'],ip,
-                                                 ip, data['room_owner_avatar'], websocket)
-            print(room.room_member_socket)
-            await websocket.send_json(response.success('创建房间成功', room.to_info()))
+        if data['type'] == OPERATE.CREATE.value:
+            """
+            {
+                "type": "create_meeting",    // 传输数据类型
+                "whiteboard":{
+                    "id":"xxxxxxxxxxx",       // 白板唯一识别
+                    "name": "未命名文件1",     // 白板名称 
+                    "nodes":[],              // 初始白板数据
+                    "readonly":false         // 这里是全局的是否只读状态
+                },
+                "user":{
+                    "id":"xxxxxxxxxxx",  // 用户唯一识别  
+                    "name":"xxxx",      // 用户昵称
+                    "color":"xxx",     // 用户默认颜色
+                }
+            }
+            """
+            await self.room_manager.create_room(data['whiteboard']['id'], data['whiteboard']['name'], data['whiteboard']['readonly'], 
+                                                data['user']['id'],data['user']['name'], data['user']['color'], websocket)
 
         # 加入房间
-        elif data['type'] == 'join_room':
-            res = {
-                'type': 'join_room',
-                'data':None
-            }
-            room = self.room_manager.join_room(data['room_id'], ip, websocket)
+        elif data['type'] == OPERATE.JOIN.value:
+            room = self.room_manager.room_dict[data['whiteboard']['id']]
             if not room:
-                await websocket.send_json(response.error('房间不存在 或者 权限不足'))
-                return 
-            
-            # 给新加入的用户发送房间信息
-            room_info = room.to_info()
-            await websocket.send_json(response.success('加入房间成功', room_info))
-
-            res['data'] = room.get_member_setting(ip)
-            for number, socket in room.room_member_socket.items():
-                if number != ip:
-                    await socket.send_json(response.success('新成员加入', res))
-        
-        # 图像操作
-        elif data['type'] == 'new_shape' or data['type'] == 'delete_shape' or data['type'] == 'update_shape':
-            room_id = self.room_manager.user_location(ip)
-            room = self.room_manager.room_dict.get(room_id)
-            if room == None:
-                await websocket.send_json(response.error('操作失败, 并没有加入房间'))
-                return
-            res = self.room_manager.room_operation(room_id, ip, data['type'], data['content'])
-            if res:
-                for number, socket in room.room_member_socket.items():
-                    if number != ip:
-                        await socket.send_json(response.success('图形编辑操作', data))
-                await websocket.send_json(response.success('图形编辑操作成功'))
+                await websocket.send_json(response.error('房间不存在'))
             else:
-                await websocket.send_json(response.error('图形编辑操作失败'))
-    
+                await room.join_room(data, websocket)
+                self.room_manager.user2room[websocket] = room
+        # 检查房间
+        elif data['type'] == OPERATE.CHECK.value:
+            room = self.room_manager.room_dict[data['whiteboard']['id']]
+            if not room:
+                await websocket.send_json(response.error('房间不存在'))
+            else:
+                await room.check_room(data, websocket)
+        # 退出房间
+        elif data['type'] == OPERATE.EXIT.value:
+            room = self.room_manager.user2room.get(websocket)
+            if not room:
+                await websocket.send_json(response.error('房间不存在'))
+            else:
+                await room.exit_room(data, websocket)
+        # 修改房间信息
+        elif data['type'] == OPERATE.UPDATE.value:
+            room = self.room_manager.user2room.get(websocket)
+            if not room:
+                await websocket.send_json(response.error('房间不存在'))
+            else:
+                await room.whiteboard_data(data, websocket)
+        # 新增 Node
+        elif data['type'] == OPERATE.SHAPE_NEW.value:
+            room = self.room_manager.user2room.get(websocket)
+            if not room:
+                await websocket.send_json(response.error('房间不存在'))
+            else:
+                await room.add_nodes(data, websocket)
+        # 更新Node
+        elif data['type'] == OPERATE.SHAPE_UPDATE.value:
+            room = self.room_manager.user2room.get(websocket)
+            if not room:
+                await websocket.send_json(response.error('房间不存在'))
+            else:
+                await room.update_nodes(data, websocket)
+        # 删除Node
+        elif data['type'] == OPERATE.SHAPE_DELETE.value:
+            room = self.room_manager.user2room.get(websocket)
+            if not room:
+                await websocket.send_json(response.error('房间不存在'))
+            else:
+                await room.delete_nodes(data, websocket)
+        # 清空白板
+        elif data['type'] == OPERATE.SHAPE_DELETEALL.value:
+            room = self.room_manager.user2room.get(websocket)
+            if not room:
+                await websocket.send_json(response.error('房间不存在'))
+            else:
+                await room.delete_all_nodes(data, websocket)
+        # 覆盖白板
+        elif data['type'] == OPERATE.SHAPE_COVERALL.value:
+            room = self.room_manager.user2room.get(websocket)
+            if not room:
+                await websocket.send_json(response.error('房间不存在'))
+            else:
+                await room.cover_all_nodes(data, websocket)
+        # 鼠标同步
+        elif data['type'] == OPERATE.MOUSE_SYNC.value:
+            room = self.room_manager.user2room.get(websocket)
+            if not room:
+                await websocket.send_json(response.error('房间不存在'))
+            else:
+                await room.sync_mouse(data, websocket)            
+
+
     # 退出房间
-    async def exit_room(self, ip, websocket: WebSocket):
+    async def exit_room(self, data, websocket: WebSocket):
         """
         退出房间
         """
-        room_id = self.room_manager.user_location(ip)
-        room = self.room_manager.room_dict.get(room_id)
-        if room == None:
-            # await websocket.send_json(response.error('退出房间失败, 并没有加入房间'))
-            return 
-
-        res = {
-            'type': 'exit_room',
-            'data': {
-                'user_id': ip
-            }
-        }
-        for number, socket in room.room_member_socket.items():
-            await socket.send_json(response.success('成员退出', res))
+        room = self.room_manager.user2room.get(websocket)
+        if room:
+            await room.exit_room(data, websocket)
+        else:
+            await websocket.send_json(response.error('房间不存在'))
 
