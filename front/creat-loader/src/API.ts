@@ -195,11 +195,11 @@ class CreatLoader extends EventEmitter {
 
     this.grid = new Grid(this as any)
 
-    this.author = new Author(this as any)
-
     this.nodes = new Nodes(this as any)
 
     this.render = new Render(this as any)
+
+    this.author = new Author(this as any)
 
     this.mountFunction()
 
@@ -252,7 +252,7 @@ class CreatLoader extends EventEmitter {
       // @ts-ignore
       this[method] = this.keyCommand[method].bind(this.keyCommand)
     })
-    ;['setSelectedNodeStyle'].forEach((method) => {
+    ;['setSelectedNodeStyle', 'cancelSelectNodes'].forEach((method) => {
       // @ts-ignore
       this[method] = this.selection[method].bind(this.selection)
     })

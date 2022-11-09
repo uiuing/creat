@@ -133,6 +133,7 @@ export type AppResponse = {
     downloadFile: (data: string, filename: string) => void
   }
   parseSetDiffData: (config: DiffNodesRes | DiffStateRes) => void
+  cancelSelectNodes: () => void
 }
 
 export type LoaderOptions = {

@@ -253,6 +253,10 @@ export default class Selection {
     this.emitChange()
   }
 
+  cancelSelectNodes() {
+    this.selectNodes([])
+  }
+
   // Set the selected graphic object
   setMultiplexSelectNodes(nodes: NodeArray = [], notUpdateRect?: boolean) {
     this.multiplexSelectNode.setSelectedNodeList(nodes)
