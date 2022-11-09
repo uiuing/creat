@@ -42,22 +42,38 @@ export default function StyleMenu() {
 
   const [strokeStyle, setStrokeStyle] = useState(
     activeNodeObject?.style?.strokeStyle
+      ? activeNodeObject?.style?.strokeStyle
+      : '#000000'
   )
-  const [fillStyle, setFillStyle] = useState(activeNodeObject?.style?.fillStyle)
-  const [lineWidth, setLineWidth] = useState(activeNodeObject?.style?.fillStyle)
+  const [fillStyle, setFillStyle] = useState(
+    activeNodeObject?.style?.fillStyle
+      ? activeNodeObject?.style?.fillStyle
+      : 'transparent'
+  )
+  const [lineWidth, setLineWidth] = useState(
+    activeNodeObject?.style?.lineWidth ? activeNodeObject?.style?.lineWidth : 2
+  )
   const [globalAlpha, setGlobalAlpha] = useState(
-    activeNodeObject?.style?.globalAlpha
+    (() => {
+      if (activeNodeObject?.style?.globalAlpha) {
+        if (activeNodeObject?.style?.globalAlpha === 'transparent') {
+          return 0
+        }
+        return activeNodeObject?.style?.globalAlpha
+      }
+      return 1
+    })()
   )
   const [rotate, setRotate] = useState(
     Math.floor(activeNodeObject?.rotate ? activeNodeObject.rotate : 0)
   )
-  const [lineDash, setLineDash] = useState(activeNodeObject?.style?.lineDash)
+  const [lineDash, setLineDash] = useState(
+    activeNodeObject?.style?.lineDash ? activeNodeObject?.style?.lineDash : 0
+  )
 
   whiteboardApp().watch.nodeRotateChange((r) => {
-    console.log('nodeRotateChange', r)
     setRotate(r)
   })
-
   useEffect(() => {
     // TODO: 关于多选的时候颜色选取显示怎么样更好？
     if (activeNodeObject || (activeNodesArray && activeNodesArray.length > 0)) {
@@ -126,6 +142,7 @@ export default function StyleMenu() {
           }}
           isOpen={typeof changeColorType !== 'undefined'}
         >
+          {/* 更多颜色样式和设置 */}
           <TwitterPicker
             color={(() => {
               if (activeNodeObject?.style && changeColorType) {
