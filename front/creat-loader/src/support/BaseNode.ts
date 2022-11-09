@@ -79,7 +79,7 @@ export default class BaseNode extends EventEmitter {
     this.style = {
       strokeStyle: this.app.state.defaultColor,
       fillStyle: 'transparent',
-      lineWidth: 'small',
+      lineWidth: 2,
       lineDash: 0,
       globalAlpha: 1,
       ...(options.style || {})
@@ -100,25 +100,9 @@ export default class BaseNode extends EventEmitter {
     return this
   }
 
-  // Handling style data
-  handleStyle(style: any) {
-    Object.keys(style).forEach((key) => {
-      if (key === 'lineWidth') {
-        if (style[key] === 'small') {
-          style[key] = 2
-        } else if (style[key] === 'middle') {
-          style[key] = 6
-        } else if (style[key] === 'large') {
-          style[key] = 10
-        }
-      }
-    })
-    return style
-  }
-
   // Setting the drawing style
   setStyle(style = {}) {
-    const _style = this.handleStyle(style)
+    const _style = style as any
     Object.keys(_style).forEach((key) => {
       if (key === 'lineDash') {
         if (_style.lineDash > 0) {
