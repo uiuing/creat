@@ -7,7 +7,7 @@ import {
   Slider,
   Typography
 } from '@douyinfe/semi-ui'
-import { Node } from 'creat-loader/src/types'
+import { Node } from '@uiuing/creat-loader/types'
 import { useEffect, useState } from 'react'
 import { TwitterPicker } from 'react-color'
 

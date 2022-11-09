@@ -5,7 +5,7 @@ import {
   Divider,
   Tooltip
 } from '@douyinfe/semi-ui'
-import { LocalData } from 'creat-loader/src/types'
+import { LocalData } from '@uiuing/creat-loader/types'
 import { useState } from 'react'
 import { TwitterPicker } from 'react-color'
 import { useRecoilValue } from 'recoil'

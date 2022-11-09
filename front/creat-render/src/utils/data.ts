@@ -1,4 +1,4 @@
-import { LocalData } from 'creat-loader/src/types'
+import { LocalData } from '@uiuing/creat-loader/types'
 import * as localforage from 'localforage'
 import { DefaultValue } from 'recoil'
 

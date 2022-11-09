@@ -2,16 +2,9 @@
 
 ## 使用 👌
 
-首先link `creat-loader`
 
 ```shell
-cd creat-loader && npm link
-```
-
-然后在 `creat-render` 中link
-
-```shell
-cd creat-render && npm link creat-loader
+yarn install && yarn run dev
 ```
 
 命令请查看 `package.json` 中的 `scripts`。

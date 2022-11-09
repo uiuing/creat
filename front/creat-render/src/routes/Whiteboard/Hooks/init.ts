@@ -1,4 +1,4 @@
-import createLoader from 'creat-loader'
+import creatLoader from '@uiuing/creat-loader'
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { useSetRecoilState } from 'recoil'
 
@@ -8,9 +8,8 @@ import { whiteboardApp } from '../utils'
 
 export function useInitWhiteboardLoader() {
   const setLocalData = useSetRecoilState<any>(localDataState)
-
   useLayoutEffect(() => {
-    window.whiteboard = createLoader({ plotType: 'selection' }).mount(
+    window.whiteboard = creatLoader({ plotType: 'selection' }).mount(
       '#creat-loader'
     )
   }, [])

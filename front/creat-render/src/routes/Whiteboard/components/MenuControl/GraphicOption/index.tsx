@@ -1,5 +1,5 @@
 import { Button, Collapsible } from '@douyinfe/semi-ui'
-import { LocalData, PlotType } from 'creat-loader/src/types'
+import { LocalData, PlotType } from '@uiuing/creat-loader/types'
 import { useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
