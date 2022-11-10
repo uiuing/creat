@@ -234,6 +234,8 @@ class Room(Data):
             self.whiteboard['name'] = whiteboard['name']
         if 'readonly' in whiteboard:
             self.whiteboard['readonly'] = whiteboard['readonly']
+
+        await websocket.send_json(response.success('成功'))
         
         
         # 给其他用户发送白板数据

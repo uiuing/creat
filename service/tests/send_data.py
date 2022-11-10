@@ -14,6 +14,14 @@ create_meeting = {
 	}
 }
 
+update_meeting = {
+  "type": "change_meeting",   
+  "whiteboard":{
+    "name": "修改文件1",     
+    "readonly":False         
+  }
+}
+
 join_meeting_1 = {
   "type": "join_meeting",
   "whiteboard":{
