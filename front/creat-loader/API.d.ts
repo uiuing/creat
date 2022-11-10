@@ -48,7 +48,6 @@ declare class CreatLoader extends EventEmitter {
     static checkClick: any;
     static plot: any;
     static nodes: any;
-    onceLoaderOK: boolean;
     constructor(options: Options);
     mountFunction(): void;
     getData(): {
@@ -111,6 +110,7 @@ declare class CreatLoader extends EventEmitter {
     }): void;
     unBindEvent(): void;
     bindEvent(): void;
+    emitNodeRotateChange(rotate: number): void;
     emitChange(noDiffData?: boolean, noHistory?: boolean): void;
     emitDiffNodesChange(oldData: LocalData, nowData: LocalData): void;
     emitDiffStateChange(oldData: LocalData, nowData: LocalData): void;
