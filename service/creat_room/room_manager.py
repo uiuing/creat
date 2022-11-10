@@ -460,6 +460,29 @@ class Room(Data):
             if websocket != socket:
                 await socket.send_json(data)
 
+    async def status_update(self, data, websocket):
+        """
+        状态更新
+
+        Input: 
+        {
+            "type":"update-state",
+            "state":{
+                "更新的key":"更新的数据",
+            },
+        }
+        """
+        # 权限判断
+        if self.permission_judgment(websocket) == False:
+            # 无权限
+            await websocket.send_json(response.error('无权限同步鼠标'))
+            return
+
+        # 有权限
+        # 给其他用户发送同步鼠标消息
+        for user_id, socket in self.user2socket.items():
+            if websocket != socket:
+                await socket.send_json(data)
 
 
 class RoomManager(object):
