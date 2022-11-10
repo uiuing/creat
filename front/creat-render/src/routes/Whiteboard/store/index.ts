@@ -23,7 +23,8 @@ export const localDataState = atom({
 export const cloudWhiteboardState = atom({
   key: 'cloudWhiteboardState',
   default: {
-    is: false,
+    isCloud: false,
+    isAuthor: false,
     name: undefined,
     readonly: false
   }
