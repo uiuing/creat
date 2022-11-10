@@ -2,8 +2,14 @@ import { useState } from 'react'
 
 import { getWhiteboardInfos } from '../../../utils/data'
 
-export function useWhiteboardId() {
+export function parseUrlWhiteboardId() {
   const id = window.location.pathname.replaceAll('/', '')
+  window.whiteboardId = id
+  return id
+}
+
+export function useWhiteboardId() {
+  const id = window.whiteboardId
   const [hasId, setHasId] = useState(false)
   const [checkOK, setCheckOK] = useState(false)
 
@@ -22,7 +28,6 @@ async function parseHasWhiteBoardId(id: string) {
   const infos = await getWhiteboardInfos()
   for (const info of infos) {
     if (info.id === id) {
-      window.whiteboardId = id
       return true
     }
   }
