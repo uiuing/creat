@@ -112,7 +112,14 @@ class Transfer(object):
             if not room:
                 await websocket.send_json(response.error('房间不存在'))
             else:
-                await room.sync_mouse(data, websocket)            
+                await room.sync_mouse(data, websocket)      
+        # 状态同步
+        elif data['type'] == OPERATE.STATUS_UPDATE.value:      
+            room = self.room_manager.user2room.get(websocket)
+            if not room:
+                await websocket.send_json(response.error('房间不存在'))
+            else:
+                await room.update_status(data, websocket)
 
 
     # 退出房间

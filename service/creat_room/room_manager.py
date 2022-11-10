@@ -127,14 +127,23 @@ class Room(Data):
         else:
             # 非只读
 
+            # 用户id
+            user_id = data['user']['id']
+
             # 判断用户name是否已经存在
             if 'user' in data:
                 for user in self.cooperation_users:
+                    # 用户名已存在
                     if user['name'] == data['user']['name']:
-                        # 用户名已存在
-                        res['user_name_exist'] = True
-                        await websocket.send_json(response.error('用户名已存在'))
-                        return
+
+                        # 如果相同的是user_id，则不需要任何操作
+                        if user['id'] == user_id:
+                            pass
+                        else:
+                            # 用户名已存在
+                            res['user_name_exist'] = True
+                            await websocket.send_json(response.error('用户名已存在'))
+                            return
 
             # 仅给当前用户发消息
             res['user_rights'] = identity
@@ -203,10 +212,10 @@ class Room(Data):
             try:
                 await socket.send_json(data)
             except:
-                # 这些也断了 TODO 还需要递归删除吗？
+                print('发送退出消息失败, 用户', user_id, '已经退出')
                 user_id = _socket2user[socket]
-                del self.socket2user[socket]
-                del self.user2socket[user_id]
+                # del self.socket2user[socket]
+                # del self.user2socket[user_id]
 
     async def whiteboard_data(self, data, websocket):
         """
@@ -460,6 +469,29 @@ class Room(Data):
             if websocket != socket:
                 await socket.send_json(data)
 
+    async def status_update(self, data, websocket):
+        """
+        状态更新
+
+        Input: 
+        {
+            "type":"update-state",
+            "state":{
+                "更新的key":"更新的数据",
+            },
+        }
+        """
+        # 权限判断
+        if self.permission_judgment(websocket) == False:
+            # 无权限
+            await websocket.send_json(response.error('无权限同步鼠标'))
+            return
+
+        # 有权限
+        # 给其他用户发送同步鼠标消息
+        for user_id, socket in self.user2socket.items():
+            if websocket != socket:
+                await socket.send_json(data)
 
 
 class RoomManager(object):

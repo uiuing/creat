@@ -23,3 +23,6 @@ class OPERATE(Enum):
     # 鼠标同步
     MOUSE_SYNC = 'sync_mouse'
 
+    # 状态更新
+    STATUS_UPDATE = 'update-state'
+

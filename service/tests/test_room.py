@@ -296,10 +296,76 @@ async def test_4():
     print('----------------------------------------')
     print('----------------------------------------')
 
+async def test_5():
+    # 用户A 创建房间
+    # 用户B 加入房间
+    # 用户B 意外断开连接
+    # 用户B 再加入房间
+
+    user_a = await websockets.connect(uri)
+    user_b = await websockets.connect(uri)
+
+    # 用户A 创建房间
+    print("用户A 创建房间")
+    print(f"用户A 发送信息> {pprint(send_data.create_meeting)}")
+    await user_a.send(json.dumps(send_data.create_meeting))
+    res = await user_a.recv()
+    res = json.loads(res)
+    print(f"用户A 接收信息> {pprint(res)}")
+    print('用户A 创建房间成功')
+    print('----------------------------------------')
+    print('----------------------------------------')
+
+    # 用户B 加入房间
+    print("用户B 加入房间")
+    print(f"用户B 发送信息> {pprint(send_data.join_meeting_1)}")
+    await user_b.send(json.dumps(send_data.join_meeting_1))
+    res = await user_b.recv()
+    res = json.loads(res)
+    print(f"用户B 接收信息> {pprint(res)}")
+
+    res = await user_a.recv()
+    res = json.loads(res)
+    print(f"用户A 接收信息> {pprint(res)}")
+
+    print('----------------------------------------')
+    print('----------------------------------------')
+
+    # 用户B 意外断开连接
+    print("用户B 意外断开连接")
+    await user_b.close()
+    print('用户B 意外断开连接成功')
+
+    # 用户A 收到用户B 断开连接的消息
+    res = await user_a.recv()
+    res = json.loads(res)
+    print(f"用户A 接收信息> {pprint(res)}")
+
+    print('----------------------------------------')
+    print('----------------------------------------')
+
+
+    # 用户B 再加入房间
+    print("用户B 再加入房间")
+    print(f"用户B 发送信息> {pprint(send_data.join_meeting_1)}")
+    user_b = await websockets.connect(uri)
+    await user_b.send(json.dumps(send_data.join_meeting_1))
+    res = await user_b.recv()
+    res = json.loads(res)
+    print(f"用户B 接收信息> {pprint(res)}")
+
+    res = await user_a.recv()
+    res = json.loads(res)
+    print(f"用户A 接收信息> {pprint(res)}")
+
+    print('----------------------------------------')
+    print('----------------------------------------')
+
 # asyncio.get_event_loop().run_until_complete(test_1())
 # asyncio.get_event_loop().run_until_complete(test_2())
 # asyncio.get_event_loop().run_until_complete(test_3())
-asyncio.get_event_loop().run_until_complete(test_4())
+# asyncio.get_event_loop().run_until_complete(test_4())
+asyncio.get_event_loop().run_until_complete(test_5())
 
 
 # def room_1():
