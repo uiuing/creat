@@ -361,11 +361,60 @@ async def test_5():
     print('----------------------------------------')
     print('----------------------------------------')
 
+async def test_6():
+    # 用户A 创建房间
+    # 用户B 检查房间信息
+    # 用户B 加入房间
+
+    user_a = await websockets.connect(uri)
+    user_b = await websockets.connect(uri)
+
+    # 用户A 创建房间
+    print("用户A 创建房间")
+    print(f"用户A 发送信息> {pprint(send_data.create_meeting)}")
+    await user_a.send(json.dumps(send_data.create_meeting))
+    res = await user_a.recv()
+    res = json.loads(res)
+    print(f"用户A 接收信息> {pprint(res)}")
+
+    print('----------------------------------------')
+    print('----------------------------------------')
+
+    # 用户B 检查房间信息
+    print("用户B 检查房间信息")
+    print(f"用户B 发送信息> {pprint(send_data.check_meeting)}")
+    await user_b.send(json.dumps(send_data.check_meeting))
+    res = await user_b.recv()
+    res = json.loads(res)
+    print(f"用户B 接收信息> {pprint(res)}")
+
+    print('----------------------------------------')
+    print('----------------------------------------')
+
+    # 用户B 加入房间
+    print("用户B 加入房间")
+    print(f"用户B 发送信息> {pprint(send_data.join_meeting_1)}")
+    await user_b.send(json.dumps(send_data.join_meeting_1))
+    res = await user_b.recv()
+    res = json.loads(res)
+    print(f"用户B 接收信息> {pprint(res)}")
+
+    res = await user_a.recv()
+    res = json.loads(res)
+    print(f"用户A 接收信息> {pprint(res)}")
+
+    print('----------------------------------------')
+    print('----------------------------------------')
+
+
+
+
 # asyncio.get_event_loop().run_until_complete(test_1())
 # asyncio.get_event_loop().run_until_complete(test_2())
 # asyncio.get_event_loop().run_until_complete(test_3())
 # asyncio.get_event_loop().run_until_complete(test_4())
-asyncio.get_event_loop().run_until_complete(test_5())
+# asyncio.get_event_loop().run_until_complete(test_5())
+asyncio.get_event_loop().run_until_complete(test_6())
 
 
 # def room_1():

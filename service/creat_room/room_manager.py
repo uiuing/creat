@@ -493,6 +493,35 @@ class Room(Data):
             if websocket != socket:
                 await socket.send_json(data)
 
+    async def check_room(self, data, websocket):
+        """
+        Input:
+        {
+            "type": "check_meeting",
+            "whiteboard":{
+                "id":"xxxxxxxxxxx",      // 白板唯一识别
+            },
+        }
+        Output:
+        {
+            "status":200
+            "whiteboard":{
+                "name": "未命名文件1",     // 白板名称 
+                "readonly":true         // 这里是全局的是否只读状态
+            },
+        }
+        """
+
+        # 有权限
+        res = {
+            "status":200,
+            'whiteboard': copy.deepcopy(self.whiteboard)
+        }
+
+        del res['whiteboard']['nodes']
+        del res['whiteboard']['id']
+        
+        await websocket.send_json(res)
 
 class RoomManager(object):
 
