@@ -51,7 +51,7 @@ class Echo(WebSocketEndpoint):
     async def on_disconnect(self, websocket, close_code):
         print(close_code)
         print('on_disconnect')
-        lock.acquire()
+        # lock.acquire()
         # 获取用户ip地址
         ip = websocket.client.host
         post = websocket.client.port
@@ -66,7 +66,7 @@ class Echo(WebSocketEndpoint):
                 }
             }
         await transfer.exit_room(data, websocket, True)
-        lock.release()
+        # lock.release()
 
 
 routes = [
