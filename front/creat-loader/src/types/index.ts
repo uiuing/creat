@@ -72,7 +72,12 @@ export type AppObject = {
   getData: () => LocalData
   // TODO: fix this type
   updateState: (state: any) => void
-  setData: (data: LocalData, noEmitChange: boolean) => Promise<void>
+  setData: (
+    data: LocalData,
+    noEmitChange: boolean,
+    noDiffData?: boolean
+  ) => Promise<void>
+  emitNodeRotateChange: (rotate: number) => void
   emitDiffNodesChange: (oldData: LocalData, newData: LocalData) => void
   emitDiffStateChange: (oldData: LocalData, newData: LocalData) => void
 }
@@ -103,14 +108,18 @@ export type AppResponse = {
       callback: (selectedNodeList: object) => void
     ) => void
     contextmenu: (callback: (event: Event, nodes: object) => void) => void
-    diffNodesChange: (callback: (diffNodes: object) => void) => void
-    diffStateChange: (callback: (diffState: State) => void) => void
+    diffNodesChange: (callback: (diffNodes: DiffNodesRes) => void) => void
+    diffStateChange: (callback: (diffState: DiffStateRes) => void) => void
     nodeRotateChange: (callback: (rotate: number) => void) => void
     nodeSizeChange: (callback: (width: number, height: number) => void) => void
     nodePositionChange: (callback: (x: number, y: number) => void) => void
     localDataChange: (callback: (localData: LocalData) => void) => void
   }
-  setData: (data: LocalData, noEmitChange: boolean) => void
+  setData: (
+    data: LocalData,
+    noEmitChange: boolean,
+    noDiffData?: boolean
+  ) => void
   getData: () => LocalData
   setEditAuthor: () => void
   setReadonlyAuthor: () => void
@@ -199,7 +208,7 @@ export type Node = {
   resizeType?: string
   lockRatio?: boolean
   serialize?: () => Node
-  imageObj?: HTMLInputElement
+  imageObj?: HTMLImageElement
   startResize?: (...args: any) => void
   resize?: (...args: any) => void
   updateSize?: (width: number, height: number) => Node

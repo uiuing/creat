@@ -35,6 +35,7 @@ import {
   DiffNodesRes,
   DiffStateRes,
   LocalData,
+  Node,
   OnCallBack,
   PlotType,
   State
@@ -105,14 +106,8 @@ class CreatLoader extends EventEmitter {
 
   static nodes: any
 
-  public onceLoaderOK: boolean = false
-
   constructor(options: Options) {
     super()
-
-    window.onload = () => {
-      this.onceLoaderOK = true
-    }
 
     this.options = options
 
@@ -225,9 +220,8 @@ class CreatLoader extends EventEmitter {
       diffStateChange: (callback: OnCallBack) =>
         this.on('diffStateChange', callback),
       localDataChange: (callback: OnCallBack) => this.on('change', callback),
-      nodeRotateChange: (callback: OnCallBack) => {
+      nodeRotateChange: (callback: OnCallBack) =>
         this.on('nodeRotateChange', callback)
-      }
     }
   }
 
@@ -329,14 +323,26 @@ class CreatLoader extends EventEmitter {
     noDiffData?: boolean
   ) {
     this.state = state
-    for (let i = 0; i < nodes.length; i += 1) {
-      if (nodes[i].type === 'image') {
-        // eslint-disable-next-line no-await-in-loop
-        nodes[i].imageObj = await createImageObj(nodes[i].url)
+
+    const nowNs = nodes.map(async (node: Node) => {
+      if (node.type === 'image') {
+        return {
+          ...node,
+          imageObj: await createImageObj(<string>node.url)
+        }
       }
+      return node
+    })
+
+    const nNS: any[] = []
+
+    for (const n of nowNs) {
+      // eslint-disable-next-line no-await-in-loop
+      nNS.push(await n)
     }
+
     this.helpUpdate()
-    this.nodes.deleteAllNodes().createNodesFromData(nodes)
+    this.nodes.deleteAllNodes().createNodesFromData(nNS)
     this.render.render()
     if (!noEmitChange) {
       this.emitChange(noDiffData)
@@ -678,6 +684,10 @@ class CreatLoader extends EventEmitter {
     this.keyCommand.bindEvent()
   }
 
+  emitNodeRotateChange(rotate: number) {
+    this.emit('nodeRotateChange', rotate)
+  }
+
   // Triggering update events
   emitChange(noDiffData?: boolean, noHistory?: boolean) {
     const data = this.getData()
@@ -688,7 +698,7 @@ class CreatLoader extends EventEmitter {
     ) {
       this.history.add(<LocalData>data)
     }
-    if (this.onceLoaderOK && !noDiffData) {
+    if (!noDiffData) {
       this.emitDiffNodesChange(oldData, data)
       this.emitDiffStateChange(oldData, data)
     }
@@ -707,7 +717,7 @@ class CreatLoader extends EventEmitter {
   emitDiffStateChange(oldData: LocalData, nowData: LocalData) {
     const diffRes = getDiffState(oldData, nowData)
     if (typeof diffRes !== 'undefined') {
-      this.emit('diffStateChange')
+      this.emit('diffStateChange', diffRes)
     }
   }
 

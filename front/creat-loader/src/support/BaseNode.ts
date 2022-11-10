@@ -169,7 +169,7 @@ export default class BaseNode extends EventEmitter {
       rotate = 360 + rotate
     }
     this.rotate = rotate
-    this.emit('nodeRotateChange', this.rotate)
+    this.app.emitNodeRotateChange(this.rotate)
   }
 
   // Rotate the individual coordinates of a graphic object according to the specified centre coordinates

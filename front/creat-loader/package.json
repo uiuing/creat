@@ -1,6 +1,6 @@
 {
   "name": "@uiuing/creat-loader",
-  "version": "0.8.2",
+  "version": "0.8.13",
   "author": "uiuing<uiuing@foxmail.com>",
   "description": "https://github.com/uiuing/creat Underlay rendering, available for use with third parties",
   "keywords": [
@@ -17,7 +17,8 @@
     "lint": "npm run prettier && npm run lint:eslint",
     "prettier": "prettier --write './src/**/*.{ts,json}'",
     "lint:eslint": "eslint --fix --ext .ts ./src ",
-    "build": "rollup -c rollup.module.config.js --bundleConfigAsCjs"
+    "build": "rollup -c rollup.module.config.js --bundleConfigAsCjs",
+    "pushCloud": "npm run build && npm publish"
   },
   "publishConfig": {
     "access": "public",

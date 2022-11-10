@@ -80,6 +80,9 @@ export function getDiffData(oldData: LocalData, nowData: LocalData) {
     // Determine which attributes have changed and store those that have changed, but not those that have not
     for (let i = 0; i < nowLen; i += 1) {
       if (!isEqual(oldNodes[i], nowNodes[i])) {
+        if ('coordinateArr' in nowNodes[i] || 'coordinateArr' in oldNodes[i]) {
+          break
+        }
         const diff: any = {}
         Object.keys(nowNodes[i]).forEach((key) => {
           // @ts-ignore
@@ -143,6 +146,10 @@ export function getDiffState(oldData: LocalData, nowData: LocalData) {
   const isDiffBac = oldState.backgroundColor !== nowState.backgroundColor
   const isDiffGrid = oldState.showGrid !== nowState.showGrid
   const isDiffReadonly = oldState.readonly !== nowState.readonly
+  const isDiffScrollY = oldState.scrollY !== nowState.scrollY
+  const isDiffScrollX = oldState.scrollX !== nowState.scrollX
+  const isDiffScale = oldState.scale !== nowState.scale
+
   if (isDiffBac || isDiffGrid || isDiffReadonly) {
     const state: any = {}
     if (isDiffBac) {
@@ -153,6 +160,15 @@ export function getDiffState(oldData: LocalData, nowData: LocalData) {
     }
     if (isDiffReadonly) {
       state.readonly = nowState.readonly
+    }
+    if (isDiffScrollY) {
+      state.scrollY = nowState.scrollY
+    }
+    if (isDiffScrollX) {
+      state.scrollX = nowState.scrollX
+    }
+    if (isDiffScale) {
+      state.scale = nowState.scale
     }
     return {
       type: 'update-state',
