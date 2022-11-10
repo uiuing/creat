@@ -20,17 +20,11 @@ export const localDataState = atom({
   effects_UNSTABLE: [localforageEffect('creat-whiteboard')]
 })
 
-export const sendContentState = atom({
-  key: 'sendContentState',
-  default: undefined
-})
-
-export const receiveContentState = atom({
-  key: 'receiveContentState',
-  default: undefined
-})
-
-export const closeEffectiveState = atom({
-  key: 'closeEffectiveState',
-  default: false
+export const cloudWhiteboardState = atom({
+  key: 'cloudWhiteboardState',
+  default: {
+    is: false,
+    name: undefined,
+    readonly: false
+  }
 })

@@ -24,3 +24,8 @@ export const syncMouseState = atom<any>({
   key: 'syncMouseState',
   default: undefined
 })
+
+export const socketIsOKState = atom<boolean>({
+  key: 'socketIsOKState',
+  default: false
+})

@@ -7,6 +7,7 @@ import {
   changeShareState,
   joinShareState,
   quitShareState,
+  socketIsOKState,
   syncMouseState
 } from '../../store/cooperationReceive'
 import { whiteboardApp } from '../index'
@@ -39,5 +40,13 @@ export function WatchReceiveState() {
         }
       }
     }
+  })
+
+  syncSocket()?.addEventListener('open', () => {
+    useSetRecoilState(socketIsOKState)(true)
+  })
+
+  syncSocket()?.addEventListener('close', () => {
+    useSetRecoilState(socketIsOKState)(false)
   })
 }
