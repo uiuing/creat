@@ -42,19 +42,21 @@ class Transfer(object):
 
         # 加入房间
         elif data['type'] == OPERATE.JOIN.value:
-            room = self.room_manager.room_dict[data['whiteboard']['id']]
-            if not room:
-                await websocket.send_json(response.error('房间不存在'))
-            else:
+            checkId = data['whiteboard']['id']
+            if checkId in self.room_manager.room_dict:
+                room = self.room_manager.room_dict
                 await room.join_room(data, websocket)
                 self.room_manager.user2room[websocket] = room
+            else:
+                await websocket.send_json(response.error('房间不存在'))
         # 检查房间
         elif data['type'] == OPERATE.CHECK.value:
-            room = self.room_manager.room_dict[data['whiteboard']['id']]
-            if not room:
-                await websocket.send_json(response.error('房间不存在'))
+            checkId = data['whiteboard']['id']
+            if checkId in self.room_manager.room_dict:
+                await self.room_manager.room_dict[checkId].check_room(data, websocket)
             else:
-                await room.check_room(data, websocket)
+                await websocket.send_json(response.error('房间不存在'))
+
         # 退出房间
         elif data['type'] == OPERATE.EXIT.value:
             room = self.room_manager.user2room.get(websocket)
@@ -120,12 +122,8 @@ class Transfer(object):
         """
         room = self.room_manager.user2room.get(websocket)
 
-        if isAccident:
-            # ???
-            pass
-
         if room:
             await room.exit_room(data, websocket)
-        else:
+        elif not isAccident:
             await websocket.send_json(response.error('房间不存在'))
 
