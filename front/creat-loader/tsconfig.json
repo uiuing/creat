@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
     "target": "ESNext",
+    "rootDir": "src",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
+    "declaration": true,
+    "declarationDir": "./build",
     "skipLibCheck": true,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
@@ -13,7 +16,9 @@
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "emitDeclarationOnly":true,
+    "typeRoots": ["./src/types"]
   },
-    "include": ["**/*.ts"],
+    "include": ["./src/**/*"],
+    "exclude": ["node_modules", "build"]
 }

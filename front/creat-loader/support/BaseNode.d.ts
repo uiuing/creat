@@ -1,0 +1,53 @@
+import EventEmitter from 'eventemitter3';
+import { AppObject } from '../types';
+export default class BaseNode extends EventEmitter {
+    app: AppObject;
+    id: string;
+    type: string;
+    key: number;
+    isCreate: boolean;
+    isActive: boolean;
+    isSelected: boolean;
+    startX: number;
+    startY: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    startRotate: number;
+    rotate: number;
+    noRender: boolean;
+    style: any;
+    dragNode: any;
+    constructor(options: any, app: AppObject);
+    isClick(x: number, y: number): void;
+    offsetRotate(or: number): this;
+    setStyle(style?: {}): this;
+    warpRender(renderFn: any): this;
+    saveState(): this;
+    move(ox: number, oy: number): this;
+    updateRotate(rotate: number): void;
+    rotateByCenter(rotate: number, cx: number, cy: number): void;
+    startResize(resizeType: string, e: any): this;
+    endResize(): this;
+    resize(...args: any[]): this;
+    getEndCoordinateList(): (number | {
+        x: number;
+        y: number;
+    })[];
+    updateRect(x: number, y: number, width: number, height: number): this;
+    updateSize(width: number, height: number): this;
+    updatePos(x: number, y: number): this;
+    serialize(): {
+        id: string;
+        type: string;
+        width: number;
+        height: number;
+        x: number;
+        y: number;
+        rotate: number;
+        style: any;
+    };
+    renderDragNode(): void;
+    render(): void;
+}

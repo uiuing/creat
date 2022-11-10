@@ -6,8 +6,9 @@
   "plugins": ["stylelint-order", "stylelint-prettier"],
   "rules": {
     "string-quotes": "single",
-    "selector-class-pattern": "^[a-z0-9\\-]+$",
-    "declaration-colon-newline-after": "always-multi-line",
+    "selector-class-pattern": "^[a-z]+([A-Z][a-z]+)*$",
+    "declaration-colon-newline-after": [],
+    "value-list-comma-newline-after": [],
     "prettier/prettier": [
       true,
       {

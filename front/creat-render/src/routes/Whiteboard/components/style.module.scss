@@ -1,0 +1,32 @@
+%fixed {
+  position: fixed;
+  z-index: 300;
+}
+
+.graphicOption {
+  @extend %fixed;
+
+  top: calc(50% - 225px);
+  left: 15px;
+}
+
+.fileOperate {
+  @extend %fixed;
+
+  top: 0;
+  left: 0;
+}
+
+.globalOperate {
+  @extend %fixed;
+
+  bottom: 15px;
+  width: 100%;
+}
+
+.collatorState {
+  @extend %fixed;
+
+  top: 0;
+  right: 0;
+}

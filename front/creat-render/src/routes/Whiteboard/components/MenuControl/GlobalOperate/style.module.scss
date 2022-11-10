@@ -1,0 +1,50 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  margin: 0 15px;
+  gap: 10px;
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: var(--semi-border-radius-large);
+  background-color: white;
+  box-shadow: 0 7px 14px rgb(0 0 0 / 5%), 0 0 3.1271px rgb(0 0 0 / 7.98%),
+    0 0 0.9311px rgb(0 0 0 / 17%);
+
+  > .semi-button-group > button,
+  span {
+    border-radius: var(--semi-border-radius-medium) !important;
+    margin: 0 4px !important;
+  }
+
+  > button {
+    border-radius: var(--semi-border-radius-medium) !important;
+    margin: 0 4px !important;
+    background-color: white;
+  }
+
+  :disabled {
+    background-color: white !important;
+  }
+}
+
+.buttonNoPadding {
+  background-color: white;
+
+  > span {
+    padding: 0 !important;
+  }
+}
+
+.twitterPicker {
+  position: fixed;
+  bottom: 15px;
+  border-radius: var(--semi-border-radius-large);
+  margin-left: -68px;
+  background-color: white;
+  box-shadow: 0 7px 14px rgb(0 0 0 / 5%), 0 0 3.1271px rgb(0 0 0 / 7.98%),
+    0 0 0.9311px rgb(0 0 0 / 17%);
+}

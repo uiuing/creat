@@ -81,7 +81,7 @@ export const keyPosit: KeyPosit = {
   z: 90
 }
 // Click on the applicable trigger pixel range
-export const CLICK_DISTANCE = 15
+export const CLICK_DISTANCE = 10
 
 // Four corners of a graphical object
 export const FOUR_CORNER = {

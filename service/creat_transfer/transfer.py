@@ -9,9 +9,8 @@ from common import OPERATE
 class Transfer(object):
     def __init__(self, room_manager: RoomManager):
         self.room_manager = room_manager
-    
-    async def handle(self, ip, data, websocket: WebSocket):
 
+    async def handle(self, ip, data, websocket: WebSocket):
         operate = [i.value for i in OPERATE]
         if data['type'] not in operate:
             await websocket.send_json(response.error('操作类型(type)错误'))
@@ -35,24 +34,28 @@ class Transfer(object):
                 }
             }
             """
-            await self.room_manager.create_room(data['whiteboard']['id'], data['whiteboard']['name'], data['whiteboard']['readonly'], 
-                                                data['user']['id'],data['user']['name'], data['user']['color'], websocket)
+            await self.room_manager.create_room(data['whiteboard']['id'], data['whiteboard']['name'],
+                                                data['whiteboard']['readonly'],
+                                                data['user']['id'], data['user']['name'], data['user']['color'],
+                                                websocket)
 
         # 加入房间
         elif data['type'] == OPERATE.JOIN.value:
-            room = self.room_manager.room_dict[data['whiteboard']['id']]
-            if not room:
-                await websocket.send_json(response.error('房间不存在'))
-            else:
+            checkId = data['whiteboard']['id']
+            if checkId in self.room_manager.room_dict:
+                room = self.room_manager.room_dict
                 await room.join_room(data, websocket)
                 self.room_manager.user2room[websocket] = room
+            else:
+                await websocket.send_json(response.error('房间不存在'))
+
         # 检查房间
         elif data['type'] == OPERATE.CHECK.value:
-            room = self.room_manager.room_dict[data['whiteboard']['id']]
-            if not room:
-                await websocket.send_json(response.error('房间不存在'))
+            checkId = data['whiteboard']['id']
+            if checkId in self.room_manager.room_dict:
+                await self.room_manager.room_dict[checkId].check_room(data, websocket)
             else:
-                await room.check_room(data, websocket)
+                await websocket.send_json(response.error('房间不存在'))
         # 退出房间
         elif data['type'] == OPERATE.EXIT.value:
             room = self.room_manager.user2room.get(websocket)
@@ -108,17 +111,16 @@ class Transfer(object):
             if not room:
                 await websocket.send_json(response.error('房间不存在'))
             else:
-                await room.sync_mouse(data, websocket)            
+                await room.sync_mouse(data, websocket)
 
+                # 退出房间
 
-    # 退出房间
-    async def exit_room(self, data, websocket: WebSocket):
+    async def exit_room(self, data, websocket: WebSocket, isAccident=False):
         """
         退出房间
         """
         room = self.room_manager.user2room.get(websocket)
         if room:
             await room.exit_room(data, websocket)
-        else:
+        elif not isAccident:
             await websocket.send_json(response.error('房间不存在'))
-
