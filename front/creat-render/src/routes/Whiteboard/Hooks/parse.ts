@@ -4,7 +4,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { getWhiteboardInfos } from '../../../utils/data'
 import { cloudWhiteboardState } from '../store'
 import { socketIsOKState } from '../store/cooperationReceive'
-import { checkShare } from '../utils/syncManage/send'
+import { checkShare } from '../utils/sendMessage'
 
 async function parseHasWhiteBoardId() {
   const infos = await getWhiteboardInfos()
@@ -25,6 +25,7 @@ export function parseUrlWhiteboardId() {
 export function useWhiteboardId() {
   const [hasId, setHasId] = useState(false)
   const [checkOK, setCheckOK] = useState(false)
+  const [needJoin, setNeedJoin] = useState(false)
   const socketIsOK = useRecoilValue(socketIsOKState)
   const setCloudWhiteboard = useSetRecoilState(cloudWhiteboardState)
   useEffect(() => {
@@ -33,33 +34,39 @@ export function useWhiteboardId() {
         setHasId(true)
       }
       if (socketIsOK) {
-        checkShare((data) => {
-          if (data.code === 200) {
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            setCloudWhiteboard({
-              isCloud: true,
-              isAuthor: hasId,
-              name: data.whiteboard.name,
-              readonly: data.whiteboard.readonly
-            })
-            setCheckOK(true)
-          } else {
-            setCheckOK(true)
+        checkShare((data: any) => {
+          if (!window.noOnceCheckShare) {
+            if (data.status === 200) {
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              // 加入房间的判断依据就是，setCloudWhiteboard.isCloud 云上存在
+              setCloudWhiteboard({
+                isCloud: true,
+                isAuthor: has,
+                name: data.whiteboard.name,
+                readonly: data.whiteboard.readonly
+              })
+              window.isCloud = true
+              setNeedJoin(true)
+              setCheckOK(true)
+            } else {
+              setCheckOK(true)
+            }
+            window.noOnceCheckShare = true
           }
-          window.rws?.close()
         })
       } else {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         setCloudWhiteboard({
           isCloud: false,
-          isAuthor: hasId,
+          isAuthor: has,
           name: undefined,
           readonly: false
         })
+        window.isCloud = false
         setCheckOK(true)
-        window.rws?.close()
       }
     })
-  }, [])
-  return [hasId, checkOK]
+  }, [socketIsOK])
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return [hasId, needJoin, checkOK]
 }
