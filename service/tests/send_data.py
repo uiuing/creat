@@ -140,3 +140,10 @@ quit_meeting = {
     "name":"b"   
   }
 }
+
+check_meeting = {
+  "type": "check_meeting",
+  "whiteboard":{
+    "id":"1"
+  }
+}
