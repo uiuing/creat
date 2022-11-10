@@ -14,8 +14,7 @@ import SelectionSvg from '../../../../components/svgs/SelectionSvg'
 import SquareSvg from '../../../../components/svgs/SquareSvg'
 import TextSvg from '../../../../components/svgs/TextSvg'
 import TriangleSvg from '../../../../components/svgs/TriangleSvg'
-import { localDataState } from '../../../store'
-import { whiteboardApp } from '../../../utils'
+import { GetLocalDataStateObject, whiteboardApp } from '../../../utils'
 import styles from './style.module.scss'
 
 export function GraphicOption() {
@@ -82,7 +81,7 @@ export function GraphicOption() {
     whiteboardApp().updateCurrentType(t)
   }
 
-  const localData = useRecoilValue(localDataState) as LocalData
+  const localData = useRecoilValue(GetLocalDataStateObject()) as LocalData
 
   return (
     <>

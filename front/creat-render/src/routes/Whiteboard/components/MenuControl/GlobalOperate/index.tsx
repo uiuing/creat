@@ -17,8 +17,7 @@ import ReadSvg from '../../../../components/svgs/ReadSvg'
 import RotateLeftRightSvg from '../../../../components/svgs/RotateLeftRightSvg'
 import TrashSvg from '../../../../components/svgs/TrashSvg'
 import { commonColors } from '../../../common/colors'
-import { localDataState } from '../../../store'
-import { whiteboardApp } from '../../../utils'
+import { GetLocalDataStateObject, whiteboardApp } from '../../../utils'
 import styles from './style.module.scss'
 
 export function GlobalOperate() {
@@ -33,7 +32,7 @@ export function GlobalOperate() {
 }
 
 function ScaleOperate() {
-  const localData = useRecoilValue(localDataState) as LocalData
+  const localData = useRecoilValue(GetLocalDataStateObject()) as LocalData
   const getScale = () => Math.floor((localData?.state?.scale || 1) * 100)
   return (
     <ButtonGroup type="tertiary" theme="borderless" className={styles.group}>
@@ -94,7 +93,7 @@ function HistoryOperate() {
 }
 
 function AuthorGridsEraserOperate() {
-  const localData = useRecoilValue(localDataState) as LocalData
+  const localData = useRecoilValue(GetLocalDataStateObject()) as LocalData
   const [backgroundColor, setBackgroundColor] = useState(
     localData?.state ? localData?.state?.backgroundColor : 'transparent'
   )
