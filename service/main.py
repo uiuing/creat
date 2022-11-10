@@ -66,7 +66,7 @@ class Echo(WebSocketEndpoint):
                 }
             }
         await transfer.exit_room(data, websocket, True)
-        lock.release()
+        # lock.release()
 
 
 routes = [

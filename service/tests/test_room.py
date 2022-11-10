@@ -249,7 +249,7 @@ async def test_3():
 
 asyncio.get_event_loop().run_until_complete(test_1())
 # asyncio.get_event_loop().run_until_complete(test_2())
-asyncio.get_event_loop().run_until_complete(test_3())
+# asyncio.get_event_loop().run_until_complete(test_3())
 
 
 # def room_1():
