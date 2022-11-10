@@ -1,14 +1,14 @@
 import { DiffNodesRes } from '@uiuing/creat-loader/src/types'
 import { DiffStateRes } from '@uiuing/creat-loader/types'
 
-import { syncSocket } from '../../../../api/ws/sync'
+import { syncSocket } from '../../../api/ws/sync'
 import {
   getUserInfo,
   getUserTmpInfo,
   getWhiteboardInfoById,
   setUserTmpInfo
-} from '../../../../utils/data'
-import { whiteboardApp } from '../index'
+} from '../../../utils/data'
+import { whiteboardApp } from './index'
 
 function watchResponse(callback: (data: any) => void) {
   syncSocket()?.addEventListener('message', (event) => {
@@ -36,14 +36,16 @@ export function checkShare(callback: (data: any) => void) {
 export async function creatShare() {
   const whiteboardInfo = await getWhiteboardInfoById(window.whiteboardId)
   const userInfo = await getUserInfo()
+  const data = await whiteboardApp()?.getData()
   syncSocket()?.send(
+    // TODO: 这里的数据需要优化
     JSON.stringify({
       type: 'create_meeting',
       whiteboard: {
         id: whiteboardInfo?.id,
         name: whiteboardInfo?.name,
-        nodes: whiteboardApp()?.getData(),
-        readonly: whiteboardInfo?.recentlyOpened
+        nodes: data.nodes,
+        readonly: false
       },
       user: {
         id: userInfo.id,
@@ -103,10 +105,13 @@ export async function closeShare() {
   )
 }
 
-export async function changeShare(
-  whiteboardName?: string,
+export async function changeShare({
+  whiteboardName,
+  whiteboardReadonly
+}: {
+  whiteboardName?: string
   whiteboardReadonly?: boolean
-) {
+}) {
   const msg = {
     type: 'change_meeting',
     whiteboard: {}
@@ -119,11 +124,15 @@ export async function changeShare(
     // @ts-ignore
     msg.whiteboard.readonly = whiteboardReadonly
   }
-  syncSocket()?.send(msg)
+  syncSocket()?.send(JSON.stringify(msg))
 }
 
 export function syncNodes(diffNodesRes: DiffNodesRes) {
-  syncSocket()?.send(diffNodesRes)
+  syncSocket()?.send(JSON.stringify(diffNodesRes))
+}
+
+export function syncState(diffStateRes: DiffStateRes) {
+  syncSocket()?.send(JSON.stringify(diffStateRes))
 }
 
 export async function syncMouse(coordinate: {

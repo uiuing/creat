@@ -29,3 +29,15 @@ export const socketIsOKState = atom<boolean>({
   key: 'socketIsOKState',
   default: false
 })
+
+export const cooperationUsersState = atom<
+  | undefined
+  | Array<{
+      name: string
+      color: string
+      rights: 'contributor' | 'author'
+    }>
+>({
+  key: 'cooperationUsersState',
+  default: undefined
+})

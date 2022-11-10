@@ -1,4 +1,4 @@
-import { atom } from 'recoil'
+import { atom, useRecoilValue } from 'recoil'
 
 import { localforageEffect } from '../../../utils/data'
 
@@ -18,6 +18,11 @@ export const localDataState = atom({
   key: 'localDataState',
   default: {},
   effects_UNSTABLE: [localforageEffect('creat-whiteboard')]
+})
+
+export const cloudLocalDataState = atom({
+  key: 'cloudDataState',
+  default: {}
 })
 
 export const cloudWhiteboardState = atom({

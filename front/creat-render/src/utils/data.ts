@@ -111,12 +111,14 @@ export async function setUserInfo(userInfo: UserInfo) {
 }
 
 export async function getUserTmpInfo(): Promise<UserTmpInfo> {
-  const userTmpInfo = (await localforage.getItem(
+  let userTmpInfo = (await localforage.getItem(
     `creat-user-tmp-color-${window.whiteboardId}`
   )) as any
   if (!userTmpInfo) {
-    userTmpInfo.color = `#${Math.floor(Math.random() * 0xffffff).toString(16)}`
-    userTmpInfo.name = (await getUserInfo()).name
+    userTmpInfo = {
+      color: `#${Math.floor(Math.random() * 0xffffff).toString(16)}`,
+      name: (await getUserInfo()).name
+    }
     await setUserTmpInfo(userTmpInfo)
   }
   return userTmpInfo
