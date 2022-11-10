@@ -44,7 +44,7 @@ class Transfer(object):
         elif data['type'] == OPERATE.JOIN.value:
             checkId = data['whiteboard']['id']
             if checkId in self.room_manager.room_dict:
-                room = self.room_manager.room_dict
+                room = self.room_manager.room_dict[checkId]
                 await room.join_room(data, websocket)
                 self.room_manager.user2room[websocket] = room
             else:
