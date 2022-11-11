@@ -1,4 +1,5 @@
 import EventEmitter from 'eventemitter3'
+import { diff, patch } from 'jsondiffpatch'
 
 import Author from './classFile/Author'
 import Background from './classFile/Background'
@@ -22,20 +23,13 @@ import {
 import * as utils from './common/utils'
 import Calculate from './common/utils/Calculate'
 import * as checkClick from './common/utils/checkClick'
-import {
-  getDiffData,
-  getDiffState,
-  parseDiffNodes,
-  parseDiffState
-} from './common/utils/diffData'
 import nodes from './components'
 import * as plot from './support/plot'
 import {
   Ctx,
-  DiffNodesRes,
-  DiffStateRes,
   LocalData,
   Node,
+  NodeArray,
   OnCallBack,
   PlotType,
   State
@@ -699,39 +693,50 @@ class CreatLoader extends EventEmitter {
       this.history.add(<LocalData>data)
     }
     if (!noDiffData) {
-      this.emitDiffNodesChange(oldData, data)
-      this.emitDiffStateChange(oldData, data)
+      if (typeof oldData === 'undefined' && typeof data === 'undefined') {
+        return
+      }
+      if (data && oldData && 'nodes' in data && 'nodes' in oldData) {
+        this.emitDiffNodesChange(oldData.nodes, data.nodes)
+      }
+      if (data && oldData && 'state' in data && 'state' in oldData) {
+        this.emitDiffStateChange(oldData.state, data.state)
+      }
     }
     this.emit('change', data)
   }
 
   // Customised data object update triggers with diff algorithm processing
-  emitDiffNodesChange(oldData: LocalData, nowData: LocalData) {
-    const diffRes = getDiffData(oldData, nowData)
-    if (typeof diffRes === 'object') {
-      this.emit('diffNodesChange', diffRes)
+  emitDiffNodesChange(oldNodes: NodeArray, nowNodes: NodeArray) {
+    const delta = diff(oldNodes, nowNodes)
+    if (delta) {
+      this.emit('diffNodesChange', { type: 'diffNodesChange', delta })
     }
   }
 
   // Customised data state update triggers with diff algorithm processing
-  emitDiffStateChange(oldData: LocalData, nowData: LocalData) {
-    const diffRes = getDiffState(oldData, nowData)
-    if (typeof diffRes !== 'undefined') {
-      this.emit('diffStateChange', diffRes)
+  emitDiffStateChange(oldState: State, nowState: State) {
+    const delta = diff(oldState, nowState)
+    if (delta) {
+      this.emit('diffNodesChange', { type: 'diffStateChange', delta })
     }
   }
 
-  async parseSetDiffData(config: DiffNodesRes | DiffStateRes) {
+  async parseSetDiffData(config: { type: string; delta: any }) {
     const oldData = this.getData()
-    const newData: any = {}
-    if (config.type === 'update-state') {
-      newData.nodes = oldData.nodes
-      newData.state = parseDiffState(oldData.nodes, config)
-    } else {
-      newData.state = oldData.state
-      newData.nodes = parseDiffNodes(oldData.nodes, config)
+    if (config.type === 'diffNodesChange') {
+      this.setData(
+        { state: oldData.state, nodes: patch(oldData, config.delta) },
+        true,
+        true
+      )
+    } else if (config.type === 'diffStateChange') {
+      this.setData(
+        { state: patch(oldData, config.delta), nodes: oldData.nodes },
+        true,
+        true
+      )
     }
-    await this.setData(newData, false, true)
   }
 }
 

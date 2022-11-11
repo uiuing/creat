@@ -70,7 +70,6 @@ export type AppObject = {
   on: (event: string, fn: (...args: any[]) => void, ...args: any) => void
   emitChange: () => void
   getData: () => LocalData
-  // TODO: fix this type
   updateState: (state: any) => void
   setData: (
     data: LocalData,
@@ -108,8 +107,12 @@ export type AppResponse = {
       callback: (selectedNodeList: object) => void
     ) => void
     contextmenu: (callback: (event: Event, nodes: object) => void) => void
-    diffNodesChange: (callback: (diffNodes: DiffNodesRes) => void) => void
-    diffStateChange: (callback: (diffState: DiffStateRes) => void) => void
+    diffNodesChange: (
+      callback: (config: { type: string; delta: any }) => void
+    ) => void
+    diffStateChange: (
+      callback: (config: { type: string; delta: any }) => void
+    ) => void
     nodeRotateChange: (callback: (rotate: number) => void) => void
     nodeSizeChange: (callback: (width: number, height: number) => void) => void
     nodePositionChange: (callback: (x: number, y: number) => void) => void
@@ -141,7 +144,7 @@ export type AppResponse = {
   utils: {
     downloadFile: (data: string, filename: string) => void
   }
-  parseSetDiffData: (config: DiffNodesRes | DiffStateRes) => void
+  parseSetDiffData: (config: { type: string; delta: any }) => void
   cancelSelectNodes: () => void
 }
 
@@ -351,16 +354,6 @@ export type KeyPosit = {
 }
 
 export type OnCallBack = (...args: any[]) => void
-
-export type DiffNodesRes = {
-  type: 'add' | 'delete' | 'update' | 'cover-all' | 'delete-all'
-  nodes: NodeArray
-}
-
-export type DiffStateRes = {
-  type: 'update-state'
-  state: State
-}
 
 export type Mount = (mountEl: string | Object | HTMLElement) => AppResponse
 export type creatLoader = (state: AppState) => Mount

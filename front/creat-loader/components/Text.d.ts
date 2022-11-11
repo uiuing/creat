@@ -7,7 +7,6 @@ export default class Text extends BaseNode {
     updateRect(x: number, y: number, width: number, height: number): void;
     serialize(): {
         text: string;
-        id: string;
         type: string;
         width: number;
         height: number;
