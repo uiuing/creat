@@ -544,10 +544,18 @@ class RoomManager(object):
         room = self.room_dict[room_id]
         if room.room_owner_id == user_id:
             # 房主关闭房间
+            need_del_socket = []
+
             for _user_id, socket in room.user2socket.items():
                 # await socket.send_json(response.success('房主关闭房间'))
-                await socket.close()
-                del self.user2room[_user_id]
+                need_del_socket.append(socket)
+
+            for socket in need_del_socket:
+                del self.user2room[socket]
+                try:
+                    await socket.close()
+                except:
+                    print('关闭房间时,该用户已经关闭了socket失败')
             del self.room_dict[room_id]
         else:
             # 非房主关闭房间
