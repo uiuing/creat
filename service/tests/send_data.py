@@ -95,7 +95,7 @@ add_node_2 = {
 }
 
 nodes_update = {
-  "type": "nodes-update",
+  "type": "update",
   "nodes":[
     {
       "id":"1",

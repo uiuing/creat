@@ -16,7 +16,7 @@ class OPERATE(Enum):
     # 更新Node
     SHAPE_NEW = 'add'
     SHAPE_DELETE = 'delete'
-    SHAPE_UPDATE = 'nodes-update'
+    SHAPE_UPDATE = 'update'
     SHAPE_DELETEALL = 'nodes-delete-all'
     SHAPE_COVERALL = 'cover-all'
 

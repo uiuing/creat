@@ -5,12 +5,12 @@ from utils import response
 
 class Room(Data):
     
-    def __init__(self, room_id, room_name,  is_only_read, room_owner_id,room_owner_name, room_owner_color, websocket):
+    def __init__(self, room_id, room_name, room_nodes, is_only_read, room_owner_id,room_owner_name, room_owner_color, websocket):
         
         self.whiteboard = {
             'id': room_id,
             'name': room_name,
-            'nodes': [],
+            'nodes': room_nodes,
             'readonly': is_only_read,
         }
         self.cooperation_users = [
@@ -97,7 +97,7 @@ class Room(Data):
                 }
         """
         res = {}
-        res['whiteboard'] =  copy.deepcopy(self.whiteboard)
+        res['whiteboard'] = copy.deepcopy(self.whiteboard)
         del res['whiteboard']['id']
         
         identity = None
@@ -294,15 +294,15 @@ class Room(Data):
             # 无权限
             await websocket.send_json(response.error('无权限添加节点'))
             return
-
-        # 有权限
-        nodes = data['nodes']
-        self.whiteboard['nodes'] += nodes
         
         # 给其他用户发送添加节点消息
         for user_id, socket in self.user2socket.items():
             if websocket != socket:
                 await socket.send_json(data)
+
+        # 有权限
+        nodes = data['nodes']
+        self.whiteboard['nodes'] += nodes
     
     async def update_nodes(self, data, websocket):
         """
@@ -310,7 +310,7 @@ class Room(Data):
 
         Input: 
         {
-            "type": "nodes-update",
+            "type": "update",
             "nodes":[
                 {
                 "id":"aaaaaa"
@@ -331,19 +331,18 @@ class Room(Data):
             await websocket.send_json(response.error('无权限更新节点'))
             return
 
-        # 有权限
-        nodes = data['nodes']
-        for node in nodes:
-            for i in self.whiteboard['nodes']:
-                if i['id'] == node['id']:
-                    for key in node:
-                        i[key] = node[key]
-
-        
         # 给其他用户发送更新节点消息
         for user_id, socket in self.user2socket.items():
             if websocket != socket:
                 await socket.send_json(data)
+
+        # 有权限
+        nodes = data['nodes']
+        for node in nodes:
+            for _node in self.whiteboard['nodes']:
+                if _node['id'] == node['id']:
+                    _node.update(node)
+                    break
         
     async def delete_nodes(self, data, websocket):
         """
@@ -370,17 +369,17 @@ class Room(Data):
             await websocket.send_json(response.error('无权限删除节点'))
             return
 
-        # 有权限
-        node = data['node']
-        for i in range(len(self.whiteboard['nodes'])):
-            if self.whiteboard['nodes'][i]['id'] == node['id']:
-                self.whiteboard['nodes'].pop(i)
-                break
-        
         # 给其他用户发送删除节点消息
         for user_id, socket in self.user2socket.items():
             if websocket != socket:
                 await socket.send_json(data)
+
+        # 有权限
+        nodes = data['nodes']
+        for node in nodes:
+            for i in self.whiteboard['nodes']:
+                if i['id'] == node['id']:
+                    self.whiteboard['nodes'].remove(i)
 
     async def delete_all_nodes(self, data, websocket):
         """
@@ -396,14 +395,14 @@ class Room(Data):
             # 无权限
             await websocket.send_json(response.error('无权限删除所有节点'))
             return
-
-        # 有权限
-        self.whiteboard['nodes'] = []
         
         # 给其他用户发送删除所有节点消息
         for user_id, socket in self.user2socket.items():
             if websocket != socket:
                 await socket.send_json(data)
+
+        # 有权限
+        self.whiteboard['nodes'] = []
     
     async def cover_all_nodes(self, data, websocket):
         """
@@ -432,13 +431,13 @@ class Room(Data):
             await websocket.send_json(response.error('无权限覆盖所有节点'))
             return
 
-        # 有权限
-        self.whiteboard['nodes'] = data['nodes']
-        
         # 给其他用户发送覆盖所有节点消息
         for user_id, socket in self.user2socket.items():
             if websocket != socket:
                 await socket.send_json(data)
+
+        # 有权限
+        self.whiteboard['nodes'] = data['nodes']
     
     async def sync_mouse(self, data, websocket):
         """
@@ -531,10 +530,10 @@ class RoomManager(object):
         self.user2room = {}
 
 
-    async def create_room(self, room_id, room_name,  is_only_read, room_owner_id,room_owner_name, room_owner_color, websocket):
+    async def create_room(self, room_id, room_name, room_nodes,  is_only_read, room_owner_id,room_owner_name, room_owner_color, websocket):
         # 创建房间,并且转发给房主
         if room_id not in self.room_dict:
-            self.room_dict[room_id] = Room(room_id, room_name,  is_only_read, room_owner_id,room_owner_name, room_owner_color, websocket)
+            self.room_dict[room_id] = Room(room_id, room_name, room_nodes,  is_only_read, room_owner_id,room_owner_name, room_owner_color, websocket)
             await websocket.send_json(response.success('创建房间成功'))
             self.user2room[websocket] = self.room_dict[room_id]
         else:

@@ -9,7 +9,7 @@ from common import OPERATE
 class Transfer(object):
     def __init__(self, room_manager: RoomManager):
         self.room_manager = room_manager
-    
+
     async def handle(self, ip, data, websocket: WebSocket):
 
         operate = [i.value for i in OPERATE]
@@ -24,18 +24,18 @@ class Transfer(object):
                 "type": "create_meeting",    // 传输数据类型
                 "whiteboard":{
                     "id":"xxxxxxxxxxx",       // 白板唯一识别
-                    "name": "未命名文件1",     // 白板名称 
+                    "name": "未命名文件1",     // 白板名称
                     "nodes":[],              // 初始白板数据
                     "readonly":false         // 这里是全局的是否只读状态
                 },
                 "user":{
-                    "id":"xxxxxxxxxxx",  // 用户唯一识别  
+                    "id":"xxxxxxxxxxx",  // 用户唯一识别
                     "name":"xxxx",      // 用户昵称
                     "color":"xxx",     // 用户默认颜色
                 }
             }
             """
-            await self.room_manager.create_room(data['whiteboard']['id'], data['whiteboard']['name'],
+            await self.room_manager.create_room(data['whiteboard']['id'], data['whiteboard']['name'], data['whiteboard']['nodes'],
                                                 data['whiteboard']['readonly'],
                                                 data['user']['id'], data['user']['name'], data['user']['color'],
                                                 websocket)
@@ -112,9 +112,9 @@ class Transfer(object):
             if not room:
                 await websocket.send_json(response.error('房间不存在'))
             else:
-                await room.sync_mouse(data, websocket)      
+                await room.sync_mouse(data, websocket)
         # 状态同步
-        elif data['type'] == OPERATE.STATUS_UPDATE.value:      
+        elif data['type'] == OPERATE.STATUS_UPDATE.value:
             room = self.room_manager.user2room.get(websocket)
             if not room:
                 await websocket.send_json(response.error('房间不存在'))
