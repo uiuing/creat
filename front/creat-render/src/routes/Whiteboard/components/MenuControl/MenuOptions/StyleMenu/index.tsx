@@ -65,16 +65,11 @@ export default function StyleMenu() {
       return 1
     })()
   )
-  const [rotate, setRotate] = useState(
-    Math.floor(activeNodeObject?.rotate ? activeNodeObject.rotate : 0)
-  )
+
   const [lineDash, setLineDash] = useState(
     activeNodeObject?.style?.lineDash ? activeNodeObject?.style?.lineDash : 0
   )
 
-  whiteboardApp().watch.nodeRotateChange((r) => {
-    setRotate(r)
-  })
   useEffect(() => {
     // TODO: 关于多选的时候颜色选取显示怎么样更好？
     if (activeNodeObject || (activeNodesArray && activeNodesArray.length > 0)) {
@@ -109,14 +104,6 @@ export default function StyleMenu() {
           activeNodesArray[0]?.style
             ? activeNodesArray[0]?.style?.globalAlpha
             : 1)
-      )
-      setRotate(
-        activeNodeObject?.rotate ||
-          (activeNodesArray &&
-          activeNodesArray.length === 1 &&
-          activeNodesArray[0]?.rotate
-            ? activeNodesArray[0]?.rotate
-            : 0)
       )
       setLineDash(
         activeNodeObject?.style?.lineDash ||
@@ -279,28 +266,6 @@ export default function StyleMenu() {
               }}
             />
           </div>
-          {(() => {
-            if (!activeNodeObject && activeNodesArray) {
-              return <></>
-            }
-            return (
-              <div className={styles.item}>
-                <Text>角度</Text>
-                <Divider margin="5px 0 0 0" />
-                <Slider
-                  max={360}
-                  min={0}
-                  step={1}
-                  value={rotate}
-                  tipFormatter={(str) => `${str}`}
-                  onChange={(r) => {
-                    whiteboardApp().updateActiveNodeRotate(r as number)
-                    setRotate(r as number)
-                  }}
-                />
-              </div>
-            )
-          })()}
           <div>
             <Text>操作</Text>
             <Divider margin="5px" />

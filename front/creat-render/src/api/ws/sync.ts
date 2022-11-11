@@ -3,7 +3,8 @@ import ReconnectingWebSocket from 'reconnecting-websocket'
 export function initSyncCloud() {
   if (!window.rws) {
     window.rws = new ReconnectingWebSocket('ws://localhost:8000/ws', [], {
-      debug: false
+      debug: false,
+      maxRetries: 5
     })
   }
 }

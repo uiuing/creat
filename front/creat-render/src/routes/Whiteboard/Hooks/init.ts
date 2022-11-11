@@ -31,12 +31,18 @@ export function useInitWhiteboardLoader() {
             joinShare(
               (d: any) => {
                 if (!window.noOnceJoinShare) {
-                  // 本地覆盖远程数据
-                  syncNodes({
-                    type: 'cover-all',
-                    nodes: data ? data.nodes : []
-                  })
-                  if (!d.whiteboard.readonly) {
+                  if (d.whiteboard.readonly) {
+                    // 只读模式本地覆盖远程数据
+                    syncNodes({
+                      type: 'cover-all',
+                      nodes: data ? data.nodes : []
+                    })
+                  } else {
+                    // 协作模式远程覆盖本地数据
+                    setLocalData({
+                      ...initData,
+                      nodes: d.whiteboard.nodes
+                    })
                     setCooperationUsers(d.cooperation_users)
                   }
                   setIsLoaderOK(true)
