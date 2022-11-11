@@ -538,3 +538,19 @@ class RoomManager(object):
             self.user2room[websocket] = self.room_dict[room_id]
         else:
             await websocket.send_json(response.error('创建房间失败,房间已存在'))
+
+    async def close_room(self, room_id, user_id, websocket):
+
+        room = self.room_dict[room_id]
+        if room.room_owner_id == user_id:
+            # 房主关闭房间
+            for _user_id, socket in room.user2socket.items():
+                # await socket.send_json(response.success('房主关闭房间'))
+                await socket.close()
+                del self.user2room[_user_id]
+            del self.room_dict[room_id]
+        else:
+            # 非房主关闭房间
+            await websocket.send_json(response.error('非房主不能关闭房间'))
+
+        

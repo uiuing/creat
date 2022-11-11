@@ -12,6 +12,9 @@ class OPERATE(Enum):
     EXIT = 'quit_meeting'
     # 修改房间信息
     UPDATE = 'change_meeting'
+
+    # 关闭房间
+    CLOSE = 'close_meeting'
     
     # 更新Node
     SHAPE_NEW = 'add'

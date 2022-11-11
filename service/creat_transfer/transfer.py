@@ -120,6 +120,11 @@ class Transfer(object):
                 await websocket.send_json(response.error('房间不存在'))
             else:
                 await room.update_status(data, websocket)
+        elif data['type'] == OPERATE.CLOSE.value:
+            room = self.room_manager.user2room.get(websocket)
+            room_id = room.whiteboard['id']
+            user_id = data['user']['id']
+            await self.room_manager.close_room(room_id, user_id, websocket)
 
 
     # 退出房间

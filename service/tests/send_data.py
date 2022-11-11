@@ -147,3 +147,10 @@ check_meeting = {
     "id":"1"
   }
 }
+
+close_meeting = {
+  "type": "close_meeting",
+  "user":{
+    "id":"a"
+  }
+}
