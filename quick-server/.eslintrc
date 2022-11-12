@@ -1,0 +1,10 @@
+{
+  "env": {
+    "node": true
+  },
+  "extends": ["airbnb-base","prettier"],
+  "rules": {
+    "indent": "error",
+    "import/extensions": "off"
+  }
+}
