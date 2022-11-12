@@ -75,10 +75,10 @@ export function GraphicOption() {
     if (t === currentType) {
       return
     }
-    whiteboardApp().cancelActiveNode()
-    whiteboardApp().cancelSelectNodes()
+    whiteboardApp()?.cancelActiveNode()
+    whiteboardApp()?.cancelSelectNodes()
     setCurrentType(currentType)
-    whiteboardApp().updateCurrentType(t)
+    whiteboardApp()?.updateCurrentType(t)
   }
 
   const localData = useRecoilValue(GetLocalDataStateObject()) as LocalData

@@ -12,6 +12,11 @@
   margin-left: 96px;
   box-shadow: 0 7px 14px rgb(0 0 0 / 5%), 0 0 3.1271px rgb(0 0 0 / 7.98%),
     0 0 0.9311px rgb(0 0 0 / 17%);
+
+  > * {
+    -webkit-user-drag: none;
+    user-select: none;
+  }
 }
 
 .content {

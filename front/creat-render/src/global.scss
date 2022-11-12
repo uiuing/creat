@@ -19,15 +19,8 @@ h3,
 h4,
 h5,
 h6,
-span,
-p,
 svg,
-img,
-div {
+img {
   -webkit-user-drag: none;
   user-select: none;
-}
-
-a {
-  pointer-events: none;
 }

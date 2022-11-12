@@ -37,15 +37,15 @@ function ScaleOperate() {
   return (
     <ButtonGroup type="tertiary" theme="borderless" className={styles.group}>
       <Button
-        onClick={() => whiteboardApp().zoomOut()}
+        onClick={() => whiteboardApp()?.zoomOut()}
         disabled={getScale() <= 0}
       >
         -
       </Button>
-      <Button onClick={() => whiteboardApp().setZoom(1)}>
+      <Button onClick={() => whiteboardApp()?.setZoom(1)}>
         <Tooltip content="重置缩放">{getScale()}%</Tooltip>
       </Button>
-      <Button onClick={() => whiteboardApp().zoomIn()}>+</Button>
+      <Button onClick={() => whiteboardApp()?.zoomIn()}>+</Button>
     </ButtonGroup>
   )
 }
@@ -53,7 +53,7 @@ function ScaleOperate() {
 function HistoryOperate() {
   const [canUndo, setCanUndo] = useState(false)
   const [canRedo, setCanRedo] = useState(false)
-  whiteboardApp().watch.shuttle((index, length) => {
+  whiteboardApp()?.watch.shuttle((index, length) => {
     setCanUndo(index > 0)
     setCanRedo(index < length - 1)
   })
@@ -61,7 +61,7 @@ function HistoryOperate() {
     <ButtonGroup type="tertiary" className={styles.group}>
       <Tooltip content="撤销">
         <Button
-          onClick={() => whiteboardApp().undo()}
+          onClick={() => whiteboardApp()?.undo()}
           disabled={!canUndo}
           icon={
             <RotateLeftRightSvg
@@ -76,7 +76,7 @@ function HistoryOperate() {
       <Divider layout="vertical" />
       <Tooltip content="重做">
         <Button
-          onClick={() => whiteboardApp().redo()}
+          onClick={() => whiteboardApp()?.redo()}
           disabled={!canRedo}
           icon={
             <RotateLeftRightSvg
@@ -108,15 +108,15 @@ function AuthorGridsEraserOperate() {
         >
           <Button
             onClick={() => {
-              whiteboardApp().updateCurrentType('selection')
-              whiteboardApp().cancelSelectNodes()
-              whiteboardApp().cancelActiveNode()
+              whiteboardApp()?.updateCurrentType('selection')
+              whiteboardApp()?.cancelSelectNodes()
+              whiteboardApp()?.cancelActiveNode()
               if (localData?.state?.readonly) {
-                whiteboardApp().setEditAuthor()
-                whiteboardApp().bindEvent()
+                whiteboardApp()?.setEditAuthor()
+                whiteboardApp()?.bindEvent()
               } else {
-                whiteboardApp().setReadonlyAuthor()
-                whiteboardApp().unBindEvent()
+                whiteboardApp()?.setReadonlyAuthor()
+                whiteboardApp()?.unBindEvent()
               }
             }}
             icon={
@@ -133,9 +133,9 @@ function AuthorGridsEraserOperate() {
           <Button
             onClick={() => {
               if (localData?.state?.showGrid) {
-                whiteboardApp().hideGrid()
+                whiteboardApp()?.hideGrid()
               } else {
-                whiteboardApp().showGrid()
+                whiteboardApp()?.showGrid()
               }
             }}
             icon={
@@ -150,7 +150,7 @@ function AuthorGridsEraserOperate() {
         <Divider layout="vertical" />
         <Tooltip content="回到白板中心">
           <Button
-            onClick={whiteboardApp().scrollToCenter}
+            onClick={whiteboardApp()?.scrollToCenter}
             icon={<LocationSvg width={15} height={15} fill="#3d3d3d" />}
           />
         </Tooltip>
@@ -162,7 +162,7 @@ function AuthorGridsEraserOperate() {
           <ButtonGroup type="tertiary" className={styles.group}>
             <Tooltip content="清空白板">
               <Button
-                onClick={whiteboardApp().empty}
+                onClick={whiteboardApp()?.empty}
                 icon={
                   <TrashSvg
                     width={15}
@@ -211,7 +211,7 @@ function AuthorGridsEraserOperate() {
                 colors={commonColors}
                 onChangeComplete={(v) => {
                   setBackgroundColor(v.hex)
-                  whiteboardApp().setBackgroundColor(v.hex)
+                  whiteboardApp()?.setBackgroundColor(v.hex)
                 }}
               />
             </Collapsible>

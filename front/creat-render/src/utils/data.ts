@@ -99,11 +99,15 @@ export async function getUserInfo(): Promise<UserInfo> {
     const id = generateId()
     userInfo = {
       id,
-      name: `${id.slice(5, 9)}`
+      name: `${id.slice(4, 9)}`
     }
     await setUserInfo(userInfo)
   }
   return userInfo
+}
+
+export function getRandomColor() {
+  return `#${Math.floor(Math.random() * 0xffffff).toString(16)}`
 }
 
 export async function setUserInfo(userInfo: UserInfo) {
@@ -116,7 +120,7 @@ export async function getUserTmpInfo(): Promise<UserTmpInfo> {
   )) as any
   if (!userTmpInfo) {
     userTmpInfo = {
-      color: `#${Math.floor(Math.random() * 0xffffff).toString(16)}`,
+      color: getRandomColor(),
       name: (await getUserInfo()).name
     }
     await setUserTmpInfo(userTmpInfo)

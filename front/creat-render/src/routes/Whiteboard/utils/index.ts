@@ -15,3 +15,5 @@ export const GetLocalDataStateObject = () =>
   useRecoilValue(cloudWhiteboardState).isAuthor
     ? localDataState
     : cloudLocalDataState
+
+export const removePromise = (p: Object) => JSON.parse(JSON.stringify(p))

@@ -26,10 +26,10 @@ export default function StyleMenu() {
   )
   const [activeNodesArray, setActiveNodesArray] = useState<any>(undefined)
   // TODO: 设置缓存，好看一点
-  whiteboardApp().watch.activeNodeChange((node: any) => {
+  whiteboardApp()?.watch.activeNodeChange((node: any) => {
     setActiveNodeObject(node)
   })
-  whiteboardApp().watch.multiplexSelectChange((nodes: any) => {
+  whiteboardApp()?.watch.multiplexSelectChange((nodes: any) => {
     setActiveNodesArray(nodes)
   })
   const hasActiveNodesArray = () =>
@@ -130,7 +130,6 @@ export default function StyleMenu() {
           }}
           isOpen={typeof changeColorType !== 'undefined'}
         >
-          {/* TODO 更多颜色样式和设置 */}
           <TwitterPicker
             color={(() => {
               if (activeNodeObject?.style && changeColorType) {
@@ -145,7 +144,7 @@ export default function StyleMenu() {
             triangle="hide"
             onChangeComplete={(color) => {
               if (changeColorType) {
-                whiteboardApp().setCurrentNodesStyle({
+                whiteboardApp()?.setCurrentNodesStyle({
                   [changeColorType]: color.hex
                 })
                 if (changeColorType === 'strokeStyle') {
@@ -208,7 +207,7 @@ export default function StyleMenu() {
                 buttonSize="middle"
                 value={lineDash}
                 onChange={(v) => {
-                  whiteboardApp().setCurrentNodesStyle({
+                  whiteboardApp()?.setCurrentNodesStyle({
                     lineDash: v.target.value
                   })
                   setLineDash(v.target.value)
@@ -241,7 +240,7 @@ export default function StyleMenu() {
                 value={lineWidth}
                 step={2}
                 onChange={(v) => {
-                  whiteboardApp().setCurrentNodesStyle({
+                  whiteboardApp()?.setCurrentNodesStyle({
                     lineWidth: v as number
                   })
                   setLineWidth(v as number)
@@ -259,7 +258,7 @@ export default function StyleMenu() {
               step={1}
               tipFormatter={(str) => `${str}%`}
               onChange={(a) => {
-                whiteboardApp().setCurrentNodesStyle({
+                whiteboardApp()?.setCurrentNodesStyle({
                   globalAlpha: (a as number) / 100
                 })
                 setGlobalAlpha((a as number) / 100)
@@ -274,14 +273,14 @@ export default function StyleMenu() {
                 theme="borderless"
                 icon={<TrashSvg width={17} height={17} fill="#3d3d3d" />}
                 onClick={() => {
-                  whiteboardApp().deleteCurrentNodes()
+                  whiteboardApp()?.deleteCurrentNodes()
                 }}
               />
               <Button
                 theme="borderless"
                 icon={<CopySvg width={17} height={17} fill="#3d3d3d" />}
                 onClick={() => {
-                  whiteboardApp().copyPasteCurrentNodes()
+                  whiteboardApp()?.copyPasteCurrentNodes()
                 }}
               />
             </div>

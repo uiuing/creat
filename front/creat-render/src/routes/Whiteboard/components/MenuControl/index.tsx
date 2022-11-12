@@ -1,6 +1,7 @@
 import { LocalData } from '@uiuing/creat-loader/types'
 import { useRecoilValue } from 'recoil'
 
+import useSyncWatch from '../../Hooks/useSyncWatch'
 import { cloudWhiteboardState } from '../../store'
 import { GetLocalDataStateObject } from '../../utils'
 import styles from '../style.module.scss'
@@ -13,6 +14,9 @@ import StyleMenu from './MenuOptions/StyleMenu'
 export function MenuControl() {
   const localData = useRecoilValue(GetLocalDataStateObject()) as LocalData
   const cloudWhiteboard = useRecoilValue(cloudWhiteboardState)
+
+  useSyncWatch()
+
   return (
     <>
       {cloudWhiteboard.isAuthor || !cloudWhiteboard.readonly ? (
