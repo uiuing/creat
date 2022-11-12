@@ -12,7 +12,7 @@ import Render from './classFile/Render';
 import Selection from './classFile/Selection';
 import TextEdit from './classFile/TextEdit';
 import Calculate from './common/utils/Calculate';
-import { Ctx, NodeArray, PlotType, State } from './types';
+import { Ctx, DiffNodesRes, DiffStateRes, LocalData, PlotType, State } from './types';
 declare type Options = {
     mountEL: HTMLElement | HTMLDivElement;
     plotType?: PlotType;
@@ -48,6 +48,7 @@ declare class CreatLoader extends EventEmitter {
     static checkClick: any;
     static plot: any;
     static nodes: any;
+    oldData: undefined;
     constructor(options: Options);
     mountFunction(): void;
     getData(): {
@@ -112,11 +113,8 @@ declare class CreatLoader extends EventEmitter {
     bindEvent(): void;
     emitNodeRotateChange(rotate: number): void;
     emitChange(noDiffData?: boolean, noHistory?: boolean): void;
-    emitDiffNodesChange(oldNodes: NodeArray, nowNodes: NodeArray): void;
-    emitDiffStateChange(oldState: State, nowState: State): void;
-    parseSetDiffData(config: {
-        type: string;
-        delta: any;
-    }): Promise<void>;
+    emitDiffNodesChange(oldData: LocalData, nowData: LocalData): void;
+    emitDiffStateChange(oldData: LocalData, nowData: LocalData): void;
+    parseSetDiffData(config: DiffNodesRes | DiffStateRes): Promise<void>;
 }
 export default CreatLoader;

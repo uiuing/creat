@@ -74,6 +74,7 @@ export declare type AppObject = {
     emitNodeRotateChange: (rotate: number) => void;
     emitDiffNodesChange: (oldData: LocalData, newData: LocalData) => void;
     emitDiffStateChange: (oldData: LocalData, newData: LocalData) => void;
+    oldData: LocalData | undefined;
 };
 export declare type AppResponse = {
     mount: (el: HTMLElement | HTMLDivElement) => AppResponse;
@@ -102,14 +103,8 @@ export declare type AppResponse = {
         activeNodeChange: (callback: (activeNode: object) => void) => void;
         multiplexSelectChange: (callback: (selectedNodeList: object) => void) => void;
         contextmenu: (callback: (event: Event, nodes: object) => void) => void;
-        diffNodesChange: (callback: (config: {
-            type: string;
-            delta: any;
-        }) => void) => void;
-        diffStateChange: (callback: (config: {
-            type: string;
-            delta: any;
-        }) => void) => void;
+        diffNodesChange: (callback: (diffNodes: DiffNodesRes) => void) => void;
+        diffStateChange: (callback: (diffState: DiffStateRes) => void) => void;
         nodeRotateChange: (callback: (rotate: number) => void) => void;
         nodeSizeChange: (callback: (width: number, height: number) => void) => void;
         nodePositionChange: (callback: (x: number, y: number) => void) => void;
@@ -137,10 +132,7 @@ export declare type AppResponse = {
     utils: {
         downloadFile: (data: string, filename: string) => void;
     };
-    parseSetDiffData: (config: {
-        type: string;
-        delta: any;
-    }) => void;
+    parseSetDiffData: (config: DiffNodesRes | DiffStateRes) => void;
     cancelSelectNodes: () => void;
 };
 export declare type LoaderOptions = {
@@ -320,6 +312,14 @@ export declare type KeyPosit = {
     PageDown: number;
 };
 export declare type OnCallBack = (...args: any[]) => void;
+export declare type DiffNodesRes = {
+    type: 'add' | 'delete' | 'update' | 'cover-all' | 'delete-all';
+    nodes: NodeArray;
+};
+export declare type DiffStateRes = {
+    type: 'update-state';
+    state: State;
+};
 export declare type Mount = (mountEl: string | Object | HTMLElement) => AppResponse;
 export declare type creatLoader = (state: AppState) => Mount;
 export {};

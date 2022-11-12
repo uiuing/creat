@@ -327,6 +327,7 @@ export default class Nodes {
 
   // Create graphic objects from graphic object data
   createNodesFromData(nodes: NodeArray) {
+    this.app.oldData = this.app.getData()
     nodes.forEach((node) => {
       const nodeObject: any = this.pureCreateNode(node)
       nodeObject.isActive = false

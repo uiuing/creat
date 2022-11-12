@@ -1,5 +1,4 @@
 import EventEmitter from 'eventemitter3'
-import { diff, patch } from 'jsondiffpatch'
 
 import Author from './classFile/Author'
 import Background from './classFile/Background'
@@ -20,16 +19,19 @@ import {
   getTowCoordinateDistance,
   throttle
 } from './common/utils'
-import * as utils from './common/utils'
 import Calculate from './common/utils/Calculate'
-import * as checkClick from './common/utils/checkClick'
-import nodes from './components'
-import * as plot from './support/plot'
+import {
+  getDiffData,
+  getDiffState,
+  parseDiffNodes,
+  parseDiffState
+} from './common/utils/diffData'
 import {
   Ctx,
+  DiffNodesRes,
+  DiffStateRes,
   LocalData,
   Node,
-  NodeArray,
   OnCallBack,
   PlotType,
   State
@@ -99,6 +101,8 @@ class CreatLoader extends EventEmitter {
   static plot: any
 
   static nodes: any
+
+  public oldData: undefined
 
   constructor(options: Options) {
     super()
@@ -354,6 +358,7 @@ class CreatLoader extends EventEmitter {
     this.canvas = canvas
     this.ctx = ctx
     this.mountEL.appendChild(this.canvas as any)
+    console.log('a')
   }
 
   // Container resizing
@@ -687,62 +692,47 @@ class CreatLoader extends EventEmitter {
     const data = this.getData()
     const oldData = this.history.now()
     if (
-      (typeof oldData === 'undefined' && data.nodes.length !== 0) ||
-      (typeof oldData !== 'undefined' && !noHistory)
+      ((typeof oldData === 'undefined' && data.nodes.length !== 0) ||
+        typeof oldData !== 'undefined') &&
+      !noHistory
     ) {
       this.history.add(<LocalData>data)
     }
     if (!noDiffData) {
-      if (typeof oldData === 'undefined' && typeof data === 'undefined') {
-        return
-      }
-      if (data && oldData && 'nodes' in data && 'nodes' in oldData) {
-        this.emitDiffNodesChange(oldData.nodes, data.nodes)
-      }
-      if (data && oldData && 'state' in data && 'state' in oldData) {
-        this.emitDiffStateChange(oldData.state, data.state)
-      }
+      this.emitDiffNodesChange(oldData, data)
+      this.emitDiffStateChange(oldData, data)
     }
     this.emit('change', data)
   }
 
   // Customised data object update triggers with diff algorithm processing
-  emitDiffNodesChange(oldNodes: NodeArray, nowNodes: NodeArray) {
-    const delta = diff(oldNodes, nowNodes)
-    if (delta) {
-      this.emit('diffNodesChange', { type: 'diffNodesChange', delta })
+  emitDiffNodesChange(oldData: LocalData, nowData: LocalData) {
+    const diffRes = getDiffData(oldData, nowData)
+    if (typeof diffRes === 'object') {
+      this.emit('diffNodesChange', diffRes)
     }
   }
 
   // Customised data state update triggers with diff algorithm processing
-  emitDiffStateChange(oldState: State, nowState: State) {
-    const delta = diff(oldState, nowState)
-    if (delta) {
-      this.emit('diffNodesChange', { type: 'diffStateChange', delta })
+  emitDiffStateChange(oldData: LocalData, nowData: LocalData) {
+    const diffRes = getDiffState(oldData, nowData)
+    if (typeof diffRes !== 'undefined') {
+      this.emit('diffStateChange', diffRes)
     }
   }
 
-  async parseSetDiffData(config: { type: string; delta: any }) {
+  async parseSetDiffData(config: DiffNodesRes | DiffStateRes) {
     const oldData = this.getData()
-    if (config.type === 'diffNodesChange') {
-      this.setData(
-        { state: oldData.state, nodes: patch(oldData, config.delta) },
-        true,
-        true
-      )
-    } else if (config.type === 'diffStateChange') {
-      this.setData(
-        { state: patch(oldData, config.delta), nodes: oldData.nodes },
-        true,
-        true
-      )
+    const newData: any = {}
+    if (config.type === 'update-state') {
+      newData.nodes = oldData.nodes
+      newData.state = parseDiffState(oldData.nodes, config)
+    } else {
+      newData.state = oldData.state
+      newData.nodes = parseDiffNodes(oldData.nodes, config)
     }
+    await this.setData(newData, false, true)
   }
 }
-
-CreatLoader.utils = utils
-CreatLoader.checkClick = checkClick
-CreatLoader.plot = plot
-CreatLoader.nodes = nodes
 
 export default CreatLoader

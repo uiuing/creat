@@ -11,6 +11,8 @@ import { AppObject } from '../types'
 export default class BaseNode extends EventEmitter {
   public app: AppObject
 
+  public id: string
+
   public type: string
 
   public key: number
@@ -46,6 +48,8 @@ export default class BaseNode extends EventEmitter {
   constructor(options: any, app: AppObject) {
     super()
     this.app = app
+    // Graphical object id
+    this.id = options.id
     // Type
     this.type = options.type || ''
     // key
@@ -224,6 +228,7 @@ export default class BaseNode extends EventEmitter {
   // Serialisation
   serialize() {
     return {
+      id: this.id,
       type: this.type,
       width: this.width,
       height: this.height,

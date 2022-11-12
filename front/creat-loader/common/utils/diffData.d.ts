@@ -1,6 +1,6 @@
 import { DiffNodesRes, DiffStateRes, LocalData, NodeArray, State } from '../../types';
 export declare function isEqual(oldData: any, nowData: any): boolean;
-export declare function getDiffData(oldData: LocalData, nowData: LocalData): {
+export declare function getDiffData(oldData: LocalData | undefined, nowData: LocalData): {
     type: string;
     nodes?: undefined;
 } | {
@@ -8,7 +8,7 @@ export declare function getDiffData(oldData: LocalData, nowData: LocalData): {
     nodes: any[];
 } | undefined;
 export declare function parseDiffNodes(oldNodes: NodeArray, { type, nodes }: DiffNodesRes): NodeArray;
-export declare function getDiffState(oldData: LocalData, nowData: LocalData): {
+export declare function getDiffState(oldData: LocalData | undefined, nowData: LocalData): {
     type: string;
     state: any;
 } | undefined;

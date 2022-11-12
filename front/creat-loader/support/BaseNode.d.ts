@@ -2,6 +2,7 @@ import EventEmitter from 'eventemitter3';
 import { AppObject } from '../types';
 export default class BaseNode extends EventEmitter {
     app: AppObject;
+    id: string;
     type: string;
     key: number;
     isCreate: boolean;
@@ -38,6 +39,7 @@ export default class BaseNode extends EventEmitter {
     updateSize(width: number, height: number): this;
     updatePos(x: number, y: number): this;
     serialize(): {
+        id: string;
         type: string;
         width: number;
         height: number;
