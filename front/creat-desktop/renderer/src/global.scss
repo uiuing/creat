@@ -1,0 +1,26 @@
+html,
+body {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+svg,
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}

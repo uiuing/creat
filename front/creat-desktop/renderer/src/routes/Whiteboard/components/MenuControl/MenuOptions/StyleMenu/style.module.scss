@@ -1,0 +1,68 @@
+.wrapper {
+  right: 15px;
+  border-radius: var(--semi-border-radius-large);
+  box-shadow: 0 7px 14px rgb(0 0 0 / 5%), 0 0 3.1271px rgb(0 0 0 / 7.98%),
+    0 0 0.9311px rgb(0 0 0 / 17%);
+}
+
+.selectionWrapper {
+  right: 15px;
+  width: 180px;
+  border-radius: var(--semi-border-radius-large);
+  margin-left: 96px;
+  box-shadow: 0 7px 14px rgb(0 0 0 / 5%), 0 0 3.1271px rgb(0 0 0 / 7.98%),
+    0 0 0.9311px rgb(0 0 0 / 17%);
+
+  > * {
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+}
+
+.content {
+  display: flex;
+  width: 150px;
+  flex-direction: column;
+  padding: 15px 15px 5px;
+  border-radius: var(--semi-border-radius-large);
+  background-color: white;
+}
+
+.option {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  margin: 0 0 5px;
+  gap: 10px;
+}
+
+.item {
+  margin: 0 0 15px;
+}
+
+.colorSelection {
+  width: 32px;
+  height: 32px;
+  border: #d6d6d6 1px solid;
+  border-radius: 8px;
+}
+
+.colorItem {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin: 0 0 10px;
+}
+
+.colorItemOption {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.radioOption {
+  > div > span {
+    display: flex;
+    padding: 4px 11px;
+    border-radius: 7px;
+  }
+}

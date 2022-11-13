@@ -1,0 +1,103 @@
+{
+  "name": "creat-desktop",
+  "version": "0.0.1",
+  "main": "out/main/index.js",
+  "productName": "Creat",
+  "author": "uiuing <uiuing@foxmail.com>",
+  "scripts": {
+    "clean": "rimraf out",
+    "dev": "npm run build-electron && electron . & vite dev renderer",
+    "build-renderer": "vite build renderer --emptyOutDir",
+    "build-electron": "tsc -p main",
+    "build": "npm run build-renderer && npm run build-electron",
+    "pack-app": "npm run build && electron-builder --dir",
+    "dist": "npm run build && electron-builder",
+    "dist-win": "npm run build && electron-builder  build  --win --x64",
+    "type-check": "tsc -p ./renderer/tsconfig.json && tsc -p main/tsconfig.json",
+    "lint": "npm run prettier && npm run lint:eslint && npm run lint:stylelint",
+    "prettier": "prettier --write 'renderer/**/*.{html,ts,js,tsx,jsx,css,json}' 'main/**/*.{ts,js}'",
+    "lint:eslint": "eslint --fix --ext .js,.jsx,.ts,.tsx ./renderer ./main",
+    "lint:stylelint": "stylelint 'renderer/**/*.{css,scss,less}' --fix"
+  },
+  "dependencies": {
+    "decompress": "^4.2.1",
+    "electron-is-dev": "^2.0.0"
+  },
+  "devDependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.2.0",
+    "@fortawesome/free-regular-svg-icons": "^6.2.0",
+    "@fortawesome/free-solid-svg-icons": "^6.2.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@types/node": "^18.11.4",
+    "@types/pubsub-js": "^1.8.3",
+    "@types/socket.io-client": "^3.0.0",
+    "jsondiffpatch": "^0.4.1",
+    "localforage": "^1.10.0",
+    "pubsub-js": "^1.9.4",
+    "recoil": "^0.7.6",
+    "@douyinfe/semi-ui": "^2.21.2",
+    "@types/react": "^18.0.21",
+    "@types/react-color": "^3.0.6",
+    "@types/react-dom": "^18.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
+    "@uiuing/creat-loader": "0.9.9",
+    "@vitejs/plugin-react": "^2.1.0",
+    "axios": "^1.1.3",
+    "eslint": "^8.26.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-typescript": "^3.5.2",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
+    "postcss": "^8.4.18",
+    "prettier": "^2.7.1",
+    "react": "^18.2.0",
+    "react-color": "^2.19.3",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.3",
+    "sass": "^1.55.0",
+    "stylelint": "^14.14.0",
+    "stylelint-config-idiomatic-order": "^9.0.0",
+    "stylelint-config-standard": "^29.0.0",
+    "stylelint-config-standard-scss": "^5.0.0",
+    "stylelint-order": "^5.0.0",
+    "stylelint-prettier": "^2.0.0",
+    "stylelint-scss": "^4.3.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4",
+    "vite": "^3.1.8"
+  },
+  "build": {
+    "asar": true,
+    "appId": "com.uiuing.ingop",
+    "productName": "IGop",
+    "copyright": "Copyright © 2022 ingop.uiuing.com",
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "./public/logo_mini_512x512.icns",
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "icon": "./public/logo_mini_512x512.ico",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": "true"
+    },
+    "files": [
+      "out/main",
+      "out/renderer/dist"
+    ]
+  }
+}

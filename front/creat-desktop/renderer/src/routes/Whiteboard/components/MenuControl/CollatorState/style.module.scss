@@ -1,0 +1,59 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  margin: 15px;
+  gap: 10px;
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: var(--semi-border-radius-large);
+  background-color: white;
+  box-shadow: 0 7px 14px rgb(0 0 0 / 5%), 0 0 3.1271px rgb(0 0 0 / 7.98%),
+    0 0 0.9311px rgb(0 0 0 / 17%);
+
+  > button {
+    border-radius: var(--semi-border-radius-medium) !important;
+    background-color: white;
+  }
+}
+
+.popConfirm {
+  * {
+    margin-left: 0 !important;
+  }
+}
+
+.button {
+  border-radius: 12px;
+  box-shadow: 0 7px 14px rgb(0 0 0 / 5%), 0 0 3.1271px rgb(0 0 0 / 7.98%),
+    0 0 0.9311px rgb(0 0 0 / 17%);
+  font-size: 1rem;
+}
+
+.option {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  margin: 0 0 5px;
+  gap: 10px;
+}
+
+.colorSelection {
+  width: 32px;
+  height: 32px;
+  border: #d6d6d6 1px solid;
+  border-radius: 8px;
+}
+
+.pickWrapper {
+  position: fixed;
+  width: 276px;
+  border-radius: var(--semi-border-radius-large);
+  margin-top: -20px;
+  margin-left: -10px;
+  box-shadow: 0 7px 14px rgb(0 0 0 / 5%), 0 0 3.1271px rgb(0 0 0 / 7.98%),
+    0 0 0.9311px rgb(0 0 0 / 17%);
+}
