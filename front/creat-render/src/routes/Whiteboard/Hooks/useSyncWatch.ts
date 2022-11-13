@@ -34,7 +34,7 @@ export default function useSyncWatch() {
       socket.emit('join', window.whiteboardId)
 
       socket.on('diff-nodes', (nodesDelta) => {
-        console.log(nodesDelta)
+        // console.log(nodesDelta)
         const nowData = whiteboardApp()?.getData()
         whiteboardApp()?.setData(
           {
@@ -65,7 +65,7 @@ export default function useSyncWatch() {
           ...cloudWhiteboard,
           ...info
         })
-        console.log(info)
+        // console.log(info)
       })
 
       PubSub.subscribe('diff-nodes', (msg, nodesDelta) => {
