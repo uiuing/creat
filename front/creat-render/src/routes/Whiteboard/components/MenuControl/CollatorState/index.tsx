@@ -117,7 +117,6 @@ export function CollatorState() {
           className={styles.group}
           style={{ padding: 7 }}
         >
-          {/* TODO 添加选中样式 */}
           <Tooltip content="白板共享设置" position="bottomRight">
             <Button
               icon={

@@ -38,9 +38,7 @@ export default function HistoryContent({ className }: Props) {
   }, [whiteboardInfos])
 
   const fns = {
-    reName: (id: string) => {
-      // TODO 更改名称的页面
-    },
+    reName: (id: string) => {},
     download: downloadWhiteboard,
     delete: (id: string) => {
       deleteWhiteboard(id).then(() => {

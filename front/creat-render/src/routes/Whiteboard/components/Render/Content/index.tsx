@@ -4,7 +4,6 @@ import RenderBuffer from '../Buffer'
 
 export default function RenderContent() {
   const isLoaderOK = useInitWhiteboardLoader()
-  // TODO 不是作者但是进来了，那么缺少设置颜色和名称的界面
 
   // useWatch(setLocalData as any, isLoaderOK)
 

@@ -42,8 +42,8 @@ export function useInitWhiteboardLoader() {
   }, [])
 
   useEffect(() => {
-    if ('state' in localData && creatOK && !window.onceLoader) {
-      let tmp = localData
+    if (whiteboardApp() && creatOK && !window.onceLoader) {
+      let tmp = whiteboardApp().getData()
       // 监听白板数据变化
       if (isLoaderOK) {
         whiteboardApp()?.watch.localDataChange((data) => {
