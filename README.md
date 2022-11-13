@@ -1,6 +1,6 @@
 <div align="center" style="display:flex;flex-direction:column;">
   <a href="https://creat.uiuing.com">
-    <img width="540" src="./front/creat-render/src/routes/Home/components/FixedBanner/banner.png" alt="Excalidraw logo: Sketch handrawn like diagrams." />
+    <img width="540" src="./front/creat-render/src/routes/Home/components/FixedBanner/banner.png" alt="creat logo" />
   </a>
   <h3>为思维发散与协同讨论孕育而生<br>2022年七牛云1024创作节作品</br>
   </h3>
