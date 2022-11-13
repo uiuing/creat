@@ -21,7 +21,7 @@ export default function useSyncWatch() {
 
   useEffect(() => {
     if (creatLoaderOK && whiteboardApp() && isCloud) {
-      const socket = io(`ws://127.0.0.1:4911`)
+      const socket = io(`wss://api-creat.uiuing.com`)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let user = {}
       socket.on('connect', () => {
