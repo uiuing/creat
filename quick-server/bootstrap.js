@@ -245,9 +245,17 @@ io.on('connection', (client) => {
   client.on('diff-nodes', (nodesDelta) => {
     if (user.roomId) {
       client.broadcast.to(user.roomId).emit('diff-nodes', nodesDelta)
-      tmp[user.roomId].nodes = JSON.parse(
+      const ids = new Set()
+      const nodes = JSON.parse(
         JSON.stringify(patch(tmp[user.roomId].nodes, nodesDelta))
-      )
+      ).filter((node) => {
+        if (ids.has(node.id)) {
+          return false
+        }
+        ids.add(node.id)
+        return true
+      })
+      tmp[user.roomId].nodes = nodes
       redisClient.set(`creat-${user.roomId}`, JSON.stringify(tmp[user.roomId]))
     }
   })
@@ -260,11 +268,17 @@ io.on('connection', (client) => {
     }
   })
 
+  client.on('update-info', (info) => {
+    if (user.roomId) {
+      client.broadcast.to(user.roomId).emit('update-info', info)
+      tmp[user.roomId].info = info
+      redisClient.set(`creat-${user.roomId}`, JSON.stringify(tmp[user.roomId]))
+    }
+  })
+
   client.on('disconnect', () => {
     /* … */
     console.log('close')
-    // console.log(user)
-    // Rooms.leave(user)
   })
 })
 
