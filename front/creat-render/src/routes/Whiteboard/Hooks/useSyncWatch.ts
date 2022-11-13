@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { io } from 'socket.io-client'
 
+import { wssApiBaseUrl } from '../apis/common'
 import { cloudWhiteboardState, creatLoaderOKState } from '../store'
-import { GetLocalDataStateObject, removePromise, whiteboardApp } from '../utils'
+import { GetLocalDataStateObject, whiteboardApp } from '../utils'
 
 export default function useSyncWatch() {
   const creatLoaderOK = useRecoilValue(creatLoaderOKState)
@@ -21,7 +22,7 @@ export default function useSyncWatch() {
 
   useEffect(() => {
     if (creatLoaderOK && whiteboardApp() && isCloud) {
-      const socket = io(`wss://api-creat.uiuing.com`)
+      const socket = io(wssApiBaseUrl)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let user = {}
       socket.on('connect', () => {
@@ -33,20 +34,12 @@ export default function useSyncWatch() {
       socket.emit('join', window.whiteboardId)
 
       socket.on('diff-nodes', (nodesDelta) => {
+        console.log(nodesDelta)
         const nowData = whiteboardApp()?.getData()
-        const newData = removePromise(patch(nowData.nodes, nodesDelta))
-        const ids = new Set()
-        const nodes = newData.filter((node: { id: string }) => {
-          if (ids.has(node.id)) {
-            return false
-          }
-          ids.add(node.id)
-          return true
-        })
         whiteboardApp()?.setData(
           {
             state: nowData.state,
-            nodes
+            nodes: JSON.parse(patch(JSON.stringify(nowData.nodes), nodesDelta))
           },
           true,
           true
@@ -58,7 +51,7 @@ export default function useSyncWatch() {
         const nowData = whiteboardApp()?.getData()
         whiteboardApp()?.setData(
           {
-            state: removePromise(patch(nowData.state, stateDelta)),
+            state: patch(nowData.state, stateDelta),
             nodes: nowData.nodes
           },
           true,

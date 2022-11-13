@@ -225,8 +225,6 @@ app.post('/update', json(), (req, res) => {
   }
 })
 
-const tmp = {}
-
 io.on('connection', (client) => {
   const user = new User()
 
@@ -235,44 +233,44 @@ io.on('connection', (client) => {
   client.on('join', (whiteboardId) => {
     Rooms.join(whiteboardId, user, io, client)
     user.roomId = whiteboardId
-    redisClient.get(`creat-${user.roomId}`, (err, reply) => {
-      if (reply) {
-        tmp[whiteboardId] = JSON.parse(reply)
-      }
-    })
   })
 
   client.on('diff-nodes', (nodesDelta) => {
     if (user.roomId) {
-      client.broadcast.to(user.roomId).emit('diff-nodes', nodesDelta)
-      const ids = new Set()
-      const nodes = JSON.parse(
-        JSON.stringify(patch(tmp[user.roomId].nodes, nodesDelta))
-      ).filter((node) => {
-        if (ids.has(node.id)) {
-          return false
+      // 获取现在毫秒数
+      redisClient.get(`creat-${user.roomId}`, (err, reply) => {
+        if (reply) {
+          const r = JSON.parse(reply)
+          r.nodes = JSON.parse(patch(JSON.stringify(r.nodes), nodesDelta))
+          client.broadcast.to(user.roomId).emit('diff-nodes', nodesDelta)
+          redisClient.set(`creat-${user.roomId}`, JSON.stringify(r))
         }
-        ids.add(node.id)
-        return true
       })
-      tmp[user.roomId].nodes = nodes
-      redisClient.set(`creat-${user.roomId}`, JSON.stringify(tmp[user.roomId]))
     }
   })
 
   client.on('diff-state', (stateDelta) => {
     if (user.roomId) {
+      redisClient.get(`creat-${user.roomId}`, (err, reply) => {
+        if (reply) {
+          const r = JSON.parse(reply)
+          r.nodes = patch(r.nodes, stateDelta)
+        }
+      })
       client.broadcast.to(user.roomId).emit('diff-state', stateDelta)
-      tmp[user.roomId].state = patch(tmp[user.roomId].state, stateDelta)
-      redisClient.set(`creat-${user.roomId}`, JSON.stringify(tmp[user.roomId]))
     }
   })
 
   client.on('update-info', (info) => {
     if (user.roomId) {
       client.broadcast.to(user.roomId).emit('update-info', info)
-      tmp[user.roomId].info = info
-      redisClient.set(`creat-${user.roomId}`, JSON.stringify(tmp[user.roomId]))
+      redisClient.get(`creat-${user.roomId}`, (err, reply) => {
+        if (reply) {
+          const r = JSON.parse(reply)
+          r.info = info
+          redisClient.set(`creat-${user.roomId}`, JSON.stringify(r))
+        }
+      })
     }
   })
 

@@ -56,13 +56,10 @@ export function useInitWhiteboardLoader() {
     whiteboardApp()?.watch.localDataChange((data) => {
       if (isLoaderOK) {
         const nodesDelta = create({
-          objectHash(obj: Node) {
-            return obj.id
-          },
-          arrays: {
-            detectMove: false
+          textDiff: {
+            minLength: 10
           }
-        }).diff(tmp.nodes, data.nodes)
+        }).diff(JSON.stringify(tmp.nodes), JSON.stringify(data.nodes))
         const stateDelta = diff(tmp.state, data.state)
         if (nodesDelta) {
           PubSub.publish('diff-nodes', nodesDelta)

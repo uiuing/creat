@@ -1,11 +1,11 @@
 import { NodeArray } from '@uiuing/creat-loader/types'
 import axios from 'axios'
 
-import { apiBaseUrl } from '../common'
+import { httpsApiBaseUrl } from '../common'
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: apiBaseUrl
+  baseURL: httpsApiBaseUrl
 })
 
 export const checkWhiteboardShare = (
