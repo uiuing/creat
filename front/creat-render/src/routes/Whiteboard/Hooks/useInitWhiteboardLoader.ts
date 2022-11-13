@@ -1,12 +1,10 @@
 import creatLoader from '@uiuing/creat-loader'
-import { Node } from '@uiuing/creat-loader/types'
-import { create, diff } from 'jsondiffpatch'
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
-import { getWhiteboardLocalData } from '../../../utils/data'
 import { creatLoaderOKState } from '../store'
 import { GetLocalDataStateObject, whiteboardApp } from '../utils'
+import { checkHasDiff, parseDiffNodes, parseDiffState } from '../utils/diffData'
 
 export function useInitWhiteboardLoader() {
   const [localData, setLocalData] = useRecoilState<any>(
@@ -20,27 +18,19 @@ export function useInitWhiteboardLoader() {
 
   useEffect(() => {
     // 初始化白板数据
-    getWhiteboardLocalData(window.whiteboardId).then((data) => {
-      if (creatLoaderOK) {
-        setLocalData(whiteboardApp().getData())
-        const { state } = whiteboardApp().getData()
-        whiteboardApp()?.setData(
-          {
-            state: {
-              ...state,
-              defaultColor: localData?.state?.defaultColor
-                ? localData?.state?.defaultColor
-                : '#000000'
-            },
-            nodes: data && 'nodes' in data ? data.nodes : localData.nodes
-          },
-          true,
-          true
-        )
-        setCreatOK(true)
-      }
-    })
-  }, [creatLoaderOK])
+    if (creatLoaderOK && 'state' in localData) {
+      const nowData = whiteboardApp()?.getData()
+      whiteboardApp().setData(
+        {
+          state: { ...nowData.state, ...localData.state },
+          nodes: localData.nodes
+        },
+        true,
+        true
+      )
+    }
+    setCreatOK(true)
+  }, [creatLoaderOK, localData])
 
   // 之所以白板的渲染和事件分开，是因为白板的渲染需要等待loader的初始化完成
   useLayoutEffect(() => {
@@ -52,27 +42,31 @@ export function useInitWhiteboardLoader() {
   }, [])
 
   useEffect(() => {
-    let tmp = localData
-    whiteboardApp()?.watch.localDataChange((data) => {
+    if ('state' in localData && creatOK) {
+      let tmp = localData
+      // 监听白板数据变化
       if (isLoaderOK) {
-        const nodesDelta = create({
-          textDiff: {
-            minLength: 10
+        whiteboardApp()?.watch.localDataChange((data) => {
+          // Diff 数据
+          if (checkHasDiff(tmp.nodes, data.nodes)) {
+            const diffNodesRes = parseDiffNodes(tmp.nodes, data.nodes)
+            if (diffNodesRes) {
+              PubSub.publish('diff-nodes', diffNodesRes)
+            }
           }
-        }).diff(JSON.stringify(tmp.nodes), JSON.stringify(data.nodes))
-        const stateDelta = diff(tmp.state, data.state)
-        if (nodesDelta) {
-          PubSub.publish('diff-nodes', nodesDelta)
-        }
-        if (stateDelta && window.readonly) {
-          PubSub.publish('diff-state', stateDelta)
-        }
-        tmp = data
-        setLocalData(data)
+          if (checkHasDiff(tmp.state, data.state)) {
+            const diffStateRes = parseDiffState(tmp.state, data.state)
+            if (diffStateRes) {
+              PubSub.publish('diff-state', diffStateRes)
+            }
+          }
+          tmp = data
+          setLocalData(data)
+        })
       }
-    })
+    }
     setIsLoaderOK(true)
-  }, [creatOK])
+  }, [creatOK, localData])
 
   return isLoaderOK
 }

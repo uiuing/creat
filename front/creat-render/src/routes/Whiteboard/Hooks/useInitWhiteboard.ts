@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { getUserTmpInfo, getWhiteboardInfoById } from '../../../utils/data'
+import {
+  getUserTmpInfo,
+  getWhiteboardInfoById,
+  setWhiteboardLocalData
+} from '../../../utils/data'
 import { checkWhiteboardShare } from '../apis/prepare'
 import { cloudWhiteboardState, userTmpInfoState } from '../store'
 import { GetLocalDataStateObject, whiteboardApp } from '../utils'
@@ -41,6 +45,15 @@ export default function useInitWhiteboard() {
             color: '#000000'
           })
           color = '#000000'
+        }
+        if (hasWhiteboardInfo) {
+          await setWhiteboardLocalData(
+            {
+              state: { ...state, defaultColor: color },
+              nodes: data?.nodes as any
+            },
+            window.whiteboardId
+          )
         }
         setLocalData({
           state: { ...state, defaultColor: color },

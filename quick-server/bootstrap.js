@@ -235,14 +235,27 @@ io.on('connection', (client) => {
     user.roomId = whiteboardId
   })
 
-  client.on('diff-nodes', (nodesDelta) => {
+  client.on('diff-nodes', (diffResNodes) => {
     if (user.roomId) {
-      // 获取现在毫秒数
       redisClient.get(`creat-${user.roomId}`, (err, reply) => {
         if (reply) {
           const r = JSON.parse(reply)
-          r.nodes = JSON.parse(patch(JSON.stringify(r.nodes), nodesDelta))
-          client.broadcast.to(user.roomId).emit('diff-nodes', nodesDelta)
+          const { type, nodes } = diffResNodes
+          if (type === 'add') {
+            r.nodes = [...r.nodes, ...nodes]
+          }
+          if (type === 'update') {
+            r.nodes = r.nodes.map((item) => {
+              const node = nodes.find((n) => n.id === item.id)
+              return node ? { ...item, ...node } : item
+            })
+          }
+          if (type === 'delete') {
+            r.nodes = r.nodes.filter(
+              (item) => !nodes.find((n) => n.id === item.id)
+            )
+          }
+          client.broadcast.to(user.roomId).emit('diff-nodes', diffResNodes)
           redisClient.set(`creat-${user.roomId}`, JSON.stringify(r))
         }
       })

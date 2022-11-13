@@ -319,7 +319,7 @@ export function CollatorState() {
                     onClick={() => {
                       createWhiteboardShare(
                         {
-                          nodes: whiteboardApp()?.getData().nodes,
+                          nodes: whiteboardApp()?.getData()?.nodes || [],
                           info: {
                             name: userTmpInfo.name,
                             readonly: false
