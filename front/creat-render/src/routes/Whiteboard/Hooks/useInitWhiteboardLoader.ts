@@ -5,7 +5,6 @@ import { useRecoilState } from 'recoil'
 
 import { creatLoaderOKState } from '../store'
 import { GetLocalDataStateObject, whiteboardApp } from '../utils'
-import { checkHasDiff, parseDiffNodes, parseDiffState } from '../utils/diffData'
 
 export function useInitWhiteboardLoader() {
   const [localData, setLocalData] = useRecoilState<any>(
