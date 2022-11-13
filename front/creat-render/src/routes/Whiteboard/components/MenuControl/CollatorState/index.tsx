@@ -9,6 +9,7 @@ import {
   Typography
 } from '@douyinfe/semi-ui'
 import { LocalData } from '@uiuing/creat-loader/types'
+import PubSub from 'pubsub-js'
 import { useState } from 'react'
 import { TwitterPicker } from 'react-color'
 import { useRecoilState, useRecoilValue } from 'recoil'
@@ -25,8 +26,7 @@ import UnLinkSvg from '../../../../components/svgs/UnLinkSvg'
 import UsersSvg from '../../../../components/svgs/UsersSvg'
 import {
   closeWhiteboardShare,
-  createWhiteboardShare,
-  updateWhiteboardShare
+  createWhiteboardShare
 } from '../../../apis/prepare'
 import { selectColors } from '../../../common/colors'
 import {
@@ -92,26 +92,15 @@ export function CollatorState() {
                 }
                 onClick={() => {
                   if (cloudWhiteboard.isCloud) {
-                    updateWhiteboardShare(
-                      {
-                        userId: userInfo.id,
-                        whiteboardId: window.whiteboardId,
-                        info: {
-                          name: cloudWhiteboard.name as any,
-                          readonly: !cloudWhiteboard.readonly
-                        }
-                      },
-                      (res) => {
-                        if (res.status === 200) {
-                          setCloudWhiteboard({
-                            ...cloudWhiteboard,
-                            readonly: !cloudWhiteboard.readonly
-                          })
-                        } else {
-                          Toast.error(res.msg as any)
-                        }
-                      }
-                    )
+                    PubSub.publish('update-info', {
+                      readonly: !cloudWhiteboard.readonly,
+                      name: cloudWhiteboard.name
+                    })
+                    setCloudWhiteboard({
+                      ...cloudWhiteboard,
+                      readonly: !cloudWhiteboard.readonly,
+                      name: cloudWhiteboard.name
+                    })
                   } else {
                     Toast.warning({ content: '请创建白板会议之后再试～' })
                   }
@@ -126,18 +115,25 @@ export function CollatorState() {
           type="tertiary"
           theme="borderless"
           className={styles.group}
+          style={{ padding: 7 }}
         >
-          <Button
-            icon={
-              <UsersSvg
-                {...defaultStyle}
-                fill={cloudWhiteboard.isCloud ? 'rgb(0,100,250)' : '#3d3d3d'}
-              />
-            }
-            onClick={() => {
-              setSettingShare(!settingShare)
-            }}
-          />
+          <Tooltip content="白板共享设置" position="bottomRight">
+            <Button
+              icon={
+                <UsersSvg
+                  {...defaultStyle}
+                  fill={
+                    cloudWhiteboard.isCloud
+                      ? 'rgb(106, 58, 199)'
+                      : 'rgb(0,100,250)'
+                  }
+                />
+              }
+              onClick={() => {
+                setSettingShare(!settingShare)
+              }}
+            />
+          </Tooltip>
         </ButtonGroup>
         <Modal
           title="会议状态"
@@ -207,17 +203,18 @@ export function CollatorState() {
                     color={userTmpInfo.color}
                     colors={selectColors}
                     triangle="hide"
-                    onChangeComplete={(c) => {
+                    onChangeComplete={(cl) => {
                       setUserTmpInfo({
                         name: userTmpInfo.name,
-                        color: c.hex
+                        color: cl.hex as any
                       })
+                      const data = whiteboardApp().getData() as any
                       whiteboardApp()?.setData(
                         {
-                          nodes: localData.nodes,
+                          nodes: data.nodes,
                           state: {
-                            ...whiteboardApp().getData().state,
-                            defaultColor: c.hex
+                            ...data.state,
+                            defaultColor: cl.hex
                           }
                         },
                         true,
@@ -247,11 +244,12 @@ export function CollatorState() {
                       name: userTmpInfo.name,
                       color: c as any
                     })
+                    const data = whiteboardApp().getData() as any
                     whiteboardApp()?.setData(
                       {
-                        nodes: localData.nodes,
+                        nodes: data.nodes,
                         state: {
-                          ...whiteboardApp().getData().state,
+                          ...data.state,
                           defaultColor: c
                         }
                       },
@@ -301,6 +299,7 @@ export function CollatorState() {
                                 ...cloudWhiteboard,
                                 isCloud: false
                               })
+                              setSettingShare(false)
                             }
                           }
                         )

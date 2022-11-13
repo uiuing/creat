@@ -3,4 +3,5 @@ declare interface Window {
   whiteboard: any
   isCloud: boolean
   readonly: boolean
+  name: string
 }

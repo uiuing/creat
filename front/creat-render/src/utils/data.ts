@@ -62,7 +62,8 @@ export async function getWhiteboardLocalData(
 
 export async function setWhiteboardLocalData(
   localData: WhiteboardLocalData,
-  id?: string
+  id?: string,
+  fileName?: string
 ) {
   // add whiteboard info
   const infos = await getWhiteboardInfos()
@@ -73,7 +74,7 @@ export async function setWhiteboardLocalData(
   if (!infos.find((info) => info.id === id)) {
     infos.push({
       id,
-      name: `未命名白板-${id.slice(3, 10)}`,
+      name: fileName || `未命名白板-${id.slice(3, 10)}`,
       recentlyOpened: Date.now()
     })
     await setWhiteboardInfos(infos)
@@ -87,7 +88,7 @@ export function generateId(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
   const len = chars.length
   let id = Date.now().toString(36).toString()
-  for (let i = 0; i < 10; i += 1) {
+  for (let i = 0; i < 18; i += 1) {
     id += chars[Math.floor(Math.random() * len)]
   }
   return id

@@ -1,7 +1,7 @@
 import { patch } from 'jsondiffpatch'
 import PubSub from 'pubsub-js'
-import { useEffect } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useEffect, useState } from 'react'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { io } from 'socket.io-client'
 
 import { cloudWhiteboardState, creatLoaderOKState } from '../store'
@@ -9,11 +9,18 @@ import { GetLocalDataStateObject, removePromise, whiteboardApp } from '../utils'
 
 export default function useSyncWatch() {
   const creatLoaderOK = useRecoilValue(creatLoaderOKState)
-  const cloudWhiteboard = useRecoilValue(cloudWhiteboardState)
+  const [cloudWhiteboard, setCloudWhiteboard] =
+    useRecoilState(cloudWhiteboardState)
   const setLocalData = useSetRecoilState<any>(GetLocalDataStateObject())
 
+  const [isCloud, setIsCloud] = useState(cloudWhiteboard.isCloud)
+
   useEffect(() => {
-    if (creatLoaderOK && whiteboardApp() && cloudWhiteboard.isCloud) {
+    setIsCloud(cloudWhiteboard.isCloud)
+  }, [cloudWhiteboard])
+
+  useEffect(() => {
+    if (creatLoaderOK && whiteboardApp() && isCloud) {
       const socket = io(`ws://127.0.0.1:4911`)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let user = {}
@@ -27,10 +34,19 @@ export default function useSyncWatch() {
 
       socket.on('diff-nodes', (nodesDelta) => {
         const nowData = whiteboardApp()?.getData()
+        const newData = removePromise(patch(nowData.nodes, nodesDelta))
+        const ids = new Set()
+        const nodes = newData.filter((node: { id: string }) => {
+          if (ids.has(node.id)) {
+            return false
+          }
+          ids.add(node.id)
+          return true
+        })
         whiteboardApp()?.setData(
           {
             state: nowData.state,
-            nodes: patch(removePromise(nowData.nodes), nodesDelta)
+            nodes
           },
           true,
           true
@@ -51,6 +67,14 @@ export default function useSyncWatch() {
         setLocalData(whiteboardApp().getData())
       })
 
+      socket.on('update-info', (info) => {
+        setCloudWhiteboard({
+          ...cloudWhiteboard,
+          ...info
+        })
+        console.log(info)
+      })
+
       PubSub.subscribe('diff-nodes', (msg, nodesDelta) => {
         socket.emit('diff-nodes', nodesDelta)
       })
@@ -59,23 +83,9 @@ export default function useSyncWatch() {
         socket.emit('diff-state', stateDelta)
       })
 
-      // Diff 数据发生
-      // whiteboardApp()?.watch.diffNodesChange((diffNodes) => {
-      //   console.log('diffNodes', diffNodes)
-      // if (
-      //   window.isCloud &&
-      //   (cloudWhiteboard.isAuthor || !cloudWhiteboard.readonly)
-      // ) {
-      //   socket.emit('diff', diffNodes)
-      // }
-      // })
-
-      // 只读的时候同步 scale ScrollX ScrollY
-      // whiteboardApp()?.watch.diffStateChange((state) => {
-      //   if (window.isCloud) {
-      //     // syncState(state)
-      //   }
-      // })
+      PubSub.subscribe('update-info', (msg, info) => {
+        socket.emit('update-info', info)
+      })
     }
-  }, [creatLoaderOK, cloudWhiteboard])
+  }, [creatLoaderOK])
 }

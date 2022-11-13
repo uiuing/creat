@@ -1,9 +1,10 @@
 import creatLoader from '@uiuing/creat-loader'
-import { diff } from 'jsondiffpatch'
+import { Node } from '@uiuing/creat-loader/types'
+import { create, diff } from 'jsondiffpatch'
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
-import { getUserTmpInfo, getWhiteboardLocalData } from '../../../utils/data'
+import { getWhiteboardLocalData } from '../../../utils/data'
 import { creatLoaderOKState } from '../store'
 import { GetLocalDataStateObject, whiteboardApp } from '../utils'
 
@@ -21,15 +22,21 @@ export function useInitWhiteboardLoader() {
     // 初始化白板数据
     getWhiteboardLocalData(window.whiteboardId).then((data) => {
       if (creatLoaderOK) {
+        setLocalData(whiteboardApp().getData())
+        const { state } = whiteboardApp().getData()
         whiteboardApp()?.setData(
           {
-            state: whiteboardApp()?.getData().state,
+            state: {
+              ...state,
+              defaultColor: localData?.state?.defaultColor
+                ? localData?.state?.defaultColor
+                : '#000000'
+            },
             nodes: data && 'nodes' in data ? data.nodes : localData.nodes
           },
           true,
           true
         )
-
         setCreatOK(true)
       }
     })
@@ -37,21 +44,25 @@ export function useInitWhiteboardLoader() {
 
   // 之所以白板的渲染和事件分开，是因为白板的渲染需要等待loader的初始化完成
   useLayoutEffect(() => {
-    getUserTmpInfo().then((user) => {
-      window.whiteboard = creatLoader({
-        plotType: 'selection',
-        defaultColor: user.color
-      }).mount('#creat-loader')
-
-      setCreatLoaderOK(true)
-    })
+    window.whiteboard = creatLoader({
+      plotType: 'selection',
+      defaultColor: '#000000'
+    }).mount('#creat-loader')
+    setCreatLoaderOK(true)
   }, [])
 
   useEffect(() => {
     let tmp = localData
     whiteboardApp()?.watch.localDataChange((data) => {
       if (isLoaderOK) {
-        const nodesDelta = diff(tmp.nodes, data.nodes)
+        const nodesDelta = create({
+          objectHash(obj: Node) {
+            return obj.id
+          },
+          arrays: {
+            detectMove: false
+          }
+        }).diff(tmp.nodes, data.nodes)
         const stateDelta = diff(tmp.state, data.state)
         if (nodesDelta) {
           PubSub.publish('diff-nodes', nodesDelta)
@@ -63,7 +74,6 @@ export function useInitWhiteboardLoader() {
         setLocalData(data)
       }
     })
-
     setIsLoaderOK(true)
   }, [creatOK])
 

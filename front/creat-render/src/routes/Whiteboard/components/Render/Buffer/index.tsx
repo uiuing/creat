@@ -1,3 +1,7 @@
+import { Spin } from '@douyinfe/semi-ui'
+
+import styles from '../../style.module.scss'
+
 export default function RenderBuffer() {
-  return <div>加载中..</div>
+  return <Spin wrapperClassName={styles.renderTop} />
 }

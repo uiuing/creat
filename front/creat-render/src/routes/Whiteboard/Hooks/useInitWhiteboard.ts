@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { getWhiteboardInfoById } from '../../../utils/data'
+import { getUserTmpInfo, getWhiteboardInfoById } from '../../../utils/data'
 import { checkWhiteboardShare } from '../apis/prepare'
-import { cloudWhiteboardState } from '../store'
+import { cloudWhiteboardState, userTmpInfoState } from '../store'
 import { GetLocalDataStateObject, whiteboardApp } from '../utils'
 
 export default function useInitWhiteboard() {
@@ -15,6 +15,8 @@ export default function useInitWhiteboard() {
 
   const setLocalData = useSetRecoilState(GetLocalDataStateObject())
 
+  const [userTmpInfo, setUserTmpInfo] = useRecoilState(userTmpInfoState)
+
   async function init() {
     // 判断是否为原作者
     const whiteboardInfo = await getWhiteboardInfoById(window.whiteboardId)
@@ -25,10 +27,23 @@ export default function useInitWhiteboard() {
     })
 
     // 判断是否已分享
-    checkWhiteboardShare(window.whiteboardId, ({ status, data }) => {
+    checkWhiteboardShare(window.whiteboardId, async ({ status, data }) => {
       if (status === 200) {
+        const state = whiteboardApp()?.getData().state
+        let { color } = userTmpInfo
+        if (!color || !hasWhiteboardInfo) {
+          const res = await getUserTmpInfo()
+          setUserTmpInfo(res)
+          color = res.color
+        } else {
+          setUserTmpInfo({
+            ...(await getUserTmpInfo()),
+            color: '#000000'
+          })
+          color = '#000000'
+        }
         setLocalData({
-          state: whiteboardApp()?.getData().state,
+          state: { ...state, defaultColor: color },
           nodes: data?.nodes
         })
         setCloudWhiteboard({
