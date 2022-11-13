@@ -240,7 +240,19 @@ io.on('connection', (client) => {
       redisClient.get(`creat-${user.roomId}`, (err, reply) => {
         if (reply) {
           const r = JSON.parse(reply)
-          r.nodes = JSON.parse(JSON.stringify(patch(r.nodes, nodesDelta)))
+          const newNodes = JSON.parse(
+            JSON.stringify(patch(r.nodes, nodesDelta))
+          )
+          // 去除重复id，采用最新的
+          const newNodesMap = new Map()
+          newNodes.forEach((item) => {
+            newNodesMap.set(item.id, item)
+          })
+          const newNodesArr = []
+          newNodesMap.forEach((item) => {
+            newNodesArr.push(item)
+          })
+          r.nodes = newNodesArr
           redisClient.set(`creat-${user.roomId}`, JSON.stringify(r))
           client.broadcast.to(user.roomId).emit('diff-nodes', nodesDelta)
         }

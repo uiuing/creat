@@ -39,27 +39,36 @@ export default function useSyncWatch() {
           JSON.parse(JSON.stringify(nowData.nodes)),
           nodesDelta
         )
+        // 去除重复id，采用最新的
+        const newNodesMap = new Map()
+        newNodes.forEach((item: any) => {
+          newNodesMap.set(item.id, item)
+        })
+        const newNodesArr: any[] = []
+        newNodesMap.forEach((item) => {
+          newNodesArr.push(item)
+        })
         whiteboardApp()?.setData(
           {
             state: nowData.state,
-            nodes: newNodes
+            nodes: newNodesArr
           },
           true,
           true
         )
-        setLocalData(newNodes)
+        setLocalData(newNodesArr)
       })
 
       socket.on('diff-state', (stateDelta) => {
         const nowData = whiteboardApp()?.getData()
-        // whiteboardApp()?.setData(
-        //   {
-        //     state: patch(nowData.state, stateDelta),
-        //     nodes: nowData.nodes
-        //   },
-        //   true,
-        //   true
-        // )
+        whiteboardApp()?.setData(
+          {
+            state: patch(nowData.state, stateDelta),
+            nodes: nowData.nodes
+          },
+          true,
+          true
+        )
         setLocalData(whiteboardApp().getData())
       })
 
