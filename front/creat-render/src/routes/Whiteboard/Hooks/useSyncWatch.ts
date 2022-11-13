@@ -1,3 +1,4 @@
+import { patch } from 'jsondiffpatch'
 import PubSub from 'pubsub-js'
 import { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
@@ -32,58 +33,21 @@ export default function useSyncWatch() {
 
       socket.emit('join', window.whiteboardId)
 
-      socket.on('diff-nodes', (diffResNodes) => {
-        console.log('diff-nodes', diffResNodes)
-        const { type, nodes } = diffResNodes
-        const nowData = whiteboardApp().getData()
-        if (type === 'add') {
-          whiteboardApp().setData(
-            {
-              state: nowData.state,
-              nodes: [...nowData.nodes, ...nodes]
-            },
-            true,
-            true
-          )
-        }
-        if (type === 'update') {
-          whiteboardApp().setData(
-            {
-              state: nowData.state,
-              nodes: nowData.nodes.map((item) => {
-                const node = nodes.find((n: any) => n.id === item.id)
-                return node ? { ...item, ...node } : item
-              })
-            },
-            true,
-            true
-          )
-        }
-        if (type === 'delete') {
-          const IDS = nodes.map((item: any) => item.id)
-          console.log(IDS)
-          whiteboardApp().setData(
-            {
-              state: nowData.state,
-              nodes: nowData.nodes.filter(
-                (item) => !nowData.nodes.find((n) => n.id === item.id)
-              )
-            },
-            true,
-            true
-          )
-        }
-        // console.log(nodesDelta)
-        // const nowData = whiteboardApp()?.getData()
-        // whiteboardApp()?.setData(
-        //   {
-        //     state: nowData.state,
-        //     nodes: JSON.parse(patch(JSON.stringify(nowData.nodes), nodesDelta))
-        //   },
-        //   true,
-        //   true
-        // )
-        // setLocalData(whiteboardApp().getData())
+      socket.on('diff-nodes', (nodesDelta) => {
+        const nowData = whiteboardApp()?.getData()
+        const newNodes = patch(
+          JSON.parse(JSON.stringify(nowData.nodes)),
+          nodesDelta
+        )
+        whiteboardApp()?.setData(
+          {
+            state: nowData.state,
+            nodes: newNodes
+          },
+          true,
+          true
+        )
+        setLocalData(newNodes)
       })
 
       socket.on('diff-state', (stateDelta) => {
@@ -119,5 +83,5 @@ export default function useSyncWatch() {
         socket.emit('update-info', info)
       })
     }
-  }, [creatLoaderOK])
+  }, [creatLoaderOK, isCloud])
 }

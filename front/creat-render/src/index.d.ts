@@ -4,4 +4,5 @@ declare interface Window {
   isCloud: boolean
   readonly: boolean
   name: string
+  onceLoader: boolean
 }

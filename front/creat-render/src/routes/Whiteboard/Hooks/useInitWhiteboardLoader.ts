@@ -1,4 +1,5 @@
 import creatLoader from '@uiuing/creat-loader'
+import { diff } from 'jsondiffpatch'
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
@@ -42,26 +43,22 @@ export function useInitWhiteboardLoader() {
   }, [])
 
   useEffect(() => {
-    if ('state' in localData && creatOK) {
+    if ('state' in localData && creatOK && !window.onceLoader) {
       let tmp = localData
       // 监听白板数据变化
       if (isLoaderOK) {
         whiteboardApp()?.watch.localDataChange((data) => {
-          // Diff 数据
-          if (checkHasDiff(tmp.nodes, data.nodes)) {
-            const diffNodesRes = parseDiffNodes(tmp.nodes, data.nodes)
-            if (diffNodesRes) {
-              PubSub.publish('diff-nodes', diffNodesRes)
-            }
+          const nodesDelta = diff(tmp.nodes, data.nodes)
+          const stateDelta = diff(tmp.state, data.state)
+          if (nodesDelta) {
+            PubSub.publish('diff-nodes', nodesDelta)
           }
-          if (checkHasDiff(tmp.state, data.state)) {
-            const diffStateRes = parseDiffState(tmp.state, data.state)
-            if (diffStateRes) {
-              PubSub.publish('diff-state', diffStateRes)
-            }
+          if (stateDelta && window.readonly) {
+            PubSub.publish('diff-state', stateDelta)
           }
           tmp = data
           setLocalData(data)
+          window.onceLoader = true
         })
       }
     }
