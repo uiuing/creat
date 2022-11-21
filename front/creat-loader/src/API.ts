@@ -358,7 +358,6 @@ class CreatLoader extends EventEmitter {
     this.canvas = canvas
     this.ctx = ctx
     this.mountEL.appendChild(this.canvas as any)
-    console.log('a')
   }
 
   // Container resizing
