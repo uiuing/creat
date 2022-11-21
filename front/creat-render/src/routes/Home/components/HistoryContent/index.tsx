@@ -38,7 +38,6 @@ export default function HistoryContent({ className }: Props) {
   }, [whiteboardInfos])
 
   const fns = {
-    reName: (id: string) => {},
     download: downloadWhiteboard,
     delete: (id: string) => {
       deleteWhiteboard(id).then(() => {
@@ -66,7 +65,11 @@ export default function HistoryContent({ className }: Props) {
         </Text>
       </div>
       <div>
-        <HistoryList whiteboardList={whiteboardInfos} fns={fns} />
+        <HistoryList
+          whiteboardList={whiteboardInfos}
+          setWhiteboardInfos={setWhiteboardInfos}
+          fns={fns}
+        />
       </div>
     </div>
   )

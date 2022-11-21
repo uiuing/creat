@@ -10,7 +10,7 @@ import {
 } from '@douyinfe/semi-ui'
 import { LocalData } from '@uiuing/creat-loader/types'
 import PubSub from 'pubsub-js'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { TwitterPicker } from 'react-color'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
@@ -66,6 +66,10 @@ export function CollatorState() {
   // useEffect(() => {
   //   console.log('cooperationUsers', cooperationUsers)
   // }, [cooperationUsers])
+
+  useEffect(() => {
+    console.log('cloudWhiteboard', cloudWhiteboard)
+  }, [cloudWhiteboard])
 
   function shareManage() {
     return (

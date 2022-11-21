@@ -1,0 +1,11 @@
+.wrapper {
+  position: relative;
+  z-index: 900;
+  top: 0;
+  display: flex;
+  width: 60%;
+  min-width: 700px;
+  max-width: 1300px;
+  flex-direction: row;
+  justify-content: flex-end;
+}

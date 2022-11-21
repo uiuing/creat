@@ -4,7 +4,6 @@ import RenderBuffer from '../Buffer'
 
 export default function RenderContent() {
   const isLoaderOK = useInitWhiteboardLoader()
-
   // useWatch(setLocalData as any, isLoaderOK)
 
   if (isLoaderOK) {

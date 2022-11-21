@@ -1,9 +1,14 @@
 import creatLoader from '@uiuing/creat-loader'
 import { diff } from 'jsondiffpatch'
-import { useEffect, useLayoutEffect, useState } from 'react'
-import { useRecoilState } from 'recoil'
+import { useEffect, useState } from 'react'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { creatLoaderOKState } from '../store'
+import { getUserTmpInfo } from '../../../utils/data'
+import {
+  cloudWhiteboardState,
+  creatLoaderOKState,
+  userTmpInfoState
+} from '../store'
 import { GetLocalDataStateObject, whiteboardApp } from '../utils'
 
 export function useInitWhiteboardLoader() {
@@ -11,58 +16,83 @@ export function useInitWhiteboardLoader() {
     GetLocalDataStateObject()
   )
 
-  const [creatOK, setCreatOK] = useState(false)
   const [isLoaderOK, setIsLoaderOK] = useState(false)
 
-  const [creatLoaderOK, setCreatLoaderOK] = useRecoilState(creatLoaderOKState)
+  const [userTmpInfo, setUserTmpInfo] = useRecoilState(userTmpInfoState)
 
-  useEffect(() => {
-    // 初始化白板数据
-    if (creatLoaderOK && 'state' in localData) {
-      const nowData = whiteboardApp()?.getData()
-      whiteboardApp().setData(
-        {
-          state: { ...nowData.state, ...localData.state },
-          nodes: localData.nodes
-        },
-        true,
-        true
-      )
-    }
-    setCreatOK(true)
-  }, [creatLoaderOK, localData])
+  const cloudWhiteboard = useRecoilValue(cloudWhiteboardState)
 
-  // 之所以白板的渲染和事件分开，是因为白板的渲染需要等待loader的初始化完成
-  useLayoutEffect(() => {
+  const setCreatLoaderOK = useSetRecoilState(creatLoaderOKState)
+
+  async function init() {
     window.whiteboard = creatLoader({
       plotType: 'selection',
       defaultColor: '#000000'
     }).mount('#creat-loader')
-    setCreatLoaderOK(true)
-  }, [])
 
-  useEffect(() => {
-    if (whiteboardApp() && creatOK && !window.onceLoader) {
-      let tmp = whiteboardApp().getData()
-      // 监听白板数据变化
-      if (isLoaderOK) {
-        whiteboardApp()?.watch.localDataChange((data) => {
-          const nodesDelta = diff(tmp.nodes, data.nodes)
-          const stateDelta = diff(tmp.state, data.state)
-          if (nodesDelta) {
-            PubSub.publish('diff-nodes', nodesDelta)
-          }
-          if (stateDelta && window.readonly) {
-            PubSub.publish('diff-state', stateDelta)
-          }
-          tmp = data
-          setLocalData(data)
-          window.onceLoader = true
-        })
+    // 初始化颜色
+    let { color } = userTmpInfo
+    if (!color || !cloudWhiteboard.isAuthor) {
+      const res = await getUserTmpInfo()
+      setUserTmpInfo(res)
+      color = res.color
+    } else {
+      setUserTmpInfo({
+        ...(await getUserTmpInfo()),
+        color: '#000000'
+      })
+      color = '#000000'
+    }
+
+    // 监听白板数据变化, 这是一个事件，当前不会操作
+    let tmp: any = {}
+    whiteboardApp()?.watch.localDataChange((data) => {
+      if (window.isCloud) {
+        const nodesDelta = diff(tmp.nodes, data.nodes)
+        const stateDelta = diff(tmp.state, data.state)
+        if (nodesDelta) {
+          PubSub.publish('diff-nodes', nodesDelta)
+        }
+        if (stateDelta && window.readonly) {
+          PubSub.publish('diff-state', stateDelta)
+        }
       }
+      tmp = data
+      setLocalData(data)
+    })
+
+    window.onceLoader = true
+
+    // 初始化白板数据变化
+    const hasNodes = localData.nodes.length !== 0
+    const hasState = Object.keys(localData.state).length !== 0
+    if (hasNodes && hasState) {
+      tmp = localData
+      whiteboardApp().setData(localData, true, true)
+    } else if ((hasNodes && !hasState) || (!hasNodes && hasState)) {
+      tmp = localData
+      whiteboardApp().setData(
+        {
+          nodes: localData.nodes,
+          state: { ...whiteboardApp().getData().state, defaultColor: color }
+        },
+        true,
+        true
+      )
+    } else {
+      const nowData = whiteboardApp().getData()
+      tmp = nowData
+      setIsLoaderOK(true)
     }
     setIsLoaderOK(true)
-  }, [creatOK, localData])
+    setCreatLoaderOK(true)
+  }
+
+  useEffect(() => {
+    if (localData && 'nodes' in localData && !window.onceLoader) {
+      init().then(() => {})
+    }
+  }, [localData])
 
   return isLoaderOK
 }
