@@ -2,7 +2,6 @@
   <a href="https://creat.uiuing.com">
     <img width="540" src="./front/creat-render/src/routes/Home/components/FixedBanner/banner.png" alt="creat logo" />
   </a>
-  <h3>为思维发散与协同讨论孕育而生<br>2022年七牛云1024创作节作品</br>
   </h3>
   <p> 欢迎大家提出问题 <a target="_blank" href="https://github.com/uiuing/creat/issues">https://github.com/uiuing/creat/issues</a>.</p>
 </div>
@@ -16,25 +15,6 @@ DEMO视频演示：[https://docs-creat.uiuing.com/demo](https://docs-creat.uiuin
 在线体验: [https://creat.uiuing.com](https://creat.uiuing.com)
 
 查看更新: [https://github.com/uiuing/creat](https://github.com/uiuing/creat)
-
-<br />
-
-
-## 以Creat做基架进行产品开发
-
-我们想带来的当然不止是一个白板应用，更期待去做saas (😝)
-
-我们的核心内容抽离为：两大模块
-- creat-loader
-- quick-server
-
-我们将核心的canvas内容绘制抽离为 creat-loader 模块，所有人都可以像前端框架使用vue和react框架一样，在白板内容领域，您可以直接将我们抽离的 creat-loader模块作为第三方SDK来使用
-
-此外，我们将负责同步数据的后台服务也抽离为了 quick-server 模块，您可以直接部署您自己的服务器上，根据需求定制您的后台需求
-
-从用户的角度来说，把我们比作一个协作白板，不如把我们比作一个白板领域的wps，我们可以通过对白板数据的多种管理，我们不仅仅要做的是一个白板远程协作工具，还要做好个人的发散思维记录工具，
-
-
 
 <br />
 
